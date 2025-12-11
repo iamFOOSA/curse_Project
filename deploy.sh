@@ -4,7 +4,7 @@
 APP_PATH="/Users/danilaabramcuk/Desktop/PLAY/play/build/debug/NutritionDiary.app"
 MACDEPLOYQT="/Users/danilaabramcuk/Desktop/QT/6.9.3/macos/bin/macdeployqt"
 
-if [ -f "$MACDEPLOYQT" ]; then
+if [[ -f "$MACDEPLOYQT" ]]; then
     echo "Запуск macdeployqt..."
     "$MACDEPLOYQT" "$APP_PATH" -verbose=2
     echo "Готово!"

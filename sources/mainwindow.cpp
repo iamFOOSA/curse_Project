@@ -107,10 +107,10 @@ void MainWindow::showSummary()
 
 void MainWindow::showHistory()
 {
-    QDialog *historyDialog = new QDialog(this);
-    historyDialog->setWindowTitle("История питания");
-    historyDialog->setMinimumSize(900, 700);
-    historyDialog->setStyleSheet(R"(
+    QDialog historyDialog(this);
+    historyDialog.setWindowTitle("История питания");
+    historyDialog.setMinimumSize(900, 700);
+    historyDialog.setStyleSheet(R"(
         QDialog {
             background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
                 stop:0 #1a1a2e, stop:0.5 #16213e, stop:1 #0f3460);
@@ -166,28 +166,27 @@ void MainWindow::showHistory()
         }
     )");
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(historyDialog);
+    HistoryManager historyManager("data/nutrition_history.json");
+    QStringList dates = historyManager.getAvailableDates();
+
+    if (dates.isEmpty()) {
+        return;
+    }
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(&historyDialog);
     mainLayout->setSpacing(15);
     mainLayout->setContentsMargins(20, 20, 20, 20);
 
-    QLabel *titleLabel = new QLabel("История питания");
+    QLabel *titleLabel = new QLabel("История питания", &historyDialog);
     titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: white; padding: 10px;");
     titleLabel->setAlignment(Qt::AlignCenter);
 
     QHBoxLayout *dateLayout = new QHBoxLayout;
-    QLabel *dateSelectLabel = new QLabel("Выберите дату:");
+    QLabel *dateSelectLabel = new QLabel("Выберите дату:", &historyDialog);
     dateSelectLabel->setStyleSheet("font-size: 14px; color: white;");
-    QComboBox *dateComboBox = new QComboBox(historyDialog);
-    QPushButton *viewButton = new QPushButton("Показать", historyDialog);
-    QPushButton *viewTodayButton = new QPushButton("Сегодня", historyDialog);
-    
-    HistoryManager historyManager("data/nutrition_history.json");
-    QStringList dates = historyManager.getAvailableDates();
-    
-    if (dates.isEmpty()) {
-        delete historyDialog;
-        return;
-    }
+    QComboBox *dateComboBox = new QComboBox(&historyDialog);
+    QPushButton *viewButton = new QPushButton("Показать", &historyDialog);
+    QPushButton *viewTodayButton = new QPushButton("Сегодня", &historyDialog);
 
     for (const QString& date : dates) {
         QDate qdate = QDate::fromString(date, "yyyy-MM-dd");
@@ -201,7 +200,7 @@ void MainWindow::showHistory()
     dateLayout->addWidget(viewTodayButton);
     dateLayout->addStretch();
 
-    QTableWidget *summaryTable = new QTableWidget(historyDialog);
+    QTableWidget *summaryTable = new QTableWidget(&historyDialog);
     summaryTable->setColumnCount(6);
     summaryTable->setHorizontalHeaderLabels(QStringList() << "Дата" << "Калории" << "Белки" << "Жиры" << "Углеводы" << "Приемов пищи");
     summaryTable->setRowCount(dates.size());
@@ -222,10 +221,10 @@ void MainWindow::showHistory()
     summaryTable->horizontalHeader()->setStretchLastSection(true);
     summaryTable->resizeColumnsToContents();
 
-    QLabel *detailLabel = new QLabel("Детали выбранного дня:");
+    QLabel *detailLabel = new QLabel("Детали выбранного дня:", &historyDialog);
     detailLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; padding: 10px;");
 
-    QTableWidget *detailTable = new QTableWidget(historyDialog);
+    QTableWidget *detailTable = new QTableWidget(&historyDialog);
     detailTable->setColumnCount(8);
     detailTable->setHorizontalHeaderLabels(QStringList() << "Время" << "Прием пищи" << "Продукт" << "Вес (г)" << "Ккал" << "Белки" << "Жиры" << "Углеводы");
     detailTable->horizontalHeader()->setStretchLastSection(true);
@@ -282,14 +281,14 @@ void MainWindow::showHistory()
         }
     });
 
-    QPushButton *closeButton = new QPushButton("Закрыть", historyDialog);
-    connect(closeButton, &QPushButton::clicked, historyDialog, &QDialog::accept);
+    QPushButton *closeButton = new QPushButton("Закрыть", &historyDialog);
+    connect(closeButton, &QPushButton::clicked, &historyDialog, &QDialog::accept);
 
-    QPushButton *showSummaryButton = new QPushButton("Показать итоги дня", historyDialog);
+    QPushButton *showSummaryButton = new QPushButton("Показать итоги дня", &historyDialog);
     connect(showSummaryButton, &QPushButton::clicked, [&]() {
         QString selectedDate = dateComboBox->currentData().toString();
         if (!selectedDate.isEmpty()) {
-            historyDialog->accept();
+            historyDialog.accept();
             summaryWindow->displaySummaryForDate(selectedDate);
             stackedWidget->setCurrentWidget(summaryWindow);
         }
@@ -307,7 +306,7 @@ void MainWindow::showHistory()
     buttonsLayout->setAlignment(Qt::AlignRight);
     mainLayout->addLayout(buttonsLayout);
 
-    historyDialog->exec();
+    historyDialog.exec();
 }
 
 void MainWindow::onUserRegistered()
