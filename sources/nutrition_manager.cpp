@@ -18,7 +18,8 @@ DailyMenu::~DailyMenu() {
 
 void DailyMenu::add_meal(Food* meal) {
     if (meal_count < max_meals) {
-        meals[meal_count++] = meal;
+        meals[meal_count] = meal;
+        ++meal_count;
     }
 }
 
@@ -54,8 +55,8 @@ NutritionManager::~NutritionManager() {
     for (int i = 0; i < day_count; i++) {
         delete weekly_menu[i];
     }
-    for (auto& [key, value] : product_database) {
-        Q_UNUSED(key);
+    for (const auto& [key, value] : product_database) {
+        (void)key;
         delete value;
     }
 }
@@ -125,7 +126,7 @@ void NutritionManager::suggest_menu() const {
 QStringList NutritionManager::get_product_names_qt() const {
     QStringList list;
     for (const auto& [key, value] : product_database) {
-        Q_UNUSED(value);
+        (void)value;
         list.append(QString::fromStdString(key));
     }
     return list;

@@ -63,7 +63,8 @@ void Manager::create_detailed_menu() {
     day1->add_meal(new Product("Куриная грудка с гречкой", 165, 31, 3.6, 15));
     day1->add_meal(new Product("Овощной салат", 65, 2, 0.5, 13));
     day1->add_meal(new Product("Творог", 120, 17, 5, 3));
-    weekly_menu[day_count++] = day1;
+    weekly_menu[day_count] = day1;
+    ++day_count;
 
     DailyMenu* day2 = new DailyMenu("День 2");
     day2->add_meal(new Product("Омлет с овощами", 180, 12, 14, 5));
@@ -71,7 +72,8 @@ void Manager::create_detailed_menu() {
     day2->add_meal(new Product("Рыба на пару с рисом", 120, 20, 4, 25));
     day2->add_meal(new Product("Салат из свежих овощей", 45, 1.5, 0.3, 9));
     day2->add_meal(new Product("Кефир", 45, 3, 2, 4));
-    weekly_menu[day_count++] = day2;
+    weekly_menu[day_count] = day2;
+    ++day_count;
 
     DailyMenu* day3 = new DailyMenu("День 3");
     day3->add_meal(new Product("Творожная запеканка", 200, 15, 8, 20));
@@ -79,7 +81,8 @@ void Manager::create_detailed_menu() {
     day3->add_meal(new Product("Индейка с овощами", 140, 25, 3, 10));
     day3->add_meal(new Product("Греческий салат", 130, 5, 10, 6));
     day3->add_meal(new Product("Орехи грецкие", 650, 15, 65, 14));
-    weekly_menu[day_count++] = day3;
+    weekly_menu[day_count] = day3;
+    ++day_count;
 }
 
 void Manager::display_weekly_menu() const {

@@ -69,14 +69,14 @@ public:
         QString date;
         QString mealType;
         QString productName;
-        double grams;
-        double calories;
-        double proteins;
-        double fats;
-        double carbs;
+        double grams = 0.0;
+        double calories = 0.0;
+        double proteins = 0.0;
+        double fats = 0.0;
+        double carbs = 0.0;
         QString timestamp;
         
-        MealEntryParams() : grams(0), calories(0), proteins(0), fats(0), carbs(0) {}
+        MealEntryParams() = default;
     };
 
     // Добавление записей

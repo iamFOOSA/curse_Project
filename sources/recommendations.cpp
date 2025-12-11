@@ -2,11 +2,11 @@
 #include <iostream>
 
 Recommendations::Recommendations() {
-    advice_list.push_back(" Не забывайте пить воду - 2 литра в день!");
-    advice_list.push_back(" Старайтесь питаться в одно и то же время");
-    advice_list.push_back(" Добавляйте овощи к каждому приему пищи");
-    advice_list.push_back(" Ограничьте потребление сахара и обработанных продуктов");
-    advice_list.push_back(" Сочетайте правильное питание с физической активностью");
+    advice_list.emplace_back(" Не забывайте пить воду - 2 литра в день!");
+    advice_list.emplace_back(" Старайтесь питаться в одно и то же время");
+    advice_list.emplace_back(" Добавляйте овощи к каждому приему пищи");
+    advice_list.emplace_back(" Ограничьте потребление сахара и обработанных продуктов");
+    advice_list.emplace_back(" Сочетайте правильное питание с физической активностью");
 }
 
 void Recommendations::show_welcome_advice() const {

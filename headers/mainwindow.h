@@ -35,10 +35,10 @@ private slots:
 private:
     void cleanup();
 
-    User *user;
-    NutritionAdvisor *advisor;
-    NutritionManager *manager;
-    Manager *basicManager;
+    User *user = nullptr;
+    NutritionAdvisor *advisor = nullptr;
+    NutritionManager *manager = nullptr;
+    Manager *basicManager = nullptr;
     MealTracker *mealTracker = nullptr;
 
     QStackedWidget *stackedWidget;

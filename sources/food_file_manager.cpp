@@ -358,22 +358,27 @@ FoodFileManager::ProductData FoodFileManager::findProduct(const QString& name) c
         }
     }
 
-    if (QStringList inputWords = inputNormalized.split(' ', Qt::SkipEmptyParts); !inputWords.isEmpty()) {
-        for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
-            QString productName = it.value().name.toLower();
-            bool allMatch = true;
-            
-            for (const QString& word : inputWords) {
-                if (word.length() < 2 || productName.contains(word)) {
-                    continue;
-                }
+    QStringList inputWords = inputNormalized.split(' ', Qt::SkipEmptyParts);
+    if (inputWords.isEmpty()) {
+        return {};
+    }
+    
+    for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
+        QString productName = it.value().name.toLower();
+        bool allMatch = true;
+        
+        for (const QString& word : inputWords) {
+            if (word.length() < 2) {
+                continue;
+            }
+            if (!productName.contains(word)) {
                 allMatch = false;
                 break;
             }
-            
-            if (allMatch) {
-                return it.value();
-            }
+        }
+        
+        if (allMatch) {
+            return it.value();
         }
     }
 
