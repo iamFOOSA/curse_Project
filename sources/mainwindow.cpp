@@ -173,7 +173,7 @@ void MainWindow::showHistory()
         return;
     }
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(&historyDialog);
+    auto mainLayout = new QVBoxLayout(&historyDialog);
     mainLayout->setSpacing(15);
     mainLayout->setContentsMargins(20, 20, 20, 20);
 
@@ -182,11 +182,11 @@ void MainWindow::showHistory()
     titleLabel->setAlignment(Qt::AlignCenter);
 
     QHBoxLayout *dateLayout = new QHBoxLayout;
-    QLabel *dateSelectLabel = new QLabel("Выберите дату:", &historyDialog);
+    auto dateSelectLabel = new QLabel("Выберите дату:", &historyDialog);
     dateSelectLabel->setStyleSheet("font-size: 14px; color: white;");
-    QComboBox *dateComboBox = new QComboBox(&historyDialog);
-    QPushButton *viewButton = new QPushButton("Показать", &historyDialog);
-    QPushButton *viewTodayButton = new QPushButton("Сегодня", &historyDialog);
+    auto dateComboBox = new QComboBox(&historyDialog);
+    auto viewButton = new QPushButton("Показать", &historyDialog);
+    auto viewTodayButton = new QPushButton("Сегодня", &historyDialog);
 
     for (const QString& date : dates) {
         QDate qdate = QDate::fromString(date, "yyyy-MM-dd");
@@ -200,7 +200,7 @@ void MainWindow::showHistory()
     dateLayout->addWidget(viewTodayButton);
     dateLayout->addStretch();
 
-    QTableWidget *summaryTable = new QTableWidget(&historyDialog);
+    auto summaryTable = new QTableWidget(&historyDialog);
     summaryTable->setColumnCount(6);
     summaryTable->setHorizontalHeaderLabels(QStringList() << "Дата" << "Калории" << "Белки" << "Жиры" << "Углеводы" << "Приемов пищи");
     summaryTable->setRowCount(dates.size());
@@ -221,10 +221,10 @@ void MainWindow::showHistory()
     summaryTable->horizontalHeader()->setStretchLastSection(true);
     summaryTable->resizeColumnsToContents();
 
-    QLabel *detailLabel = new QLabel("Детали выбранного дня:", &historyDialog);
+    auto detailLabel = new QLabel("Детали выбранного дня:", &historyDialog);
     detailLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; padding: 10px;");
 
-    QTableWidget *detailTable = new QTableWidget(&historyDialog);
+    auto detailTable = new QTableWidget(&historyDialog);
     detailTable->setColumnCount(8);
     detailTable->setHorizontalHeaderLabels(QStringList() << "Время" << "Прием пищи" << "Продукт" << "Вес (г)" << "Ккал" << "Белки" << "Жиры" << "Углеводы");
     detailTable->horizontalHeader()->setStretchLastSection(true);
@@ -281,10 +281,10 @@ void MainWindow::showHistory()
         }
     });
 
-    QPushButton *closeButton = new QPushButton("Закрыть", &historyDialog);
+    auto closeButton = new QPushButton("Закрыть", &historyDialog);
     connect(closeButton, &QPushButton::clicked, &historyDialog, &QDialog::accept);
 
-    QPushButton *showSummaryButton = new QPushButton("Показать итоги дня", &historyDialog);
+    auto showSummaryButton = new QPushButton("Показать итоги дня", &historyDialog);
     connect(showSummaryButton, &QPushButton::clicked, [&]() {
         QString selectedDate = dateComboBox->currentData().toString();
         if (!selectedDate.isEmpty()) {
