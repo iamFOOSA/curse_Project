@@ -51,7 +51,7 @@ public:
     ~MealTracker() = default;
 
     // Управление приемами пищи
-    bool add_meal(const std::string& meal_type, const std::string& product_name, double grams);
+    bool add_meal(const std::string& meal_type, const std::string& product_name, double grams) const;
     bool remove_meal(int index);
     void clear_meals();
 

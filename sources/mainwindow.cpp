@@ -26,11 +26,11 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , user(new User())
+    , advisor(new NutritionAdvisor())
+    , manager(new NutritionManager(advisor))
+    , basicManager(new Manager())
 {
-    user = new User();
-    advisor = new NutritionAdvisor();
-    manager = new NutritionManager(advisor);
-    basicManager = new Manager();
     setWindowTitle("Дневник питания - FatSecret");
     setMinimumSize(1000, 700);
     resize(1100, 800);

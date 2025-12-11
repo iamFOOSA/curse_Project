@@ -5,7 +5,7 @@ MealTracker::MealTracker(User* user, NutritionManager* mgr, NutritionAdvisor* ad
     current_date = get_current_date_string();
 }
 
-bool MealTracker::add_meal(const std::string& /*meal_type*/, const std::string& /*product_name*/, double /*grams*/) {
+bool MealTracker::add_meal(const std::string& /*meal_type*/, const std::string& /*product_name*/, double /*grams*/) const {
     return true;
 }
 
