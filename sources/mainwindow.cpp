@@ -25,16 +25,16 @@
 #include <QTableWidgetItem>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), manager(nullptr), basicManager(nullptr), user(nullptr), advisor(nullptr), mealTracker(nullptr)
+    : QMainWindow(parent)
+    , user(new User())
+    , advisor(new NutritionAdvisor())
+    , manager(new NutritionManager(advisor))
+    , basicManager(new Manager())
+    , mealTracker(nullptr)
 {
     setWindowTitle("Дневник питания - FatSecret");
     setMinimumSize(1000, 700);
     resize(1100, 800);
-
-    user = new User();
-    advisor = new NutritionAdvisor();
-    manager = new NutritionManager(advisor);
-    basicManager = new Manager();
 
 
     basicManager->load_products_from_file();

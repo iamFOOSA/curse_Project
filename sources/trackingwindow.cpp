@@ -805,7 +805,7 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     // Не создаем сразу, так как данные пользователя могут быть еще не загружены
     
     // Подключаем изменение периода к обновлению графика
-    connect(periodComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, periodComboBox, chartScrollArea]() {
+    connect(periodComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, periodComboBox, chartScrollArea, dailyProgressChart]() {
         int days = periodComboBox->currentData().toInt();
         // Для месяца уменьшаем высоту, для других периодов - увеличиваем
         if (days > 7) {

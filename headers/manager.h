@@ -9,14 +9,15 @@
 #include <algorithm>
 #include <iomanip>
 #include <cctype>
+#include <array>
 
 
 class Manager {
 private:
-    static const int max_days = 7;
-    DailyMenu* weekly_menu[max_days];
-    int day_count;
-    std::map<std::string, class Product*> product_database;
+    static constexpr int max_days = 7;
+    std::array<DailyMenu*, max_days> weekly_menu{};
+    int day_count = 0;
+    std::map<std::string, class Product*, std::less<>> product_database;
 
 public:
     Manager();

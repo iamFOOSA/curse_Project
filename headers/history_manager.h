@@ -82,9 +82,6 @@ public:
 
     // Добавление записей
     bool addMealEntry(const MealEntryParams& params);
-    bool addMealEntry(const QString& date, const QString& mealType, const QString& productName,
-                      double grams, double calories, double proteins, double fats, double carbs,
-                      const QString& timestamp = "");
     bool addMealEntry(const DayMealEntry& entry);
 
     // Получение данных

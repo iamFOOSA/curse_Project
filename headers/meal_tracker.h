@@ -41,14 +41,14 @@ private:
     std::vector<MealEntry> daily_meals;
     std::string current_date;
 
-    double total_calories;
-    double total_proteins;
-    double total_fats;
-    double total_carbs;
+    double total_calories = 0.0;
+    double total_proteins = 0.0;
+    double total_fats = 0.0;
+    double total_carbs = 0.0;
 
 public:
     explicit MealTracker(User* user = nullptr, NutritionManager* mgr = nullptr, NutritionAdvisor* adv = nullptr);
-    ~MealTracker();
+    ~MealTracker() = default;
 
     // Управление приемами пищи
     bool add_meal(const std::string& meal_type, const std::string& product_name, double grams);

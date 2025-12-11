@@ -1,20 +1,15 @@
 #include "../headers/meal_tracker.h"
 
 MealTracker::MealTracker(User* user, NutritionManager* mgr, NutritionAdvisor* adv)
-    : current_user(user), manager(mgr), advisor(adv), total_calories(0), total_proteins(0), total_fats(0), total_carbs(0) {
+    : current_user(user), manager(mgr), advisor(adv) {
     current_date = get_current_date_string();
 }
 
-MealTracker::~MealTracker() {
-
-}
-
-bool MealTracker::add_meal(const std::string& meal_type, const std::string& product_name, double grams) {
-
+bool MealTracker::add_meal(const std::string& /*meal_type*/, const std::string& /*product_name*/, double /*grams*/) {
     return true;
 }
 
-bool MealTracker::remove_meal(int index) {
+bool MealTracker::remove_meal(int /*index*/) {
     return true;
 }
 

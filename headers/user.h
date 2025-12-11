@@ -2,6 +2,7 @@
 #define USER_H
 
 #include <string>
+#include <string_view>
 #include <map>
 #include <iostream>
 #include <QString>
@@ -46,11 +47,11 @@ public:
     void register_user();
     void choose_goal();
 
-    void set_name(const std::string& n) { name = n; }
+    void set_name(std::string_view n) { name = std::string(n); }
     void set_age(int a) { age = a; }
     void set_height(double h) { height = h; }
     void set_weight(double w) { weight = w; }
-    void set_goal(const std::string& g) { goal = g; }
+    void set_goal(std::string_view g) { goal = std::string(g); }
     void set_daily_calories(double cal) { daily_calories = cal; }
     void set_daily_proteins(double prot) { daily_proteins = prot; }
     void set_daily_fats(double f) { daily_fats = f; }

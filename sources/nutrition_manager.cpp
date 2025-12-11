@@ -4,7 +4,7 @@
 #include <fstream>
 #include <algorithm>
 
-DailyMenu::DailyMenu(const std::string& d) : day(d), meal_count(0) {
+DailyMenu::DailyMenu(const std::string& d) : day(d) {
     for (int i = 0; i < max_meals; i++) {
         meals[i] = nullptr;
     }
@@ -44,7 +44,7 @@ void DailyMenu::save_to_file(const std::string& filename) const {
     }
 }
 
-NutritionManager::NutritionManager(NutritionAdvisor* adv) : advisor(adv), day_count(0) {
+NutritionManager::NutritionManager(NutritionAdvisor* adv) : advisor(adv) {
     for (int i = 0; i < max_days; i++) {
         weekly_menu[i] = nullptr;
     }
@@ -69,7 +69,7 @@ bool NutritionManager::load_products_from_file(const std::string& filename) {
     double calories, proteins, fats, carbs;
 
     while (file >> name >> calories >> proteins >> fats >> carbs) {
-        std::replace(name.begin(), name.end(), '_', ' ');
+        std::ranges::replace(name, '_', ' ');
         product_database[name] = new Product(name, calories, proteins, fats, carbs);
     }
 
@@ -95,6 +95,7 @@ bool NutritionManager::add_product(const std::string& name, double calories, dou
 }
 
 void NutritionManager::create_detailed_menu() {
+    // Метод зарезервирован для будущей реализации создания детального меню
 }
 
 void NutritionManager::display_weekly_menu() const {
@@ -114,12 +115,14 @@ void NutritionManager::save_all_menus(const std::string& filename) const {
 }
 
 void NutritionManager::suggest_menu() const {
+    // Метод зарезервирован для будущей реализации предложения меню
 }
 
 QStringList NutritionManager::get_product_names_qt() const {
     QStringList list;
-    for (const auto& pair : product_database) {
-        list.append(QString::fromStdString(pair.first));
+    for (const auto& [key, value] : product_database) {
+        Q_UNUSED(value);
+        list.append(QString::fromStdString(key));
     }
     return list;
 }
@@ -132,7 +135,21 @@ bool NutritionManager::add_product_qt(const QString& name, double calories, doub
     return add_product(name.toStdString(), calories, proteins, fats, carbs);
 }
 
-bool NutritionManager::save_products_to_file(const std::string& filename) const { return true; }
-bool NutritionManager::remove_product(const std::string& name) { return true; }
-std::vector<std::string> NutritionManager::get_all_product_names() const { return {}; }
-void NutritionManager::display_product_info(const std::string& name, double grams) const {}
+bool NutritionManager::save_products_to_file(const std::string& /*filename*/) const { 
+    // Метод зарезервирован для будущей реализации сохранения продуктов
+    return true; 
+}
+
+bool NutritionManager::remove_product(const std::string& /*name*/) { 
+    // Метод зарезервирован для будущей реализации удаления продукта
+    return true; 
+}
+
+std::vector<std::string> NutritionManager::get_all_product_names() const { 
+    // Метод зарезервирован для будущей реализации получения всех имен продуктов
+    return {}; 
+}
+
+void NutritionManager::display_product_info(const std::string& /*name*/, double /*grams*/) const {
+    // Метод зарезервирован для будущей реализации отображения информации о продукте
+}

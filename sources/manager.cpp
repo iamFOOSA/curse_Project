@@ -7,13 +7,13 @@
 
 std::string to_lower_case(const std::string& str) {
     std::string result = str;
-    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
-    result.erase(std::remove_if(result.begin(), result.end(), ::isspace), result.end());
+    std::ranges::transform(result, result.begin(), ::tolower);
+    std::erase_if(result, ::isspace);
     return result;
 }
 
 // Реализации методов Manager
-Manager::Manager() : day_count(0) {
+Manager::Manager() {
     for (int i = 0; i < max_days; i++) {
         weekly_menu[i] = nullptr;
     }
@@ -84,7 +84,7 @@ void Manager::create_detailed_menu() {
 
 void Manager::display_weekly_menu() const {
     std::cout << "\n    ПРИМЕРНОЕ МЕНЮ НА 3 ДНЯ    " << std::endl;
-    for (int i = 0; i < day_count; i++) {
+    for (int i = 0; i < day_count; ++i) {
         weekly_menu[i]->display_menu();
     }
 }
@@ -117,7 +117,7 @@ Product* Manager::find_product(const std::string& name) const {
 }
 
 void Manager::display_product_info(const std::string& name, double grams) const {
-    Product* product = find_product(name);
+    const Product* product = find_product(name);
     if (product) {
         std::cout << "Информация о продукте '" << name << "' (" << grams << "г):" << std::endl;
         std::cout << "Калории: " << product->get_calories() * grams / 100 << " ккал" << std::endl;
@@ -138,7 +138,7 @@ bool Manager::add_product_to_file(const std::string& name, double calories, doub
     }
 
     std::string file_name = name;
-    std::replace(file_name.begin(), file_name.end(), ' ', '_');
+    std::ranges::replace(file_name, ' ', '_');
 
     file << file_name << " " << calories << " " << proteins << " " << fats << " " << carbs << "\n";
     file.close();

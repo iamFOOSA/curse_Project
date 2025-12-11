@@ -33,6 +33,8 @@ private:
     QStringList splitProductName(const QString& input) const;
     QString findDataFilePath(const QString& relativePath) const;
     bool createDefaultProductsFile(const QString& filepath) const;
+    bool parseProductLine(const QString& line, int lineNumber, ProductData& product) const;
+    void addProductVariants(const ProductData& product);
 
 public:
     explicit FoodFileManager(const std::string& filepath = "data/products.txt");

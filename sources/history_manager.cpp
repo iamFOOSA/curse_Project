@@ -214,24 +214,6 @@ bool HistoryManager::addMealEntry(const MealEntryParams& params)
     return addMealEntry(entry);
 }
 
-bool HistoryManager::addMealEntry(const QString& date, const QString& mealType, const QString& productName,
-                                  double grams, double calories, double proteins, double fats, double carbs,
-                                  const QString& timestamp)
-{
-    MealEntryParams params;
-    params.date = date;
-    params.mealType = mealType;
-    params.productName = productName;
-    params.grams = grams;
-    params.calories = calories;
-    params.proteins = proteins;
-    params.fats = fats;
-    params.carbs = carbs;
-    params.timestamp = timestamp;
-    
-    return addMealEntry(params);
-}
-
 bool HistoryManager::addMealEntry(const DayMealEntry& entry)
 {
     if (entry.date.isEmpty()) {
@@ -292,7 +274,7 @@ QStringList HistoryManager::getAvailableDates() const
         dates.append(it.key());
     }
     dates.sort();
-    std::reverse(dates.begin(), dates.end());
+    std::ranges::reverse(dates);
     return dates;
 }
 
@@ -305,8 +287,8 @@ QList<QDate> HistoryManager::getAvailableDatesAsQDate() const
             dates.append(date);
         }
     }
-    std::sort(dates.begin(), dates.end());
-    std::reverse(dates.begin(), dates.end());
+    std::ranges::sort(dates);
+    std::ranges::reverse(dates);
     return dates;
 }
 
@@ -392,9 +374,8 @@ bool HistoryManager::removeMealEntry(const QString& date, int index)
         return false;
     }
 
-    const DayMealEntry& entry = summary.meals[index];
-    
-    if (entry.calories <= ZERO_VALUE && entry.proteins <= ZERO_VALUE && entry.fats <= ZERO_VALUE && entry.carbs <= ZERO_VALUE) {
+    if (const DayMealEntry& entry = summary.meals[index]; 
+        entry.calories <= ZERO_VALUE && entry.proteins <= ZERO_VALUE && entry.fats <= ZERO_VALUE && entry.carbs <= ZERO_VALUE) {
         summary.meals.removeAt(index);
         if (summary.meals.isEmpty()) {
             historyData.remove(date);

@@ -11,19 +11,23 @@
 #include <iomanip>
 #include <cctype>
 #include <vector>
+#include <array>
 #include <QString>
 #include <QStringList>
+#include <functional>
 
 class DailyMenu {
 private:
     std::string day;
-    static const int max_meals = 5;
-    Food* meals[max_meals];
-    int meal_count;
+    static constexpr int max_meals = 5;
+    std::array<Food*, max_meals> meals{};
+    int meal_count = 0;
 
 public:
-    DailyMenu(const std::string& d);
+    explicit DailyMenu(const std::string& d);
     ~DailyMenu();
+    DailyMenu(const DailyMenu&) = delete;
+    DailyMenu& operator=(const DailyMenu&) = delete;
 
     void add_meal(Food* meal);
     void display_menu() const;
@@ -37,15 +41,17 @@ public:
 
 class NutritionManager {
 private:
-    static const int max_days = 7;
-    DailyMenu* weekly_menu[max_days];
-    int day_count;
-    std::map<std::string, Product*> product_database;
+    static constexpr int max_days = 7;
+    std::array<DailyMenu*, max_days> weekly_menu{};
+    int day_count = 0;
+    std::map<std::string, Product*, std::less<>> product_database;
     NutritionAdvisor* advisor;
 
 public:
-    NutritionManager(NutritionAdvisor* adv = nullptr);
+    explicit NutritionManager(NutritionAdvisor* adv = nullptr);
     ~NutritionManager();
+    NutritionManager(const NutritionManager&) = delete;
+    NutritionManager& operator=(const NutritionManager&) = delete;
 
     // Управление продуктами
     bool load_products_from_file(const std::string& filename = "products.txt");

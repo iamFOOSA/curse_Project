@@ -2,6 +2,7 @@
 #define FOOD_H
 
 #include <string>
+#include <string_view>
 #include <iostream>
 #include <iomanip>
 
@@ -33,7 +34,7 @@ public:
     double get_fats() const { return fats; }
     double get_carbs() const { return carbs; }
 
-    void set_name(const std::string& n) { name = n; }
+    void set_name(std::string_view n) { name = std::string(n); }
     void set_calories(double cal) { calories = cal; }
     void set_proteins(double p) { proteins = p; }
     void set_fats(double f) { fats = f; }
@@ -44,10 +45,11 @@ class Product : public Food {
 private:
     double weight;
 
+    friend std::ostream& operator<<(std::ostream& os, const Product& product);
+
 public:
     explicit Product(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0, double w = 100);
 
-    friend std::ostream& operator<<(std::ostream& os, const Product& product);
     friend void calculate_nutrition(const Product& p);
 
     void display() const override;

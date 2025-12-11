@@ -43,13 +43,13 @@ QString FoodFileManager::findDataFilePath(const QString& relativePath) const
     QDir currentQDir(currentDir);
     QString projectRoot = currentDir;
     
-    while (!currentQDir.isRoot()) {
+    bool found = false;
+    while (!currentQDir.isRoot() && !found) {
         if (QFileInfo playCheck(currentQDir.absoluteFilePath("play/data/products.txt")); playCheck.exists()) {
             projectRoot = currentQDir.absolutePath();
             searchPaths << playCheck.absoluteFilePath();
-            break;
-        }
-        if (!currentQDir.cdUp()) {
+            found = true;
+        } else if (!currentQDir.cdUp()) {
             break;
         }
     }
@@ -84,6 +84,62 @@ QString FoodFileManager::findDataFilePath(const QString& relativePath) const
     }
     
     return QDir::cleanPath(createPath);
+}
+
+bool FoodFileManager::parseProductLine(const QString& line, int lineNumber, ProductData& product) const
+{
+    QStringList parts = line.split(' ', Qt::SkipEmptyParts);
+    if (parts.size() != 5) {
+        qDebug() << "Ошибка в строке" << lineNumber << ": неверное количество параметров";
+        return false;
+    }
+
+    QString name = parts[0];
+    bool ok;
+    double calories = parts[1].toDouble(&ok);
+    if (!ok) {
+        qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение калорий";
+        return false;
+    }
+
+    double proteins = parts[2].toDouble(&ok);
+    if (!ok) {
+        qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение белков";
+        return false;
+    }
+
+    double fats = parts[3].toDouble(&ok);
+    if (!ok) {
+        qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение жиров";
+        return false;
+    }
+
+    double carbs = parts[4].toDouble(&ok);
+    if (!ok) {
+        qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение углеводов";
+        return false;
+    }
+
+    QString originalName = name;
+    originalName.replace('_', ' ');
+    originalName = originalName.trimmed();
+    
+    product = ProductData(originalName, calories, proteins, fats, carbs);
+    return true;
+}
+
+void FoodFileManager::addProductVariants(const ProductData& product)
+{
+    QString normalizedName = product.name.toLower();
+    QString nameWithUnderscores = product.name;
+    nameWithUnderscores.replace(' ', '_');
+    QString nameWithUnderscoresLower = nameWithUnderscores.toLower();
+    
+    productsDatabase[normalizedName] = product;
+    productsDatabase[product.name] = product;
+    productsDatabase[product.name.toLower()] = product;
+    productsDatabase[nameWithUnderscores] = product;
+    productsDatabase[nameWithUnderscoresLower] = product;
 }
 
 bool FoodFileManager::createDefaultProductsFile(const QString& filepath) const
@@ -180,54 +236,10 @@ bool FoodFileManager::loadProductsFromFile(const std::string& filepath)
             continue;
         }
 
-        QStringList parts = line.split(' ', Qt::SkipEmptyParts);
-        if (parts.size() != 5) {
-            qDebug() << "Ошибка в строке" << lineNumber << ": неверное количество параметров";
-            continue;
+        ProductData product;
+        if (parseProductLine(line, lineNumber, product)) {
+            addProductVariants(product);
         }
-
-        QString name = parts[0];
-        bool ok;
-        double calories = parts[1].toDouble(&ok);
-        if (!ok) {
-            qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение калорий";
-            continue;
-        }
-
-        double proteins = parts[2].toDouble(&ok);
-        if (!ok) {
-            qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение белков";
-            continue;
-        }
-
-        double fats = parts[3].toDouble(&ok);
-        if (!ok) {
-            qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение жиров";
-            continue;
-        }
-
-        double carbs = parts[4].toDouble(&ok);
-        if (!ok) {
-            qDebug() << "Ошибка в строке" << lineNumber << ": неверное значение углеводов";
-            continue;
-        }
-
-        QString originalName = name;
-        originalName.replace('_', ' ');
-        originalName = originalName.trimmed();
-        
-        ProductData product(originalName, calories, proteins, fats, carbs);
-        
-        QString normalizedName = originalName.toLower();
-        QString nameWithUnderscores = originalName;
-        nameWithUnderscores.replace(' ', '_');
-        QString nameWithUnderscoresLower = nameWithUnderscores.toLower();
-        
-        productsDatabase[normalizedName] = product;
-        productsDatabase[originalName] = product;
-        productsDatabase[originalName.toLower()] = product;
-        productsDatabase[nameWithUnderscores] = product;
-        productsDatabase[nameWithUnderscoresLower] = product;
     }
 
     file.close();
@@ -346,17 +358,17 @@ FoodFileManager::ProductData FoodFileManager::findProduct(const QString& name) c
         }
     }
 
-    QStringList inputWords = inputNormalized.split(' ', Qt::SkipEmptyParts);
-    if (!inputWords.isEmpty()) {
+    if (QStringList inputWords = inputNormalized.split(' ', Qt::SkipEmptyParts); !inputWords.isEmpty()) {
         for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
             QString productName = it.value().name.toLower();
             bool allMatch = true;
             
             for (const QString& word : inputWords) {
-                if (word.length() >= 2 && !productName.contains(word)) {
-                    allMatch = false;
-                    break;
+                if (word.length() < 2 || productName.contains(word)) {
+                    continue;
                 }
+                allMatch = false;
+                break;
             }
             
             if (allMatch) {
