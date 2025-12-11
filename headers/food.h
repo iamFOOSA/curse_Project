@@ -14,7 +14,7 @@ protected:
     double carbs;
 
 public:
-    Food(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0);
+    explicit Food(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0);
     virtual ~Food() = default;
 
     virtual void display() const;
