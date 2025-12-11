@@ -7,8 +7,8 @@
 
 std::string to_lower_case(const std::string& str) {
     std::string result = str;
-    std::ranges::transform(result, result.begin(), ::tolower);
-    std::erase_if(result, ::isspace);
+    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+    result.erase(std::remove_if(result.begin(), result.end(), ::isspace), result.end());
     return result;
 }
 

@@ -805,7 +805,7 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     // Не создаем сразу, так как данные пользователя могут быть еще не загружены
     
     // Подключаем изменение периода к обновлению графика
-    connect(periodComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, periodComboBox, chartScrollArea, dailyProgressChart]() {
+    connect(periodComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, periodComboBox, chartScrollArea]() {
         int days = periodComboBox->currentData().toInt();
         // Для месяца уменьшаем высоту, для других периодов - увеличиваем
         if (days > 7) {
@@ -1380,8 +1380,17 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
 
     // Сохраняем в историю
     if (historyManager) {
-        historyManager->addMealEntry(date, mealType, product.name, grams,
-                                     mealCalories, mealProteins, mealFats, mealCarbs, timestamp);
+        HistoryManager::MealEntryParams params;
+        params.date = date;
+        params.mealType = mealType;
+        params.productName = product.name;
+        params.grams = grams;
+        params.calories = mealCalories;
+        params.proteins = mealProteins;
+        params.fats = mealFats;
+        params.carbs = mealCarbs;
+        params.timestamp = timestamp;
+        historyManager->addMealEntry(params);
     }
 
     updateMealsTable();

@@ -58,10 +58,10 @@ public:
     void calculate_nutrition_with_weight() const;
 
     // Для расчета питания с произвольным весом
-    double calculate_calories(double grams = 100) const { return calories * grams / 100; }
-    double calculate_proteins(double grams = 100) const { return proteins * grams / 100; }
-    double calculate_fats(double grams = 100) const { return fats * grams / 100; }
-    double calculate_carbs(double grams = 100) const { return carbs * grams / 100; }
+    double calculate_calories(double grams = 100) const { return get_calories() * grams / 100; }
+    double calculate_proteins(double grams = 100) const { return get_proteins() * grams / 100; }
+    double calculate_fats(double grams = 100) const { return get_fats() * grams / 100; }
+    double calculate_carbs(double grams = 100) const { return get_carbs() * grams / 100; }
 };
 
 #endif
