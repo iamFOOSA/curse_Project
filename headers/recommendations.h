@@ -6,9 +6,7 @@
 
 class Recommendations {
 private:
-    static constexpr int max_advice = 10;
     std::vector<std::string> advice_list;
-    int advice_count = 0;
 
 public:
     Recommendations();

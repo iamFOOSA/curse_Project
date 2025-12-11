@@ -54,8 +54,9 @@ NutritionManager::~NutritionManager() {
     for (int i = 0; i < day_count; i++) {
         delete weekly_menu[i];
     }
-    for (auto& pair : product_database) {
-        delete pair.second;
+    for (auto& [key, value] : product_database) {
+        Q_UNUSED(key);
+        delete value;
     }
 }
 
@@ -66,7 +67,10 @@ bool NutritionManager::load_products_from_file(const std::string& filename) {
     }
 
     std::string name;
-    double calories, proteins, fats, carbs;
+    double calories = 0.0;
+    double proteins = 0.0;
+    double fats = 0.0;
+    double carbs = 0.0;
 
     while (file >> name >> calories >> proteins >> fats >> carbs) {
         std::ranges::replace(name, '_', ' ');

@@ -14,8 +14,8 @@ std::string to_lower_case(const std::string& str) {
 
 // Реализации методов Manager
 Manager::Manager() {
-    for (int i = 0; i < max_days; i++) {
-        weekly_menu[i] = nullptr;
+    for (auto& menu : weekly_menu) {
+        menu = nullptr;
     }
 }
 

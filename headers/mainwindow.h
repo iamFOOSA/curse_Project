@@ -39,7 +39,7 @@ private:
     NutritionAdvisor *advisor;
     NutritionManager *manager;
     Manager *basicManager;
-    MealTracker *mealTracker;
+    MealTracker *mealTracker = nullptr;
 
     QStackedWidget *stackedWidget;
     RegistrationWindow *registrationWindow;

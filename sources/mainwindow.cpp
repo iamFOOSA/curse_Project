@@ -30,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent)
     , advisor(new NutritionAdvisor())
     , manager(new NutritionManager(advisor))
     , basicManager(new Manager())
-    , mealTracker(nullptr)
 {
     setWindowTitle("Дневник питания - FatSecret");
     setMinimumSize(1000, 700);

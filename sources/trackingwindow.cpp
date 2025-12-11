@@ -2076,11 +2076,11 @@ void TrackingWindow::onUpdateTrends()
     trendsMealDistributionTable->setRowCount(analysis.mealDistribution.size());
     int row = 0;
     for (auto it = analysis.mealDistribution.constBegin(); it != analysis.mealDistribution.constEnd(); ++it) {
-        QTableWidgetItem *mealItem = new QTableWidgetItem(it.key());
+        auto *mealItem = new QTableWidgetItem(it.key());
         mealItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         trendsMealDistributionTable->setItem(row, 0, mealItem);
         
-        QTableWidgetItem *calItem = new QTableWidgetItem(QString("%1 ккал").arg(static_cast<int>(it.value())));
+        auto *calItem = new QTableWidgetItem(QString("%1 ккал").arg(static_cast<int>(it.value())));
         calItem->setTextAlignment(Qt::AlignCenter);
         trendsMealDistributionTable->setItem(row, 1, calItem);
         row++;

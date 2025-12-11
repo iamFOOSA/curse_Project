@@ -37,15 +37,15 @@ double MealTracker::get_carbs_percentage() const {
     return 0.0;
 }
 
-bool MealTracker::save_to_file(const std::string& filename) const {
+bool MealTracker::save_to_file(const std::string& /*filename*/) const {
     return true;
 }
 
-bool MealTracker::load_from_file(const std::string& filename) {
+bool MealTracker::load_from_file(const std::string& /*filename*/) {
     return true;
 }
 
-bool MealTracker::save_summary_to_file(const std::string& filename) const {
+bool MealTracker::save_summary_to_file(const std::string& /*filename*/) const {
     return true;
 }
 

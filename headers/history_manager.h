@@ -14,15 +14,14 @@ struct DayMealEntry {
     QString date;
     QString mealType;      // Завтрак, Обед, Ужин, Перекус
     QString productName;
-    double grams;
-    double calories;
-    double proteins;
-    double fats;
-    double carbs;
+    double grams = 0.0;
+    double calories = 0.0;
+    double proteins = 0.0;
+    double fats = 0.0;
+    double carbs = 0.0;
     QString timestamp;     // Время добавления
 
-    DayMealEntry()
-        : grams(0), calories(0), proteins(0), fats(0), carbs(0) {}
+    DayMealEntry() = default;
 
     DayMealEntry(const QString& d, const QString& mt, const QString& pn,
                  double g, double cal, double prot, double fat, double carb, const QString& ts)

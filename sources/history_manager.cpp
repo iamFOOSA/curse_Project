@@ -287,8 +287,8 @@ QList<QDate> HistoryManager::getAvailableDatesAsQDate() const
             dates.append(date);
         }
     }
-    std::ranges::sort(dates);
-    std::ranges::reverse(dates);
+    std::ranges::sort(dates.begin(), dates.end());
+    std::ranges::reverse(dates.begin(), dates.end());
     return dates;
 }
 
@@ -395,8 +395,7 @@ bool HistoryManager::removeMealEntry(const QString& date, int index)
     }
 
     for (int i = 0; i < summary.meals.size(); ++i) {
-        if (i != index) {
-            const DayMealEntry& meal = summary.meals[i];
+        if (const DayMealEntry& meal = summary.meals[i]; i != index) {
             if (meal.calories > 0 || meal.proteins > 0 || meal.fats > 0 || meal.carbs > 0) {
                 recalcCalories += meal.calories;
                 recalcProteins += meal.proteins;

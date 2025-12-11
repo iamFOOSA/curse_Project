@@ -23,7 +23,7 @@ protected:
     double& get_carbs_ref() { return carbs; }
 
 public:
-    explicit Food(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0);
+    explicit Food(std::string_view n = "", double cal = 0, double p = 0, double f = 0, double c = 0);
     virtual ~Food() = default;
 
     virtual void display() const;
@@ -45,11 +45,10 @@ class Product : public Food {
 private:
     double weight;
 
-    friend std::ostream& operator<<(std::ostream& os, const Product& product);
-
 public:
-    explicit Product(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0, double w = 100);
+    explicit Product(std::string_view n = "", double cal = 0, double p = 0, double f = 0, double c = 0, double w = 100);
 
+    friend std::ostream& operator<<(std::ostream& os, const Product& product);
     friend void calculate_nutrition(const Product& p);
 
     void display() const override;

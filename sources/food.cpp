@@ -1,13 +1,13 @@
 #include "../headers/food.h"
 
-Food::Food(const std::string& n, double cal, double p, double f, double c)
+Food::Food(std::string_view n, double cal, double p, double f, double c)
         : name(n), calories(cal), proteins(p), fats(f), carbs(c) {}
 
 void Food::display() const {
     std::cout << name << " - " << calories << " ккал" << std::endl;
 }
 
-Product::Product(const std::string& n, double cal, double p, double f, double c, double w)
+Product::Product(std::string_view n, double cal, double p, double f, double c, double w)
         : Food(n, cal, p, f, c), weight(w) {}
 
 void Product::display() const {
@@ -28,11 +28,6 @@ void Product::calculate_nutrition_with_weight() const {
     std::cout << "Углеводы: " << total_carbs << "г\n";
 }
 
-std::ostream& operator<<(std::ostream& os, const Product& product) {
-    os << product.get_name() << " | " << product.get_calories() << " ккал/100г | "
-       << product.get_proteins() << "Б/" << product.get_fats() << "Ж/" << product.get_carbs() << "У";
-    return os;
-}
 
 void calculate_nutrition(const Product& p) {
     std::cout << "Питательная ценность " << p.get_name() << ":\n";
