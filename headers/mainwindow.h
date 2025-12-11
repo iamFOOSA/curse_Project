@@ -36,9 +36,9 @@ private:
     void cleanup();
 
     User *user;
-    NutritionManager *manager;
-    Manager *basicManager; // Добавляем
     NutritionAdvisor *advisor;
+    NutritionManager *manager;
+    Manager *basicManager;
     MealTracker *mealTracker;
 
     QStackedWidget *stackedWidget;
