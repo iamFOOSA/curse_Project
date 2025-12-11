@@ -1,5 +1,14 @@
+# Игнорировать все
 *
 
+# Явно игнорировать ненужные папки и файлы
+.idea/
+cmake-build-debug/
+build/
+txt/
+CMakeLists.txt
+
+# Разрешить нужные папки и их содержимое
 !data/
 !data/**
 !headers/
@@ -7,7 +16,9 @@
 !sources/
 !sources/**
 
+# Разрешить нужные файлы
 !NutritionDiary.pro
 !mainwindow.ui
 
+# Разрешить сам .gitignore
 !.gitignore
