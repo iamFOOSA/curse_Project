@@ -31,7 +31,7 @@ class TrackingWindow : public QWidget
 
 public:
     explicit TrackingWindow(User *user, NutritionManager *manager, NutritionAdvisor *advisor, QWidget *parent = nullptr);
-    ~TrackingWindow();
+    ~TrackingWindow() override;
 
     void resetTracking();
     void loadDailyData();

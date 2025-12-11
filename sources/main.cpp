@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setStyle(QStyleFactory::create("Fusion"));
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
 
     QPalette darkPalette;
     darkPalette.setColor(QPalette::Window, QColor(25, 25, 35));
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     darkPalette.setColor(QPalette::Link, QColor(148, 87, 235));
     darkPalette.setColor(QPalette::Highlight, QColor(148, 87, 235));
     darkPalette.setColor(QPalette::HighlightedText, Qt::white);
-    a.setPalette(darkPalette);
+    QApplication::setPalette(darkPalette);
 
     a.setStyleSheet(R"(
         QToolTip {
@@ -47,12 +47,12 @@ int main(int argc, char *argv[])
         }
     )");
 
-    a.setApplicationName(" Дневник питания");
-    a.setApplicationVersion("2.0");
-    a.setOrganizationName("HealthTech");
+    QApplication::setApplicationName(" Дневник питания");
+    QApplication::setApplicationVersion("2.0");
+    QApplication::setOrganizationName("HealthTech");
 
     MainWindow w;
     w.show();
 
-    return a.exec();
+    return QApplication::exec();
 }

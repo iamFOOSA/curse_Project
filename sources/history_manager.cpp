@@ -110,8 +110,7 @@ bool HistoryManager::loadHistoryFromFile(const QString& filepath)
     QFile file(filepath);
     if (!file.exists()) {
         QFileInfo fileInfo(filepath);
-        QDir dir = fileInfo.absoluteDir();
-        if (!dir.exists()) {
+        if (QDir dir = fileInfo.absoluteDir(); !dir.exists()) {
             dir.mkpath(".");
         }
         return true;
@@ -173,8 +172,7 @@ bool HistoryManager::saveHistoryToFile() const
 bool HistoryManager::saveHistoryToFile(const QString& filepath) const
 {
     QFileInfo fileInfo(filepath);
-    QDir dir = fileInfo.absoluteDir();
-    if (!dir.exists()) {
+    if (QDir dir = fileInfo.absoluteDir(); !dir.exists()) {
         dir.mkpath(".");
     }
     
@@ -203,17 +201,35 @@ bool HistoryManager::saveHistoryToFile(const QString& filepath) const
     return true;
 }
 
+bool HistoryManager::addMealEntry(const MealEntryParams& params)
+{
+    QString actualTimestamp = params.timestamp.isEmpty() 
+        ? QDateTime::currentDateTime().toString("hh:mm") 
+        : params.timestamp;
+
+    DayMealEntry entry(params.date, params.mealType, params.productName, 
+                       params.grams, params.calories, params.proteins, 
+                       params.fats, params.carbs, actualTimestamp);
+
+    return addMealEntry(entry);
+}
+
 bool HistoryManager::addMealEntry(const QString& date, const QString& mealType, const QString& productName,
                                   double grams, double calories, double proteins, double fats, double carbs,
                                   const QString& timestamp)
 {
-    QString actualTimestamp = timestamp.isEmpty() 
-        ? QDateTime::currentDateTime().toString("hh:mm") 
-        : timestamp;
-
-    DayMealEntry entry(date, mealType, productName, grams, calories, proteins, fats, carbs, actualTimestamp);
-
-    return addMealEntry(entry);
+    MealEntryParams params;
+    params.date = date;
+    params.mealType = mealType;
+    params.productName = productName;
+    params.grams = grams;
+    params.calories = calories;
+    params.proteins = proteins;
+    params.fats = fats;
+    params.carbs = carbs;
+    params.timestamp = timestamp;
+    
+    return addMealEntry(params);
 }
 
 bool HistoryManager::addMealEntry(const DayMealEntry& entry)
@@ -306,8 +322,7 @@ QMap<QString, double> HistoryManager::getWeeklyTotals(const QDate& startDate) co
     QDate currentDate = startDate;
 
     while (currentDate <= endDate) {
-        QString dateStr = formatDate(currentDate);
-        if (historyData.contains(dateStr)) {
+        if (QString dateStr = formatDate(currentDate); historyData.contains(dateStr)) {
             const DaySummary& summary = historyData[dateStr];
             totals["calories"] += summary.totalCalories;
             totals["proteins"] += summary.totalProteins;
@@ -333,8 +348,7 @@ QMap<QString, double> HistoryManager::getMonthlyTotals(const QDate& date) const
     QDate currentDate = startDate;
 
     while (currentDate <= endDate) {
-        QString dateStr = formatDate(currentDate);
-        if (historyData.contains(dateStr)) {
+        if (QString dateStr = formatDate(currentDate); historyData.contains(dateStr)) {
             const DaySummary& summary = historyData[dateStr];
             totals["calories"] += summary.totalCalories;
             totals["proteins"] += summary.totalProteins;
@@ -354,8 +368,7 @@ double HistoryManager::getAverageDailyCalories(const QDate& startDate, const QDa
 
     QDate currentDate = startDate;
     while (currentDate <= endDate) {
-        QString dateStr = formatDate(currentDate);
-        if (historyData.contains(dateStr)) {
+        if (QString dateStr = formatDate(currentDate); historyData.contains(dateStr)) {
             totalCalories += historyData[dateStr].totalCalories;
             daysWithData++;
         }

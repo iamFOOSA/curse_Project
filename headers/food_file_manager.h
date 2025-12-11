@@ -35,8 +35,8 @@ private:
     bool createDefaultProductsFile(const QString& filepath) const;
 
 public:
-    FoodFileManager(const std::string& filepath = "data/products.txt");
-    ~FoodFileManager();
+    explicit FoodFileManager(const std::string& filepath = "data/products.txt");
+    ~FoodFileManager() = default;
 
     // Загрузка и сохранение продуктов
     bool loadProductsFromFile();

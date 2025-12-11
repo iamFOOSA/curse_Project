@@ -6,12 +6,20 @@
 #include <iomanip>
 
 class Food {
-protected:
+private:
     std::string name;
     double calories;
     double proteins;
     double fats;
     double carbs;
+
+protected:
+    std::string& get_name_ref() { return name; }
+    const std::string& get_name_ref() const { return name; }
+    double& get_calories_ref() { return calories; }
+    double& get_proteins_ref() { return proteins; }
+    double& get_fats_ref() { return fats; }
+    double& get_carbs_ref() { return carbs; }
 
 public:
     explicit Food(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0);
@@ -37,7 +45,7 @@ private:
     double weight;
 
 public:
-    Product(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0, double w = 100);
+    explicit Product(const std::string& n = "", double cal = 0, double p = 0, double f = 0, double c = 0, double w = 100);
 
     friend std::ostream& operator<<(std::ostream& os, const Product& product);
     friend void calculate_nutrition(const Product& p);

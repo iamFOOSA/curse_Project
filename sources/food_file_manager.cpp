@@ -15,9 +15,6 @@ FoodFileManager::FoodFileManager(const std::string& filepath)
 {
 }
 
-FoodFileManager::~FoodFileManager()
-{
-}
 
 QString FoodFileManager::normalizeProductName(const QString& name) const
 {
@@ -39,17 +36,15 @@ QString FoodFileManager::findDataFilePath(const QString& relativePath) const
     QString appDir;
     QString currentDir = QDir::currentPath();
     
-    QCoreApplication* app = QCoreApplication::instance();
-    if (app) {
-        appDir = app->applicationDirPath();
+    if (const QCoreApplication* app = QCoreApplication::instance()) {
+        appDir = QCoreApplication::applicationDirPath();
     }
     
     QDir currentQDir(currentDir);
     QString projectRoot = currentDir;
     
     while (!currentQDir.isRoot()) {
-        QFileInfo playCheck(currentQDir.absoluteFilePath("play/data/products.txt"));
-        if (playCheck.exists()) {
+        if (QFileInfo playCheck(currentQDir.absoluteFilePath("play/data/products.txt")); playCheck.exists()) {
             projectRoot = currentQDir.absolutePath();
             searchPaths << playCheck.absoluteFilePath();
             break;
@@ -83,12 +78,9 @@ QString FoodFileManager::findDataFilePath(const QString& relativePath) const
     
     QString createPath = QDir::cleanPath(currentDir + "/" + relativePath);
     QFileInfo createFileInfo(createPath);
-    QDir createDir = createFileInfo.absoluteDir();
     
-    if (!createDir.exists()) {
-        if (!createDir.mkpath(".")) {
-            return QString();
-        }
+    if (QDir createDir = createFileInfo.absoluteDir(); !createDir.exists() && !createDir.mkpath(".")) {
+        return QString();
     }
     
     return QDir::cleanPath(createPath);
@@ -162,11 +154,8 @@ bool FoodFileManager::loadProductsFromFile(const std::string& filepath)
     
     if (!file.exists()) {
         QFileInfo fileInfo(qFilePath);
-        QDir dir = fileInfo.absoluteDir();
-        if (!dir.exists()) {
-            if (!dir.mkpath(".")) {
-                return false;
-            }
+        if (QDir dir = fileInfo.absoluteDir(); !dir.exists() && !dir.mkpath(".")) {
+            return false;
         }
         
         if (!createDefaultProductsFile(qFilePath)) {

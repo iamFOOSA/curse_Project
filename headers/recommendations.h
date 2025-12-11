@@ -2,12 +2,13 @@
 #define RECOMMENDATIONS_H
 
 #include <string>
+#include <vector>
 
 class Recommendations {
 private:
-    static const int max_advice = 10;
-    std::string advice_list[max_advice];
-    int advice_count;
+    static constexpr int max_advice = 10;
+    std::vector<std::string> advice_list;
+    int advice_count = 0;
 
 public:
     Recommendations();

@@ -25,7 +25,7 @@ struct MealEntry {
     double fats;
     double carbs;
 
-    MealEntry(const std::string& d = "", const std::string& mt = "",
+    explicit MealEntry(const std::string& d = "", const std::string& mt = "",
               const std::string& pn = "", double g = 0, double cal = 0,
               double prot = 0, double f = 0, double c = 0)
         : date(d), meal_type(mt), product_name(pn), grams(g),
@@ -47,7 +47,7 @@ private:
     double total_carbs;
 
 public:
-    MealTracker(User* user = nullptr, NutritionManager* mgr = nullptr, NutritionAdvisor* adv = nullptr);
+    explicit MealTracker(User* user = nullptr, NutritionManager* mgr = nullptr, NutritionAdvisor* adv = nullptr);
     ~MealTracker();
 
     // Управление приемами пищи

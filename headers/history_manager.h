@@ -32,17 +32,15 @@ struct DayMealEntry {
 
 struct DaySummary {
     QString date;
-    double totalCalories;
-    double totalProteins;
-    double totalFats;
-    double totalCarbs;
+    double totalCalories = 0.0;
+    double totalProteins = 0.0;
+    double totalFats = 0.0;
+    double totalCarbs = 0.0;
     QList<DayMealEntry> meals;
 
-    DaySummary()
-        : totalCalories(0), totalProteins(0), totalFats(0), totalCarbs(0) {}
+    DaySummary() = default;
 
-    DaySummary(const QString& d)
-        : date(d), totalCalories(0), totalProteins(0), totalFats(0), totalCarbs(0) {}
+    explicit DaySummary(const QString& d) : date(d) {}
 };
 
 class HistoryManager {
@@ -68,7 +66,22 @@ public:
     bool saveHistoryToFile() const;
     bool saveHistoryToFile(const QString& filepath) const;
 
+    struct MealEntryParams {
+        QString date;
+        QString mealType;
+        QString productName;
+        double grams;
+        double calories;
+        double proteins;
+        double fats;
+        double carbs;
+        QString timestamp;
+        
+        MealEntryParams() : grams(0), calories(0), proteins(0), fats(0), carbs(0) {}
+    };
+
     // Добавление записей
+    bool addMealEntry(const MealEntryParams& params);
     bool addMealEntry(const QString& date, const QString& mealType, const QString& productName,
                       double grams, double calories, double proteins, double fats, double carbs,
                       const QString& timestamp = "");

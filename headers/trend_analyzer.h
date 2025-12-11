@@ -11,32 +11,30 @@
 
 struct TrendData {
     QString period;
-    double avgCalories;
-    double avgProteins;
-    double avgFats;
-    double avgCarbs;
-    double trendCalories;      // Положительное = рост, отрицательное = снижение
-    double trendProteins;
-    double trendFats;
-    double trendCarbs;
-    double stabilityCoefficient; // Коэффициент вариации (0-100, меньше = стабильнее)
+    double avgCalories = 0.0;
+    double avgProteins = 0.0;
+    double avgFats = 0.0;
+    double avgCarbs = 0.0;
+    double trendCalories = 0.0;      // Положительное = рост, отрицательное = снижение
+    double trendProteins = 0.0;
+    double trendFats = 0.0;
+    double trendCarbs = 0.0;
+    double stabilityCoefficient = 0.0; // Коэффициент вариации (0-100, меньше = стабильнее)
     
-    TrendData() : avgCalories(0), avgProteins(0), avgFats(0), avgCarbs(0),
-                  trendCalories(0), trendProteins(0), trendFats(0), trendCarbs(0),
-                  stabilityCoefficient(0) {}
+    TrendData() = default;
 };
 
 struct TrendAnalysis {
     QDate startDate;
     QDate endDate;
-    int totalDays;
-    int daysWithData;
+    int totalDays = 0;
+    int daysWithData = 0;
     
     // Средние значения за период
-    double avgCalories;
-    double avgProteins;
-    double avgFats;
-    double avgCarbs;
+    double avgCalories = 0.0;
+    double avgProteins = 0.0;
+    double avgFats = 0.0;
+    double avgCarbs = 0.0;
     
     // Тренды (рост/снижение/стабильность)
     QString caloriesTrend;      // "рост", "снижение", "стабильно"
@@ -56,17 +54,15 @@ struct TrendAnalysis {
     QString leastCaloricDay;
     
     // Стабильность питания
-    double stabilityScore; // 0-100, выше = стабильнее
+    double stabilityScore = 0.0; // 0-100, выше = стабильнее
     
     // Периоды превышения/недостатка норм
-    int daysOverTarget;
-    int daysUnderTarget;
+    int daysOverTarget = 0;
+    int daysUnderTarget = 0;
     
     QString analysisText;
     
-    TrendAnalysis() : totalDays(0), daysWithData(0),
-                      avgCalories(0), avgProteins(0), avgFats(0), avgCarbs(0),
-                      stabilityScore(0), daysOverTarget(0), daysUnderTarget(0) {}
+    TrendAnalysis() = default;
 };
 
 class TrendAnalyzer {
