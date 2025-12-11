@@ -396,12 +396,11 @@ bool HistoryManager::removeMealEntry(const QString& date, int index)
 
     for (int i = 0; i < summary.meals.size(); ++i) {
         if (const DayMealEntry& meal = summary.meals[i]; i != index && (meal.calories > 0 || meal.proteins > 0 || meal.fats > 0 || meal.carbs > 0)) {
-                recalcCalories += meal.calories;
-                recalcProteins += meal.proteins;
-                recalcFats += meal.fats;
-                recalcCarbs += meal.carbs;
-                remainingMeals.append(meal);
-            }
+            recalcCalories += meal.calories;
+            recalcProteins += meal.proteins;
+            recalcFats += meal.fats;
+            recalcCarbs += meal.carbs;
+            remainingMeals.append(meal);
         }
     }
 
