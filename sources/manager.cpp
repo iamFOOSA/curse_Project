@@ -141,7 +141,7 @@ bool Manager::add_product_to_file(const std::string& name, double calories, doub
     }
 
     std::string file_name = name;
-    std::ranges::replace(file_name, ' ', '_');
+    std::replace(file_name.begin(), file_name.end(), ' ', '_');
 
     file << file_name << " " << calories << " " << proteins << " " << fats << " " << carbs << "\n";
     file.close();
