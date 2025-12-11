@@ -74,7 +74,7 @@ bool NutritionManager::load_products_from_file(const std::string& filename) {
     double carbs = 0.0;
 
     while (file >> name >> calories >> proteins >> fats >> carbs) {
-        std::ranges::replace(name, '_', ' ');
+        std::replace(name.begin(), name.end(), '_', ' ');
         product_database[name] = new Product(name, calories, proteins, fats, carbs);
     }
 

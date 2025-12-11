@@ -274,7 +274,7 @@ QStringList HistoryManager::getAvailableDates() const
         dates.append(it.key());
     }
     dates.sort();
-    std::ranges::reverse(dates);
+    std::reverse(dates.begin(), dates.end());
     return dates;
 }
 
@@ -287,8 +287,8 @@ QList<QDate> HistoryManager::getAvailableDatesAsQDate() const
             dates.append(date);
         }
     }
-    std::ranges::sort(dates);
-    std::ranges::reverse(dates);
+    std::sort(dates.begin(), dates.end());
+    std::reverse(dates.begin(), dates.end());
     return dates;
 }
 
