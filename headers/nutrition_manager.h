@@ -58,11 +58,11 @@ public:
     bool save_products_to_file(const std::string& filename = "products.txt") const;
     Product* find_product(const std::string& name) const;
     bool add_product(const std::string& name, double calories, double proteins, double fats, double carbs);
-    bool remove_product(const std::string& name);
+    bool remove_product(const std::string& name) const;
     std::vector<std::string> get_all_product_names() const;
 
     // Управление меню
-    void create_detailed_menu();
+    void create_detailed_menu() const;
     void display_weekly_menu() const;
     void save_all_menus(const std::string& filename = "weekly_menu.txt") const;
     void suggest_menu() const;

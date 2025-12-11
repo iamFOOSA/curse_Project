@@ -22,6 +22,9 @@ private:
 public:
     Manager();
     ~Manager();
+    
+    Manager(const Manager&) = delete;
+    Manager& operator=(const Manager&) = delete;
 
     bool load_products_from_file();
     void create_detailed_menu();

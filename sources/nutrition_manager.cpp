@@ -74,7 +74,7 @@ bool NutritionManager::load_products_from_file(const std::string& filename) {
     double carbs = 0.0;
 
     while (file >> name >> calories >> proteins >> fats >> carbs) {
-        std::replace(name.begin(), name.end(), '_', ' ');
+        std::ranges::replace(name, '_', ' ');
         product_database[name] = new Product(name, calories, proteins, fats, carbs);
     }
 
@@ -99,7 +99,7 @@ bool NutritionManager::add_product(const std::string& name, double calories, dou
     return true;
 }
 
-void NutritionManager::create_detailed_menu() {
+void NutritionManager::create_detailed_menu() const {
     // Метод зарезервирован для будущей реализации создания детального меню
 }
 
@@ -145,7 +145,7 @@ bool NutritionManager::save_products_to_file(const std::string& /*filename*/) co
     return true; 
 }
 
-bool NutritionManager::remove_product(const std::string& /*name*/) { 
+bool NutritionManager::remove_product(const std::string& /*name*/) const { 
     // Метод зарезервирован для будущей реализации удаления продукта
     return true; 
 }
