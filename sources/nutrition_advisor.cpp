@@ -31,11 +31,21 @@ void NutritionAdvisor::show_goal_based_advice(const User& user) const {
 }
 
 void NutritionAdvisor::show_nutrition_analysis_advice(const User& user, double calories, double proteins, double fats, double carbs) const {
-
+    // Метод оставлен пустым, так как анализ питания реализован через Qt UI компоненты
+    (void)user;
+    (void)calories;
+    (void)proteins;
+    (void)fats;
+    (void)carbs;
 }
 
 void NutritionAdvisor::show_progress_advice(const User& user, double calories_percentage, double proteins_percentage, double fats_percentage, double carbs_percentage) const {
-
+    // Метод оставлен пустым, так как советы по прогрессу реализованы через Qt UI компоненты
+    (void)user;
+    (void)calories_percentage;
+    (void)proteins_percentage;
+    (void)fats_percentage;
+    (void)carbs_percentage;
 }
 
 QString NutritionAdvisor::get_welcome_advice_qt() const {

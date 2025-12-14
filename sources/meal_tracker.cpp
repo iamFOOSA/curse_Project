@@ -18,7 +18,7 @@ void MealTracker::clear_meals() {
 }
 
 void MealTracker::calculate_totals() {
-
+    // Метод оставлен пустым, так как расчеты выполняются в других компонентах системы
 }
 
 double MealTracker::get_calories_percentage() const {
@@ -54,11 +54,13 @@ std::string MealTracker::get_current_date_string() {
 }
 
 void MealTracker::display_progress_bar(double current, double max) const {
-
+    // Метод оставлен пустым, так как отображение прогресса реализовано в UI компонентах Qt
+    Q_UNUSED(current)
+    Q_UNUSED(max)
 }
 
 void MealTracker::display_detailed_summary() const {
-
+    // Метод оставлен пустым, так как отображение сводки реализовано в UI компонентах Qt
 }
 
 QVector<QStringList> MealTracker::get_meals_qt() const {

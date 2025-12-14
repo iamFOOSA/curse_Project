@@ -255,7 +255,7 @@ void MainWindow::showHistory()
         dateComboBox->setCurrentIndex(0);
     }
 
-    connect(summaryTable, &QTableWidget::cellDoubleClicked, [&](int row, int) {
+    connect(summaryTable, &QTableWidget::cellDoubleClicked, [this, &dates, dateComboBox](int row, int) {
         if (row >= 0 && row < dates.size()) {
             QString selectedDate = dates[row];
             int index = dateComboBox->findData(selectedDate);
@@ -266,14 +266,14 @@ void MainWindow::showHistory()
         }
     });
 
-    connect(viewButton, &QPushButton::clicked, [&]() {
+    connect(viewButton, &QPushButton::clicked, [this, dateComboBox]() {
         QString selectedDate = dateComboBox->currentData().toString();
         if (!selectedDate.isEmpty()) {
             updateDetailTable(selectedDate);
         }
     });
 
-    connect(viewTodayButton, &QPushButton::clicked, [&]() {
+    connect(viewTodayButton, &QPushButton::clicked, [this, dateComboBox]() {
         QString todayDate = QDate::currentDate().toString("yyyy-MM-dd");
         int index = dateComboBox->findData(todayDate);
         if (index >= 0) {

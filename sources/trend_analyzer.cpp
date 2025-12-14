@@ -10,9 +10,7 @@ TrendAnalyzer::TrendAnalyzer(HistoryManager* historyMgr, User* usr)
 {
 }
 
-TrendAnalyzer::~TrendAnalyzer()
-{
-}
+TrendAnalyzer::~TrendAnalyzer() = default;
 
 double TrendAnalyzer::calculateAverage(const QList<double>& values) const
 {

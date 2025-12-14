@@ -56,8 +56,11 @@ private:
     DayMealEntry jsonToMealEntry(const QJsonObject& json) const;
 
 public:
-    HistoryManager(const QString& filepath = "data/nutrition_history.json");
+    explicit HistoryManager(const QString& filepath = "data/nutrition_history.json");
     ~HistoryManager();
+
+    HistoryManager(const HistoryManager&) = delete;
+    HistoryManager& operator=(const HistoryManager&) = delete;
 
     // Загрузка и сохранение истории
     bool loadHistoryFromFile();

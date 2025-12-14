@@ -1527,9 +1527,11 @@ TrackingWindow::~TrackingWindow() {
 }
 
 void TrackingWindow::addTestData() {
+    // Метод оставлен пустым, так как тестовые данные не требуются в продакшн версии
 }
 
 void TrackingWindow::onProductSearch() {
+    // Метод оставлен пустым, так как поиск продуктов реализован через QCompleter
 }
 
 void TrackingWindow::onMealTypeChanged(int index) {
@@ -1564,6 +1566,7 @@ void TrackingWindow::showProductInfo(const QString &productName) {
 }
 
 void TrackingWindow::autoSave() {
+    // Метод оставлен пустым, так как автосохранение выполняется при каждом изменении данных
 }
 
 void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
