@@ -79,7 +79,7 @@ TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionA
         }
     )");
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    auto *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(20, 20, 20, 20);
 
@@ -118,9 +118,9 @@ TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionA
         }
     )");
 
-    QWidget *trackingTab = new QWidget;
-    QWidget *statisticsTab = new QWidget;
-    QWidget *trendsTab = new QWidget;
+    auto *trackingTab = new QWidget;
+    auto *statisticsTab = new QWidget;
+    auto *trendsTab = new QWidget;
 
     tabWidget->addTab(trackingTab, " Отслеживание");
     tabWidget->addTab(statisticsTab, " Статистика");
@@ -145,7 +145,7 @@ TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionA
 void TrackingWindow::setupTrackingTab(QWidget *tab)
 {
     // Создаем scroll area
-    QScrollArea *scrollArea = new QScrollArea;
+    auto *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -186,12 +186,12 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     )");
 
     // Создаем контейнер для содержимого
-    QWidget *scrollContent = new QWidget;
-    QVBoxLayout *tabLayout = new QVBoxLayout(scrollContent);
+    auto *scrollContent = new QWidget;
+    auto *tabLayout = new QVBoxLayout(scrollContent);
     tabLayout->setSpacing(15);
     tabLayout->setContentsMargins(20, 20, 20, 20);
 
-    QLabel *titleLabel = new QLabel(" Отслеживание питания");
+    auto *titleLabel = new QLabel(" Отслеживание питания");
     titleLabel->setStyleSheet(R"(
         font-size: 24px;
         font-weight: bold;
@@ -204,7 +204,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     )");
     titleLabel->setAlignment(Qt::AlignCenter);
 
-    QGroupBox *dateGroup = new QGroupBox(" Выбор даты");
+    auto *dateGroup = new QGroupBox(" Выбор даты");
     dateGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -223,8 +223,8 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
             font-size: 14px;
         }
     )");
-    QHBoxLayout *dateLayout = new QHBoxLayout(dateGroup);
-    QLabel *dateLabel = new QLabel("Дата:");
+    auto *dateLayout = new QHBoxLayout(dateGroup);
+    auto *dateLabel = new QLabel("Дата:");
     dateLabel->setStyleSheet("font-weight: 600; color: white; font-size: 12px;");
     dateEdit = new QDateEdit(QDate::currentDate());
     dateEdit->setCalendarPopup(true);
@@ -254,7 +254,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     previousDate = dateEdit->date().toString("yyyy-MM-dd");
     connect(dateEdit, &QDateEdit::dateChanged, this, &TrackingWindow::onDateChanged);
 
-    QGroupBox *progressGroup = new QGroupBox(" Дневной прогресс");
+    auto *progressGroup = new QGroupBox(" Дневной прогресс");
     progressGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -274,7 +274,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
         }
     )");
 
-    QVBoxLayout *progressLayout = new QVBoxLayout(progressGroup);
+    auto *progressLayout = new QVBoxLayout(progressGroup);
     progressLayout->setSpacing(8);
 
     QString progressStyle = R"(
@@ -307,8 +307,8 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     carbsProgress->setStyleSheet(progressStyle + "QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #27ae60, stop:1 #229954); }");
 
     auto createProgressRow = [](const QString& label, QProgressBar* progress) {
-        QHBoxLayout *rowLayout = new QHBoxLayout;
-        QLabel *progressLabel = new QLabel(label);
+        auto *rowLayout = new QHBoxLayout;
+        auto *progressLabel = new QLabel(label);
         progressLabel->setStyleSheet("font-weight: 600; color: white; font-size: 12px; min-width: 80px;");
         progressLabel->setAlignment(Qt::AlignLeft);
         progress->setMinimumWidth(180);
@@ -323,7 +323,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     progressLayout->addLayout(createProgressRow(" Жиры:", fatsProgress));
     progressLayout->addLayout(createProgressRow(" Углеводы:", carbsProgress));
 
-    QGroupBox *inputGroup = new QGroupBox(" Добавить прием пищи");
+    auto *inputGroup = new QGroupBox(" Добавить прием пищи");
     inputGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -343,7 +343,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
         }
     )");
 
-    QVBoxLayout *inputLayout = new QVBoxLayout(inputGroup);
+    auto *inputLayout = new QVBoxLayout(inputGroup);
     inputLayout->setSpacing(10);
     inputLayout->setContentsMargins(15, 15, 15, 15);
 
@@ -377,19 +377,19 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
         }
     )";
 
-    QLabel *mealLabel = new QLabel(" Прием пищи:");
+    auto *mealLabel = new QLabel(" Прием пищи:");
     mealLabel->setStyleSheet(labelStyle);
     mealTypeComboBox = new QComboBox;
     mealTypeComboBox->addItems({"Завтрак", "Обед", "Ужин", "Перекус"});
     mealTypeComboBox->setStyleSheet(inputStyle);
 
-    QLabel *productLabel = new QLabel(" Продукт:");
+    auto *productLabel = new QLabel(" Продукт:");
     productLabel->setStyleSheet(labelStyle);
     productNameEdit = new QLineEdit;
     productNameEdit->setPlaceholderText("Введите название продукта...");
     productNameEdit->setStyleSheet(inputStyle);
 
-    QLabel *gramsLabel = new QLabel(" Количество (граммы):");
+    auto *gramsLabel = new QLabel(" Количество (граммы):");
     gramsLabel->setStyleSheet(labelStyle);
     gramsEdit = new QLineEdit;
     gramsEdit->setPlaceholderText("Введите вес в граммах...");
@@ -427,7 +427,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     inputLayout->addSpacing(5);
     inputLayout->addWidget(addMealButton, 0, Qt::AlignCenter);
 
-    QGroupBox *historyGroup = new QGroupBox(" Приемы пищи");
+    auto *historyGroup = new QGroupBox(" Приемы пищи");
     historyGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -447,7 +447,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
         }
     )");
 
-    QVBoxLayout *historyLayout = new QVBoxLayout(historyGroup);
+    auto *historyLayout = new QVBoxLayout(historyGroup);
 
     mealsTable = new QTableWidget;
     mealsTable->setColumnCount(8);
@@ -486,7 +486,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
 
     historyLayout->addWidget(mealsTable);
 
-    QHBoxLayout *buttonsLayout = new QHBoxLayout;
+    auto *buttonsLayout = new QHBoxLayout;
 
     removeMealButton = new QPushButton(" Удалить выбранное");
     removeMealButton->setStyleSheet(R"(
@@ -504,7 +504,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
         }
     )");
 
-    QPushButton *summaryButton = new QPushButton(" Промежуточные итоги");
+    auto *summaryButton = new QPushButton(" Промежуточные итоги");
     summaryButton->setStyleSheet(R"(
         QPushButton {
             background: #27ae60;
@@ -536,7 +536,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     scrollArea->setWidget(scrollContent);
 
     // Создаем главный layout для вкладки и помещаем в него scrollArea
-    QVBoxLayout *mainTabLayout = new QVBoxLayout(tab);
+    auto *mainTabLayout = new QVBoxLayout(tab);
     mainTabLayout->setSpacing(0);
     mainTabLayout->setContentsMargins(0, 0, 0, 0);
     mainTabLayout->addWidget(scrollArea);
@@ -564,7 +564,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
 void TrackingWindow::setupStatisticsTab(QWidget *tab)
 {
     // Создаем scroll area для статистики тоже
-    QScrollArea *scrollArea = new QScrollArea;
+    auto *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -593,12 +593,12 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
         }
     )");
 
-    QWidget *scrollContent = new QWidget;
-    QVBoxLayout *tabLayout = new QVBoxLayout(scrollContent);
+    auto *scrollContent = new QWidget;
+    auto *tabLayout = new QVBoxLayout(scrollContent);
     tabLayout->setSpacing(20);
     tabLayout->setContentsMargins(25, 25, 25, 25);
 
-    QLabel *titleLabel = new QLabel(" Статистика питания");
+    auto *titleLabel = new QLabel(" Статистика питания");
     titleLabel->setStyleSheet(R"(
         font-size: 28px;
         font-weight: bold;
@@ -611,7 +611,7 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     )");
     titleLabel->setAlignment(Qt::AlignCenter);
 
-    QGroupBox *chartsGroup = new QGroupBox(" Визуализация данных");
+    auto *chartsGroup = new QGroupBox(" Визуализация данных");
     chartsGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -631,7 +631,7 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
         }
     )");
 
-    QVBoxLayout *chartsLayout = new QVBoxLayout(chartsGroup);
+    auto *chartsLayout = new QVBoxLayout(chartsGroup);
 
     caloriesChartView = new QChartView();
     macrosChartView = new QChartView();
@@ -644,13 +644,13 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     macrosChartView->setMinimumSize(400, 250);
     macrosChartView->setStyleSheet("background: transparent; border: none;");
 
-    QHBoxLayout *chartsRow = new QHBoxLayout;
+    auto *chartsRow = new QHBoxLayout;
     chartsRow->addWidget(caloriesChartView);
     chartsRow->addWidget(macrosChartView);
 
     chartsLayout->addLayout(chartsRow);
 
-    QGroupBox *statsGroup = new QGroupBox(" Детальная статистика");
+    auto *statsGroup = new QGroupBox(" Детальная статистика");
     statsGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -670,7 +670,7 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
         }
     )");
 
-    QVBoxLayout *statsLayout = new QVBoxLayout(statsGroup);
+    auto *statsLayout = new QVBoxLayout(statsGroup);
     statsDisplay = new QTextEdit;
     statsDisplay->setReadOnly(true);
     statsDisplay->setStyleSheet(R"(
@@ -688,7 +688,7 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     statsLayout->addWidget(statsDisplay);
 
     // Добавляем график прогресса по дням
-    QGroupBox *progressChartGroup = new QGroupBox(" Прогресс по дням");
+    auto *progressChartGroup = new QGroupBox(" Прогресс по дням");
     progressChartGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -708,12 +708,12 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
         }
     )");
     
-    QVBoxLayout *progressChartLayout = new QVBoxLayout(progressChartGroup);
+    auto *progressChartLayout = new QVBoxLayout(progressChartGroup);
     progressChartLayout->setContentsMargins(0, 0, 0, 0);
     progressChartLayout->setSpacing(0);
     
     // Создаем ScrollArea для графика с горизонтальной прокруткой
-    QScrollArea *chartScrollArea = new QScrollArea;
+    auto *chartScrollArea = new QScrollArea;
     chartScrollArea->setWidgetResizable(false);
     chartScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     chartScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -742,12 +742,12 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     )");
     
     // Кнопки выбора периода
-    QHBoxLayout *periodLayout = new QHBoxLayout;
-    QLabel *periodLabel = new QLabel("Период:");
+    auto *periodLayout = new QHBoxLayout;
+    auto *periodLabel = new QLabel("Период:");
     periodLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white; margin-right: 10px;");
     periodLayout->addWidget(periodLabel);
     
-    QComboBox *periodComboBox = new QComboBox;
+    auto *periodComboBox = new QComboBox;
     periodComboBox->addItem("3 дня", 3);
     periodComboBox->addItem("Неделя", 7);
     periodComboBox->addItem("Месяц", 30);
@@ -827,7 +827,7 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     scrollArea->setWidget(scrollContent);
 
     // Создаем главный layout для вкладки и помещаем в него scrollArea
-    QVBoxLayout *mainTabLayout = new QVBoxLayout(tab);
+    auto *mainTabLayout = new QVBoxLayout(tab);
     mainTabLayout->setSpacing(0);
     mainTabLayout->setContentsMargins(0, 0, 0, 0);
     mainTabLayout->addWidget(scrollArea);
@@ -841,17 +841,17 @@ void TrackingWindow::createCharts()
         return;
     }
     
-    QBarSet *caloriesSet = new QBarSet("Калории");
+    auto *caloriesSet = new QBarSet("Калории");
 
     double currentCalories = totalCalories > 0 ? totalCalories : 0;
     double targetCalories = user->get_daily_calories() > 0 ? user->get_daily_calories() : 2000;
 
     *caloriesSet << currentCalories << targetCalories;
 
-    QBarSeries *caloriesSeries = new QBarSeries();
+    auto *caloriesSeries = new QBarSeries();
     caloriesSeries->append(caloriesSet);
 
-    QChart *caloriesChart = new QChart();
+    auto *caloriesChart = new QChart();
     caloriesChart->addSeries(caloriesSeries);
     caloriesChart->setTitle(" Потребление калорий");
     caloriesChart->setAnimationOptions(QChart::SeriesAnimations);
@@ -861,13 +861,13 @@ void TrackingWindow::createCharts()
 
     QStringList categories;
     categories << "Съедено" << "Цель";
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
+    auto *axisX = new QBarCategoryAxis();
     axisX->append(categories);
     axisX->setLabelsColor(Qt::white);
     caloriesChart->addAxis(axisX, Qt::AlignBottom);
     caloriesSeries->attachAxis(axisX);
 
-    QValueAxis *axisY = new QValueAxis();
+    auto *axisY = new QValueAxis();
     axisY->setLabelsColor(Qt::white);
     axisY->setRange(0, qMax(currentCalories, targetCalories) * 1.2);
     caloriesChart->addAxis(axisY, Qt::AlignLeft);
@@ -878,9 +878,9 @@ void TrackingWindow::createCharts()
 
     caloriesChartView->setChart(caloriesChart);
 
-    QBarSet *proteinsSet = new QBarSet("Белки");
-    QBarSet *fatsSet = new QBarSet("Жиры");
-    QBarSet *carbsSet = new QBarSet("Углеводы");
+    auto *proteinsSet = new QBarSet("Белки");
+    auto *fatsSet = new QBarSet("Жиры");
+    auto *carbsSet = new QBarSet("Углеводы");
 
     double currentProteins = totalProteins > 0 ? totalProteins : 0;
     double currentFats = totalFats > 0 ? totalFats : 0;
@@ -894,12 +894,12 @@ void TrackingWindow::createCharts()
     *fatsSet << currentFats << targetFats;
     *carbsSet << currentCarbs << targetCarbs;
 
-    QBarSeries *macrosSeries = new QBarSeries();
+    auto *macrosSeries = new QBarSeries();
     macrosSeries->append(proteinsSet);
     macrosSeries->append(fatsSet);
     macrosSeries->append(carbsSet);
 
-    QChart *macrosChart = new QChart();
+    auto *macrosChart = new QChart();
     macrosChart->addSeries(macrosSeries);
     macrosChart->setTitle(" Баланс БЖУ");
     macrosChart->setAnimationOptions(QChart::SeriesAnimations);
@@ -907,13 +907,13 @@ void TrackingWindow::createCharts()
     macrosChart->setBackgroundBrush(QBrush(QColor(45, 45, 65)));
     macrosChart->setTitleBrush(QBrush(Qt::white));
 
-    QBarCategoryAxis *macrosAxisX = new QBarCategoryAxis();
+    auto *macrosAxisX = new QBarCategoryAxis();
     macrosAxisX->append(categories);
     macrosAxisX->setLabelsColor(Qt::white);
     macrosChart->addAxis(macrosAxisX, Qt::AlignBottom);
     macrosSeries->attachAxis(macrosAxisX);
 
-    QValueAxis *macrosAxisY = new QValueAxis();
+    auto *macrosAxisY = new QValueAxis();
     macrosAxisY->setLabelsColor(Qt::white);
 
     double maxMacro = qMax(qMax(currentProteins, targetProteins),
@@ -1582,8 +1582,8 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     QDate today = QDate::currentDate();
     QDate startDate = today.addDays(-(days - 1)); // Включая сегодня
     
-    QBarSet *actualSet = new QBarSet("Фактическое");
-    QBarSet *targetSet = new QBarSet("Цель");
+    auto *actualSet = new QBarSet("Фактическое");
+    auto *targetSet = new QBarSet("Цель");
     
     QStringList dateLabels;
     double maxCalories = targetCalories;
@@ -1608,12 +1608,12 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     actualSet->setColor(QColor(148, 87, 235));
     targetSet->setColor(QColor(243, 156, 18, 100));
     
-    QBarSeries *series = new QBarSeries();
+    auto *series = new QBarSeries();
     series->append(actualSet);
     series->append(targetSet);
     series->setBarWidth(0.7);
     
-    QChart *chart = new QChart();
+    auto *chart = new QChart();
     chart->addSeries(series);
     QString periodText;
     if (days == 3) periodText = "3 дня";
@@ -1627,7 +1627,7 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     chart->setBackgroundBrush(QBrush(QColor(45, 45, 65)));
     chart->setTitleBrush(QBrush(Qt::white));
     
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
+    auto *axisX = new QBarCategoryAxis();
     axisX->append(dateLabels);
     axisX->setLabelsColor(Qt::white);
     axisX->setTitleText("Дата");
@@ -1635,7 +1635,7 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
     
-    QValueAxis *axisY = new QValueAxis();
+    auto *axisY = new QValueAxis();
     double range = maxCalories - minCalories;
     if (range < 500) range = 500;
     axisY->setRange(0, maxCalories + range * 0.3);
@@ -1694,7 +1694,7 @@ void TrackingWindow::updateDailyProgressChart()
 void TrackingWindow::setupTrendsTab(QWidget *tab)
 {
     // Создаем scroll area
-    QScrollArea *scrollArea = new QScrollArea;
+    auto *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -1723,12 +1723,12 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
         }
     )");
 
-    QWidget *scrollContent = new QWidget;
-    QVBoxLayout *tabLayout = new QVBoxLayout(scrollContent);
+    auto *scrollContent = new QWidget;
+    auto *tabLayout = new QVBoxLayout(scrollContent);
     tabLayout->setSpacing(20);
     tabLayout->setContentsMargins(25, 25, 25, 25);
 
-    QLabel *titleLabel = new QLabel(" Анализ трендов питания");
+    auto *titleLabel = new QLabel(" Анализ трендов питания");
     titleLabel->setStyleSheet(R"(
         font-size: 28px;
         font-weight: bold;
@@ -1741,7 +1741,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     )");
     titleLabel->setAlignment(Qt::AlignCenter);
 
-    QGroupBox *controlsGroup = new QGroupBox(" Настройки анализа");
+    auto *controlsGroup = new QGroupBox(" Настройки анализа");
     controlsGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -1761,8 +1761,8 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
         }
     )");
 
-    QHBoxLayout *controlsLayout = new QHBoxLayout(controlsGroup);
-    QLabel *periodLabel = new QLabel("Период анализа:");
+    auto *controlsLayout = new QHBoxLayout(controlsGroup);
+    auto *periodLabel = new QLabel("Период анализа:");
     periodLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white; margin-right: 10px;");
     
     trendPeriodComboBox = new QComboBox;
@@ -1838,7 +1838,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     controlsLayout->addWidget(updateTrendsButton);
     controlsLayout->addStretch();
 
-    QGroupBox *trendsGroup = new QGroupBox(" Результаты анализа");
+    auto *trendsGroup = new QGroupBox(" Результаты анализа");
     trendsGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -1858,7 +1858,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
         }
     )");
 
-    QVBoxLayout *trendsLayout = new QVBoxLayout(trendsGroup);
+    auto *trendsLayout = new QVBoxLayout(trendsGroup);
     
     QString tableStyle = R"(
         QTableWidget {
@@ -1916,7 +1916,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     )";
     
     // Таблица 1: Средние значения и тренды
-    QLabel *summaryLabel = new QLabel("Средние значения и тренды:");
+    auto *summaryLabel = new QLabel("Средние значения и тренды:");
     summaryLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 10px;");
     trendsSummaryTable = new QTableWidget(4, 3);
     trendsSummaryTable->setHorizontalHeaderLabels(QStringList() << "Макронутриент" << "Среднее значение" << "Тренд");
@@ -1931,7 +1931,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsSummaryTable->setMinimumHeight(250);
     
     // Таблица 2: Топ продуктов
-    QLabel *topProductsLabel = new QLabel("Топ-10 наиболее часто употребляемых продуктов:");
+    auto *topProductsLabel = new QLabel("Топ-10 наиболее часто употребляемых продуктов:");
     topProductsLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsTopProductsTable = new QTableWidget(0, 3);
     trendsTopProductsTable->setHorizontalHeaderLabels(QStringList() << "№" << "Продукт" << "Количество раз");
@@ -1946,7 +1946,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsTopProductsTable->setMinimumHeight(400);
     
     // Таблица 3: Распределение по приемам пищи
-    QLabel *mealDistLabel = new QLabel("Распределение калорий по приемам пищи:");
+    auto *mealDistLabel = new QLabel("Распределение калорий по приемам пищи:");
     mealDistLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsMealDistributionTable = new QTableWidget(0, 2);
     trendsMealDistributionTable->setHorizontalHeaderLabels(QStringList() << "Прием пищи" << "Средние калории");
@@ -1961,7 +1961,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsMealDistributionTable->setMinimumHeight(200);
     
     // Таблица 4: Дни недели
-    QLabel *weekdayLabel = new QLabel("Средние калории по дням недели:");
+    auto *weekdayLabel = new QLabel("Средние калории по дням недели:");
     weekdayLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsWeekdayTable = new QTableWidget(0, 2);
     trendsWeekdayTable->setHorizontalHeaderLabels(QStringList() << "День недели" << "Средние калории");
@@ -1976,7 +1976,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsWeekdayTable->setMinimumHeight(350);
     
     // Таблица 5: Статистика
-    QLabel *statsLabel = new QLabel("Общая статистика:");
+    auto *statsLabel = new QLabel("Общая статистика:");
     statsLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsStatsTable = new QTableWidget(0, 2);
     trendsStatsTable->setHorizontalHeaderLabels(QStringList() << "Показатель" << "Значение");
@@ -2013,7 +2013,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
 
     scrollArea->setWidget(scrollContent);
 
-    QVBoxLayout *mainTabLayout = new QVBoxLayout(tab);
+    auto *mainTabLayout = new QVBoxLayout(tab);
     mainTabLayout->setSpacing(0);
     mainTabLayout->setContentsMargins(0, 0, 0, 0);
     mainTabLayout->addWidget(scrollArea);
@@ -2040,28 +2040,28 @@ void TrackingWindow::onUpdateTrends()
 
     constexpr int SUMMARY_TABLE_ROWS = 4;
     trendsSummaryTable->setRowCount(SUMMARY_TABLE_ROWS);
-    QTableWidgetItem *calItem = new QTableWidgetItem("Калории");
+    auto *calItem = new QTableWidgetItem("Калории");
     calItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsSummaryTable->setItem(0, 0, calItem);
     trendsSummaryTable->setItem(0, 1, new QTableWidgetItem(QString("%1 ккал").arg(static_cast<int>(analysis.avgCalories))));
     trendsSummaryTable->setItem(0, 2, new QTableWidgetItem(analysis.caloriesTrend));
     
     // Белки
-    QTableWidgetItem *protItem = new QTableWidgetItem("Белки");
+    auto *protItem = new QTableWidgetItem("Белки");
     protItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsSummaryTable->setItem(1, 0, protItem);
     trendsSummaryTable->setItem(1, 1, new QTableWidgetItem(QString("%1 г").arg(static_cast<int>(analysis.avgProteins))));
     trendsSummaryTable->setItem(1, 2, new QTableWidgetItem(analysis.proteinsTrend));
     
     // Жиры
-    QTableWidgetItem *fatItem = new QTableWidgetItem("Жиры");
+    auto *fatItem = new QTableWidgetItem("Жиры");
     fatItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsSummaryTable->setItem(2, 0, fatItem);
     trendsSummaryTable->setItem(2, 1, new QTableWidgetItem(QString("%1 г").arg(static_cast<int>(analysis.avgFats))));
     trendsSummaryTable->setItem(2, 2, new QTableWidgetItem(analysis.fatsTrend));
     
     // Углеводы
-    QTableWidgetItem *carbItem = new QTableWidgetItem("Углеводы");
+    auto *carbItem = new QTableWidgetItem("Углеводы");
     carbItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsSummaryTable->setItem(3, 0, carbItem);
     trendsSummaryTable->setItem(3, 1, new QTableWidgetItem(QString("%1 г").arg(static_cast<int>(analysis.avgCarbs))));
@@ -2069,15 +2069,15 @@ void TrackingWindow::onUpdateTrends()
     
     trendsTopProductsTable->setRowCount(analysis.topProducts.size());
     for (int i = 0; i < analysis.topProducts.size(); ++i) {
-        QTableWidgetItem *numItem = new QTableWidgetItem(QString::number(i + 1));
+        auto *numItem = new QTableWidgetItem(QString::number(i + 1));
         numItem->setTextAlignment(Qt::AlignCenter);
         trendsTopProductsTable->setItem(i, 0, numItem);
         
-        QTableWidgetItem *nameItem = new QTableWidgetItem(analysis.topProducts[i].first);
+        auto *nameItem = new QTableWidgetItem(analysis.topProducts[i].first);
         nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         trendsTopProductsTable->setItem(i, 1, nameItem);
         
-        QTableWidgetItem *countItem = new QTableWidgetItem(QString("%1 раз").arg(analysis.topProducts[i].second));
+        auto *countItem = new QTableWidgetItem(QString("%1 раз").arg(analysis.topProducts[i].second));
         countItem->setTextAlignment(Qt::AlignCenter);
         trendsTopProductsTable->setItem(i, 2, countItem);
     }
@@ -2106,7 +2106,7 @@ void TrackingWindow::onUpdateTrends()
     row = 0;
     for (const QString& day : weekdayOrder) {
         if (analysis.weekdayCalories.contains(day)) {
-            QTableWidgetItem *dayItem = new QTableWidgetItem(day);
+            auto *dayItem = new QTableWidgetItem(day);
             dayItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
             trendsWeekdayTable->setItem(row, 0, dayItem);
             
@@ -2117,7 +2117,7 @@ void TrackingWindow::onUpdateTrends()
             } else if (day == analysis.leastCaloricDay) {
                 caloriesText += " (минимум)";
             }
-            QTableWidgetItem *calItem = new QTableWidgetItem(caloriesText);
+            auto *calItem = new QTableWidgetItem(caloriesText);
             calItem->setTextAlignment(Qt::AlignCenter);
             trendsWeekdayTable->setItem(row, 1, calItem);
             row++;
@@ -2127,7 +2127,7 @@ void TrackingWindow::onUpdateTrends()
     constexpr int STATS_TABLE_ROWS = 5;
     trendsStatsTable->setRowCount(STATS_TABLE_ROWS);
     
-    QTableWidgetItem *periodItem = new QTableWidgetItem("Период анализа");
+    auto *periodItem = new QTableWidgetItem("Период анализа");
     periodItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(0, 0, periodItem);
     trendsStatsTable->setItem(0, 1, new QTableWidgetItem(
@@ -2135,31 +2135,31 @@ void TrackingWindow::onUpdateTrends()
                                     .arg(analysis.endDate.toString("dd.MM.yyyy"))
                                     .arg(analysis.totalDays)));
     
-    QTableWidgetItem *dataItem = new QTableWidgetItem("Дней с данными");
+    auto *dataItem = new QTableWidgetItem("Дней с данными");
     dataItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(1, 0, dataItem);
-    QTableWidgetItem *dataValue = new QTableWidgetItem(QString::number(analysis.daysWithData));
+    auto *dataValue = new QTableWidgetItem(QString::number(analysis.daysWithData));
     dataValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(1, 1, dataValue);
     
-    QTableWidgetItem *stabilityItem = new QTableWidgetItem("Стабильность питания");
+    auto *stabilityItem = new QTableWidgetItem("Стабильность питания");
     stabilityItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(2, 0, stabilityItem);
-    QTableWidgetItem *stabilityValue = new QTableWidgetItem(QString("%1/100").arg(static_cast<int>(analysis.stabilityScore)));
+    auto *stabilityValue = new QTableWidgetItem(QString("%1/100").arg(static_cast<int>(analysis.stabilityScore)));
     stabilityValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(2, 1, stabilityValue);
     
-    QTableWidgetItem *overItem = new QTableWidgetItem("Дней превышения нормы");
+    auto *overItem = new QTableWidgetItem("Дней превышения нормы");
     overItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(3, 0, overItem);
-    QTableWidgetItem *overValue = new QTableWidgetItem(QString::number(analysis.daysOverTarget));
+    auto *overValue = new QTableWidgetItem(QString::number(analysis.daysOverTarget));
     overValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(3, 1, overValue);
     
-    QTableWidgetItem *underItem = new QTableWidgetItem("Дней ниже нормы");
+    auto *underItem = new QTableWidgetItem("Дней ниже нормы");
     underItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(4, 0, underItem);
-    QTableWidgetItem *underValue = new QTableWidgetItem(QString::number(analysis.daysUnderTarget));
+    auto *underValue = new QTableWidgetItem(QString::number(analysis.daysUnderTarget));
     underValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(4, 1, underValue);
     

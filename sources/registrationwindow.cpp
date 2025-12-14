@@ -24,7 +24,7 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
         }
     )");
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    auto *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(40, 40, 40, 40);
 
@@ -37,17 +37,17 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
         }
     )");
 
-    QGraphicsDropShadowEffect *shadowEffect = new QGraphicsDropShadowEffect;
+    auto *shadowEffect = new QGraphicsDropShadowEffect;
     shadowEffect->setBlurRadius(25);
     shadowEffect->setColor(QColor(148, 87, 235, 120));
     shadowEffect->setOffset(0, 8);
     mainFrame->setGraphicsEffect(shadowEffect);
 
-    QVBoxLayout *frameLayout = new QVBoxLayout(mainFrame);
+    auto *frameLayout = new QVBoxLayout(mainFrame);
     frameLayout->setSpacing(25);
     frameLayout->setContentsMargins(40, 40, 40, 40);
 
-    QLabel *titleLabel = new QLabel("👤 Создание профиля");
+    auto *titleLabel = new QLabel("👤 Создание профиля");
     titleLabel->setStyleSheet(R"(
         QLabel {
             font-size: 32px;
@@ -60,7 +60,7 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     )");
     titleLabel->setAlignment(Qt::AlignCenter);
 
-    QLabel *subtitleLabel = new QLabel("Создайте персональный профиль для точных рекомендаций по питанию");
+    auto *subtitleLabel = new QLabel("Создайте персональный профиль для точных рекомендаций по питанию");
     subtitleLabel->setStyleSheet(R"(
         QLabel {
             font-size: 14px;
@@ -73,10 +73,10 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     subtitleLabel->setAlignment(Qt::AlignCenter);
     subtitleLabel->setWordWrap(true);
 
-    QFrame *formContainer = new QFrame;
+    auto *formContainer = new QFrame;
     formContainer->setStyleSheet("background: transparent; border: none;");
 
-    QFormLayout *formLayout = new QFormLayout(formContainer);
+    auto *formLayout = new QFormLayout(formContainer);
     formLayout->setSpacing(20);
     formLayout->setContentsMargins(20, 20, 20, 20);
     formLayout->setVerticalSpacing(20);
@@ -143,14 +143,14 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
         }
     )";
 
-    QLabel *nameLabel = new QLabel(" Имя:");
+    auto *nameLabel = new QLabel(" Имя:");
     nameLabel->setStyleSheet(labelStyle);
     nameEdit = new QLineEdit;
     nameEdit->setPlaceholderText("Введите ваше имя");
     nameEdit->setStyleSheet(inputStyle);
     formLayout->addRow(nameLabel, nameEdit);
 
-    QLabel *ageLabel = new QLabel(" Возраст:");
+    auto *ageLabel = new QLabel(" Возраст:");
     ageLabel->setStyleSheet(labelStyle);
     ageEdit = new QLineEdit;
     ageEdit->setPlaceholderText("Ваш возраст в годах");
@@ -158,7 +158,7 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     ageEdit->setValidator(new QIntValidator(1, 120, this));
     formLayout->addRow(ageLabel, ageEdit);
 
-    QLabel *heightLabel = new QLabel(" Рост (см):");
+    auto *heightLabel = new QLabel(" Рост (см):");
     heightLabel->setStyleSheet(labelStyle);
     heightEdit = new QLineEdit;
     heightEdit->setPlaceholderText("Рост в сантиметрах");
@@ -166,7 +166,7 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     heightEdit->setValidator(new QIntValidator(50, 250, this));
     formLayout->addRow(heightLabel, heightEdit);
 
-    QLabel *weightLabel = new QLabel(" Вес (кг):");
+    auto *weightLabel = new QLabel(" Вес (кг):");
     weightLabel->setStyleSheet(labelStyle);
     weightEdit = new QLineEdit;
     weightEdit->setPlaceholderText("Вес в килограммах");
@@ -174,7 +174,7 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     weightEdit->setValidator(new QDoubleValidator(20, 300, 1, this));
     formLayout->addRow(weightLabel, weightEdit);
 
-    QLabel *goalLabel = new QLabel(" Цель:");
+    auto *goalLabel = new QLabel(" Цель:");
     goalLabel->setStyleSheet(labelStyle);
     goalComboBox = new QComboBox;
     goalComboBox->addItem(" Похудение");

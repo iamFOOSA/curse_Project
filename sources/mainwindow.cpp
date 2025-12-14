@@ -176,11 +176,11 @@ void MainWindow::showHistory()
     mainLayout->setSpacing(15);
     mainLayout->setContentsMargins(20, 20, 20, 20);
 
-    QLabel *titleLabel = new QLabel("История питания", &historyDialog);
+    auto *titleLabel = new QLabel("История питания", &historyDialog);
     titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: white; padding: 10px;");
     titleLabel->setAlignment(Qt::AlignCenter);
 
-    QHBoxLayout *dateLayout = new QHBoxLayout;
+    auto *dateLayout = new QHBoxLayout;
     auto dateSelectLabel = new QLabel("Выберите дату:", &historyDialog);
     dateSelectLabel->setStyleSheet("font-size: 14px; color: white;");
     auto dateComboBox = new QComboBox(&historyDialog);
@@ -299,7 +299,7 @@ void MainWindow::showHistory()
     mainLayout->addWidget(detailLabel);
     mainLayout->addWidget(detailTable, 2);
     
-    QHBoxLayout *buttonsLayout = new QHBoxLayout;
+    auto *buttonsLayout = new QHBoxLayout;
     buttonsLayout->addWidget(showSummaryButton);
     buttonsLayout->addWidget(closeButton);
     buttonsLayout->setAlignment(Qt::AlignRight);

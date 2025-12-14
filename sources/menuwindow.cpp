@@ -21,12 +21,12 @@
         }
     )");
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    auto *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(20);
     mainLayout->setContentsMargins(25, 25, 25, 25);
 
     // Заголовок
-    QLabel *titleLabel = new QLabel(" Примерное меню на 3 дня");
+    auto *titleLabel = new QLabel(" Примерное меню на 3 дня");
     titleLabel->setStyleSheet(R"(
         font-size: 32px;
         font-weight: bold;
@@ -38,7 +38,7 @@
     )");
     titleLabel->setAlignment(Qt::AlignCenter);
 
-    QGroupBox *menuGroup = new QGroupBox(" План питания");
+    auto *menuGroup = new QGroupBox(" План питания");
     menuGroup->setStyleSheet(R"(
         QGroupBox {
             background: rgba(255, 255, 255, 0.08);
@@ -60,7 +60,7 @@
         }
     )");
 
-    QVBoxLayout *menuLayout = new QVBoxLayout(menuGroup);
+    auto *menuLayout = new QVBoxLayout(menuGroup);
     menuDisplay = new QTextEdit;
     menuDisplay->setReadOnly(true);
     menuDisplay->setStyleSheet(R"(

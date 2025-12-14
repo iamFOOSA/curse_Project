@@ -43,11 +43,11 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
         }
     )");
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    auto *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
-    QScrollArea *scrollArea = new QScrollArea;
+    auto *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -71,13 +71,13 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
         }
     )");
 
-    QWidget *scrollContent = new QWidget;
-    QVBoxLayout *scrollLayout = new QVBoxLayout(scrollContent);
+    auto *scrollContent = new QWidget;
+    auto *scrollLayout = new QVBoxLayout(scrollContent);
     scrollLayout->setSpacing(20);
     scrollLayout->setContentsMargins(20, 20, 20, 20);
 
     // Заголовок с датой
-    QFrame *headerFrame = new QFrame;
+    auto *headerFrame = new QFrame;
     headerFrame->setStyleSheet(R"(
         QFrame {
             background: rgba(148, 87, 235, 0.2);
@@ -85,9 +85,9 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
             padding: 20px;
         }
     )");
-    QVBoxLayout *headerLayout = new QVBoxLayout(headerFrame);
+    auto *headerLayout = new QVBoxLayout(headerFrame);
     
-    QLabel *titleLabel = new QLabel("Итоги дня");
+    auto *titleLabel = new QLabel("Итоги дня");
     titleLabel->setStyleSheet(R"(
         font-size: 32px;
         font-weight: bold;
@@ -108,11 +108,11 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     headerLayout->addWidget(dateLabel);
 
     // Карточки метрик в строку
-    QHBoxLayout *metricsLayout = new QHBoxLayout;
+    auto *metricsLayout = new QHBoxLayout;
     metricsLayout->setSpacing(15);
     
     auto createMetricCard = [](const QString& title, const QString& color) -> QFrame* {
-        QFrame *card = new QFrame;
+        auto *card = new QFrame;
         card->setStyleSheet(QString(R"(
             QFrame {
                 background: rgba(255, 255, 255, 0.1);
@@ -125,17 +125,17 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
         return card;
     };
     
-    QFrame *caloriesCard = createMetricCard("Калории", "#e74c3c");
-    QFrame *proteinsCard = createMetricCard("Белки", "#3498db");
-    QFrame *fatsCard = createMetricCard("Жиры", "#f39c12");
-    QFrame *carbsCard = createMetricCard("Углеводы", "#27ae60");
+    auto *caloriesCard = createMetricCard("Калории", "#e74c3c");
+    auto *proteinsCard = createMetricCard("Белки", "#3498db");
+    auto *fatsCard = createMetricCard("Жиры", "#f39c12");
+    auto *carbsCard = createMetricCard("Углеводы", "#27ae60");
     
     // Для каждой карточки создаем layout с метриками
     // Калории
-    QVBoxLayout *caloriesCardLayout = new QVBoxLayout(caloriesCard);
+    auto *caloriesCardLayout = new QVBoxLayout(caloriesCard);
     caloriesCardLayout->setSpacing(10);
     caloriesCardLayout->setContentsMargins(10, 10, 10, 10);
-    QLabel *caloriesLabel = new QLabel("Калории");
+    auto *caloriesLabel = new QLabel("Калории");
     caloriesLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white;");
     caloriesCardLayout->addWidget(caloriesLabel);
     caloriesProgress = new QProgressBar;
@@ -157,10 +157,10 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     caloriesCardLayout->addStretch();
     
     // Белки
-    QVBoxLayout *proteinsCardLayout = new QVBoxLayout(proteinsCard);
+    auto *proteinsCardLayout = new QVBoxLayout(proteinsCard);
     proteinsCardLayout->setSpacing(10);
     proteinsCardLayout->setContentsMargins(10, 10, 10, 10);
-    QLabel *proteinsLabel = new QLabel("Белки");
+    auto *proteinsLabel = new QLabel("Белки");
     proteinsLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white;");
     proteinsCardLayout->addWidget(proteinsLabel);
     proteinsProgress = new QProgressBar;
@@ -182,10 +182,10 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     proteinsCardLayout->addStretch();
     
     // Жиры
-    QVBoxLayout *fatsCardLayout = new QVBoxLayout(fatsCard);
+    auto *fatsCardLayout = new QVBoxLayout(fatsCard);
     fatsCardLayout->setSpacing(10);
     fatsCardLayout->setContentsMargins(10, 10, 10, 10);
-    QLabel *fatsLabel = new QLabel("Жиры");
+    auto *fatsLabel = new QLabel("Жиры");
     fatsLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white;");
     fatsCardLayout->addWidget(fatsLabel);
     fatsProgress = new QProgressBar;
@@ -207,10 +207,10 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     fatsCardLayout->addStretch();
     
     // Углеводы
-    QVBoxLayout *carbsCardLayout = new QVBoxLayout(carbsCard);
+    auto *carbsCardLayout = new QVBoxLayout(carbsCard);
     carbsCardLayout->setSpacing(10);
     carbsCardLayout->setContentsMargins(10, 10, 10, 10);
-    QLabel *carbsLabel = new QLabel("Углеводы");
+    auto *carbsLabel = new QLabel("Углеводы");
     carbsLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white;");
     carbsCardLayout->addWidget(carbsLabel);
     carbsProgress = new QProgressBar;
@@ -237,7 +237,7 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     metricsLayout->addWidget(carbsCard);
 
     // Анализ и рекомендации
-    QFrame *analysisFrame = new QFrame;
+    auto *analysisFrame = new QFrame;
     analysisFrame->setStyleSheet(R"(
         QFrame {
             background: rgba(255, 255, 255, 0.08);
@@ -246,9 +246,9 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
             padding: 20px;
         }
     )");
-    QVBoxLayout *analysisLayout = new QVBoxLayout(analysisFrame);
+    auto *analysisLayout = new QVBoxLayout(analysisFrame);
 
-    QLabel *analysisTitle = new QLabel("Анализ дня");
+    auto *analysisTitle = new QLabel("Анализ дня");
     analysisTitle->setStyleSheet("font-size: 20px; font-weight: bold; color: #9457eb; padding: 10px 0;");
     analysisLayout->addWidget(analysisTitle);
 
@@ -265,7 +265,7 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     analysisLayout->addWidget(summaryLabel);
 
     // Кнопка возврата
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    auto *buttonLayout = new QHBoxLayout;
     backButton = new QPushButton("← Вернуться к отслеживанию");
     backButton->setStyleSheet(R"(
         QPushButton {
@@ -292,7 +292,7 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     buttonLayout->addStretch();
 
     // График прогресса по дням - улучшенный дизайн
-    QFrame *chartFrame = new QFrame;
+    auto *chartFrame = new QFrame;
     chartFrame->setStyleSheet(R"(
         QFrame {
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -302,11 +302,11 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
             padding: 20px;
         }
     )");
-    QVBoxLayout *chartLayout = new QVBoxLayout(chartFrame);
+    auto *chartLayout = new QVBoxLayout(chartFrame);
     chartLayout->setContentsMargins(0, 0, 0, 0);
     chartLayout->setSpacing(0);
     
-    QFrame *chartTitleFrame = new QFrame;
+    auto *chartTitleFrame = new QFrame;
     chartTitleFrame->setStyleSheet(R"(
         QFrame {
             background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
@@ -315,17 +315,17 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
             padding: 8px;
         }
     )");
-    QHBoxLayout *chartTitleLayout = new QHBoxLayout(chartTitleFrame);
+    auto *chartTitleLayout = new QHBoxLayout(chartTitleFrame);
     chartTitleLayout->setContentsMargins(15, 8, 15, 8);
     
-    QLabel *chartTitle = new QLabel("📊 Прогресс по дням");
+    auto *chartTitle = new QLabel("📊 Прогресс по дням");
     chartTitle->setStyleSheet("font-size: 20px; font-weight: bold; color: white; background: transparent;");
     chartTitleLayout->addWidget(chartTitle);
     chartTitleLayout->addStretch();
     chartLayout->addWidget(chartTitleFrame);
     
     // Создаем ScrollArea для графика с горизонтальной прокруткой
-    QScrollArea *chartScrollArea = new QScrollArea;
+    auto *chartScrollArea = new QScrollArea;
     chartScrollArea->setWidgetResizable(false);
     chartScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     chartScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -354,12 +354,12 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     )");
     
     // Кнопки выбора периода
-    QHBoxLayout *periodLayout = new QHBoxLayout;
-    QLabel *periodLabel = new QLabel("Период:");
+    auto *periodLayout = new QHBoxLayout;
+    auto *periodLabel = new QLabel("Период:");
     periodLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white; margin-right: 10px;");
     periodLayout->addWidget(periodLabel);
     
-    QComboBox *periodComboBox = new QComboBox;
+    auto *periodComboBox = new QComboBox;
     periodComboBox->addItem("3 дня", 3);
     periodComboBox->addItem("Неделя", 7);
     periodComboBox->addItem("Месяц", 30);
@@ -420,7 +420,7 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     });
 
     // Таблица приемов пищи - улучшенный дизайн
-    QFrame *mealsFrame = new QFrame;
+    auto *mealsFrame = new QFrame;
     mealsFrame->setStyleSheet(R"(
         QFrame {
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -430,9 +430,9 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
             padding: 20px;
         }
     )");
-    QVBoxLayout *mealsLayout = new QVBoxLayout(mealsFrame);
+    auto *mealsLayout = new QVBoxLayout(mealsFrame);
     
-    QFrame *mealsTitleFrame = new QFrame;
+    auto *mealsTitleFrame = new QFrame;
     mealsTitleFrame->setStyleSheet(R"(
         QFrame {
             background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
@@ -441,14 +441,14 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
             padding: 10px;
         }
     )");
-    QHBoxLayout *mealsTitleLayout = new QHBoxLayout(mealsTitleFrame);
+    auto *mealsTitleLayout = new QHBoxLayout(mealsTitleFrame);
     mealsTitleLayout->setContentsMargins(15, 10, 15, 10);
     
-    QLabel *mealsIcon = new QLabel("🍽️");
+    auto *mealsIcon = new QLabel("🍽️");
     mealsIcon->setStyleSheet("font-size: 24px; background: transparent;");
     mealsTitleLayout->addWidget(mealsIcon);
     
-    QLabel *mealsTitle = new QLabel("Приемы пищи");
+    auto *mealsTitle = new QLabel("Приемы пищи");
     mealsTitle->setStyleSheet(R"(
         font-size: 22px;
         font-weight: bold;
@@ -746,8 +746,8 @@ void SummaryWindow::createProgressChart(int days)
     QDate today = QDate::currentDate();
     QDate startDate = today.addDays(-(days - 1)); // Включая сегодня
     
-    QBarSet *actualSet = new QBarSet("Фактическое");
-    QBarSet *targetSet = new QBarSet("Цель");
+    auto *actualSet = new QBarSet("Фактическое");
+    auto *targetSet = new QBarSet("Цель");
     
     QStringList dateLabels;
     double maxCalories = targetCalories;
@@ -772,12 +772,12 @@ void SummaryWindow::createProgressChart(int days)
     actualSet->setColor(QColor(148, 87, 235));
     targetSet->setColor(QColor(243, 156, 18, 100));
     
-    QBarSeries *series = new QBarSeries();
+    auto *series = new QBarSeries();
     series->append(actualSet);
     series->append(targetSet);
     series->setBarWidth(0.7);
     
-    QChart *chart = new QChart();
+    auto *chart = new QChart();
     chart->addSeries(series);
     QString periodText;
     if (days == 3) periodText = "3 дня";
@@ -791,7 +791,7 @@ void SummaryWindow::createProgressChart(int days)
     chart->setBackgroundBrush(QBrush(QColor(45, 45, 65)));
     chart->setTitleBrush(QBrush(Qt::white));
     
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
+    auto *axisX = new QBarCategoryAxis();
     axisX->append(dateLabels);
     axisX->setLabelsColor(Qt::white);
     axisX->setTitleText("Дата");
@@ -799,7 +799,7 @@ void SummaryWindow::createProgressChart(int days)
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
     
-    QValueAxis *axisY = new QValueAxis();
+    auto *axisY = new QValueAxis();
     double range = maxCalories - minCalories;
     if (range < 500) range = 500;
     axisY->setRange(0, maxCalories + range * 0.3);
