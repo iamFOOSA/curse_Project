@@ -1463,9 +1463,7 @@ void TrackingWindow::onRemoveMealClicked()
         return;
     }
 
-    QString currentDate = getCurrentDate();
-    
-    if (currentDate.isEmpty()) {
+    if (QString currentDate = getCurrentDate(); currentDate.isEmpty()) {
         return;
     }
 
@@ -1475,9 +1473,7 @@ void TrackingWindow::onRemoveMealClicked()
         return;
     }
 
-    const MealEntry &entry = mealEntries[currentRow];
-    
-    if (entry.calories <= ZERO_VALUE && entry.proteins <= ZERO_VALUE && entry.fats <= ZERO_VALUE && entry.carbs <= ZERO_VALUE) {
+    if (const MealEntry &entry = mealEntries[currentRow]; entry.calories <= ZERO_VALUE && entry.proteins <= ZERO_VALUE && entry.fats <= ZERO_VALUE && entry.carbs <= ZERO_VALUE) {
         mealEntries.removeAt(currentRow);
         updateMealsTable();
         return;

@@ -304,11 +304,12 @@ QMap<QString, double> HistoryManager::getWeeklyTotals(const QDate& startDate) co
 
     while (currentDate <= endDate) {
         if (QString dateStr = formatDate(currentDate); historyData.contains(dateStr)) {
-            const DaySummary& summary = historyData[dateStr];
-            totals["calories"] += summary.totalCalories;
-            totals["proteins"] += summary.totalProteins;
-            totals["fats"] += summary.totalFats;
-            totals["carbs"] += summary.totalCarbs;
+            if (const DaySummary& summary = historyData.at(dateStr); true) {
+                totals["calories"] += summary.totalCalories;
+                totals["proteins"] += summary.totalProteins;
+                totals["fats"] += summary.totalFats;
+                totals["carbs"] += summary.totalCarbs;
+            }
         }
         currentDate = currentDate.addDays(1);
     }
@@ -330,11 +331,12 @@ QMap<QString, double> HistoryManager::getMonthlyTotals(const QDate& date) const
 
     while (currentDate <= endDate) {
         if (QString dateStr = formatDate(currentDate); historyData.contains(dateStr)) {
-            const DaySummary& summary = historyData[dateStr];
-            totals["calories"] += summary.totalCalories;
-            totals["proteins"] += summary.totalProteins;
-            totals["fats"] += summary.totalFats;
-            totals["carbs"] += summary.totalCarbs;
+            if (const DaySummary& summary = historyData.at(dateStr); true) {
+                totals["calories"] += summary.totalCalories;
+                totals["proteins"] += summary.totalProteins;
+                totals["fats"] += summary.totalFats;
+                totals["carbs"] += summary.totalCarbs;
+            }
         }
         currentDate = currentDate.addDays(1);
     }

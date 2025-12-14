@@ -61,7 +61,6 @@ private:
     QString generateMealStatsText() const;
     QString generateBJUFactText(double protPercentage, double fatsPercentage, double carbsPercentage) const;
 
-private:
     User *user;
     NutritionManager *manager;
     NutritionAdvisor *advisor;

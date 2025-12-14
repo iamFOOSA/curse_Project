@@ -135,8 +135,7 @@ QMap<QString, double> TrendAnalyzer::calculateWeekdayDistribution(const QDate& s
             case 7: dayName = "Воскресенье"; break;
         }
         
-        DaySummary summary = historyManager->getDaySummary(currentDate);
-        if (summary.totalCalories > 0) {
+        if (DaySummary summary = historyManager->getDaySummary(currentDate); summary.totalCalories > 0) {
             weekdayCalories[dayName].append(summary.totalCalories);
         }
         
@@ -155,8 +154,10 @@ QPair<QString, QString> TrendAnalyzer::findExtremeDays(const QMap<QString, doubl
 {
     if (weekdayData.isEmpty()) return qMakePair(QString(), QString());
     
-    QString mostCaloric, leastCaloric;
-    double maxCal = 0, minCal = 1000000;
+    QString mostCaloric;
+    QString leastCaloric;
+    double maxCal = 0;
+    double minCal = 1000000;
     
     for (auto it = weekdayData.constBegin(); it != weekdayData.constEnd(); ++it) {
         if (it.value() > maxCal) {
