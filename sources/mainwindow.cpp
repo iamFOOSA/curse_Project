@@ -286,7 +286,7 @@ void MainWindow::showHistory()
     connect(closeButton, &QPushButton::clicked, &historyDialog, &QDialog::accept);
 
     auto showSummaryButton = new QPushButton("Показать итоги дня", &historyDialog);
-    connect(showSummaryButton, &QPushButton::clicked, [&]() {
+    connect(showSummaryButton, &QPushButton::clicked, [this, &historyDialog, dateComboBox, summaryWindow, stackedWidget]() {
         QString selectedDate = dateComboBox->currentData().toString();
         if (!selectedDate.isEmpty()) {
             historyDialog.accept();
@@ -317,4 +317,5 @@ void MainWindow::onUserRegistered()
 
 void MainWindow::initializeData()
 {
+    // Метод оставлен пустым, так как инициализация данных выполняется в конструкторе
 }

@@ -55,6 +55,13 @@ private slots:
     void onUpdateTrends();
 
 private:
+    QString generateDailyStatsText(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const;
+    QString generateAnalysisText(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const;
+    QString generateWeeklyStatsText() const;
+    QString generateMealStatsText() const;
+    QString generateBJUFactText(double protPercentage, double fatsPercentage, double carbsPercentage) const;
+
+private:
     User *user;
     NutritionManager *manager;
     NutritionAdvisor *advisor;

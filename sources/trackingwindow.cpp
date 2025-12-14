@@ -1111,8 +1111,6 @@ void TrackingWindow::updateStatistics()
     
     createCharts();
 
-    QString statsText = "<h3 style='color: #9457eb; margin-bottom: 15px;'> Статистика за день:</h3>";
-
     double dailyCalories = user->get_daily_calories() > 0 ? user->get_daily_calories() : 1;
     double dailyProteins = user->get_daily_proteins() > 0 ? user->get_daily_proteins() : 1;
     double dailyFats = user->get_daily_fats() > 0 ? user->get_daily_fats() : 1;
@@ -1123,148 +1121,176 @@ void TrackingWindow::updateStatistics()
     double fatsPercentage = (totalFats / dailyFats) * 100;
     double carbsPercentage = (totalCarbs / dailyCarbs) * 100;
 
-    statsText += QString("<b>Калории:</b> %1/%2 ккал (<span style='color:%4'>%3%</span>)<br>")
-                     .arg(totalCalories, 0, 'f', 1)
-                     .arg(user->get_daily_calories(), 0, 'f', 0)
-                     .arg(calPercentage, 0, 'f', 1)
-                     .arg(calPercentage > 100 ? "#e74c3c" : calPercentage < 80 ? "#f39c12" : "#27ae60");
-
-    statsText += QString("<b>Белки:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
-                     .arg(totalProteins, 0, 'f', 1)
-                     .arg(user->get_daily_proteins(), 0, 'f', 1)
-                     .arg(protPercentage, 0, 'f', 1)
-                     .arg(protPercentage > 120 ? "#e74c3c" : protPercentage < 80 ? "#f39c12" : "#27ae60");
-
-    statsText += QString("<b>Жиры:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
-                     .arg(totalFats, 0, 'f', 1)
-                     .arg(user->get_daily_fats(), 0, 'f', 1)
-                     .arg(fatsPercentage, 0, 'f', 1)
-                     .arg(fatsPercentage > 120 ? "#e74c3c" : fatsPercentage < 80 ? "#f39c12" : "#27ae60");
-
-    statsText += QString("<b>Углеводы:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br><br>")
-                     .arg(totalCarbs, 0, 'f', 1)
-                     .arg(user->get_daily_carbs(), 0, 'f', 1)
-                     .arg(carbsPercentage, 0, 'f', 1)
-                     .arg(carbsPercentage > 120 ? "#e74c3c" : carbsPercentage < 80 ? "#f39c12" : "#27ae60");
-
-    statsText += "<h3 style='color: #f39c12; margin-bottom: 15px;'> Анализ:</h3>";
-
-    if (calPercentage < 70) {
-        statsText += "• Калорийность: <span style='color:#e74c3c'>ниже нормы</span><br>";
-    } else if (calPercentage > 130) {
-        statsText += "• Калорийность: <span style='color:#e74c3c'>превышена</span><br>";
-    } else {
-        statsText += "• Калорийность: <span style='color:#27ae60'>в норме</span><br>";
-    }
-
-    if (protPercentage < 80) {
-        statsText += "• Белки: <span style='color:#e74c3c'>недостаточно</span><br>";
-    } else if (protPercentage > 120) {
-        statsText += "• Белки: <span style='color:#f39c12'>избыток</span><br>";
-    } else {
-        statsText += "• Белки: <span style='color:#27ae60'>сбалансированы</span><br>";
-    }
-
-    if (fatsPercentage < 80) {
-        statsText += "• Жиры: <span style='color:#e74c3c'>недостаточно</span><br>";
-    } else if (fatsPercentage > 120) {
-        statsText += "• Жиры: <span style='color:#f39c12'>избыток</span><br>";
-    } else {
-        statsText += "• Жиры: <span style='color:#27ae60'>сбалансированы</span><br>";
-    }
-
-    if (carbsPercentage < 80) {
-        statsText += "• Углеводы: <span style='color:#e74c3c'>недостаточно</span><br>";
-    } else if (carbsPercentage > 120) {
-        statsText += "• Углеводы: <span style='color:#f39c12'>избыток</span><br>";
-    } else {
-        statsText += "• Углеводы: <span style='color:#27ae60'>сбалансированы</span><br>";
-    }
+    QString statsText = generateDailyStatsText(calPercentage, protPercentage, fatsPercentage, carbsPercentage);
+    statsText += generateAnalysisText(calPercentage, protPercentage, fatsPercentage, carbsPercentage);
     
-    // Добавляем интересную статистику
     if (historyManager) {
-        statsText += "<br><h3 style='color: #9457eb; margin-bottom: 15px; margin-top: 20px;'> Дополнительная статистика:</h3>";
-        
-        // Средние показатели за последние 7 дней
-        QDate today = QDate::currentDate();
-        double weeklyAvgCalories = 0;
-        double weeklyAvgProteins = 0;
-        double weeklyAvgFats = 0;
-        double weeklyAvgCarbs = 0;
-        int daysWithData = 0;
-        
-        for (int i = 0; i < 7; ++i) {
-            QDate date = today.addDays(-i);
-            QString dateStr = date.toString("yyyy-MM-dd");
-            DaySummary summary = historyManager->getDaySummary(dateStr);
-            if (!summary.date.isEmpty() && summary.totalCalories > 0) {
-                weeklyAvgCalories += summary.totalCalories;
-                weeklyAvgProteins += summary.totalProteins;
-                weeklyAvgFats += summary.totalFats;
-                weeklyAvgCarbs += summary.totalCarbs;
-                daysWithData++;
-            }
-        }
-        
-        if (daysWithData > 0) {
-            weeklyAvgCalories /= daysWithData;
-            weeklyAvgProteins /= daysWithData;
-            weeklyAvgFats /= daysWithData;
-            weeklyAvgCarbs /= daysWithData;
-            
-            statsText += QString("<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #9457eb;'>");
-            statsText += QString("<b style='color: #9457eb;'>Средние показатели за последние 7 дней (%1 дня с данными):</b><br>").arg(daysWithData);
-            statsText += QString("• Калории: <span style='color: white;'>%1 ккал/день</span><br>").arg(weeklyAvgCalories, 0, 'f', 0);
-            statsText += QString("• Белки: <span style='color: white;'>%1 г/день</span><br>").arg(weeklyAvgProteins, 0, 'f', 1);
-            statsText += QString("• Жиры: <span style='color: white;'>%1 г/день</span><br>").arg(weeklyAvgFats, 0, 'f', 1);
-            statsText += QString("• Углеводы: <span style='color: white;'>%1 г/день</span>").arg(weeklyAvgCarbs, 0, 'f', 1);
-            statsText += "</div>";
-            
-            // Сравнение с сегодняшним днем
-            double calDiff = totalCalories - weeklyAvgCalories;
-            if (qAbs(calDiff) > 50) {
-                QString trendColor = calDiff > 0 ? "#f39c12" : "#3498db";
-                QString trendText = calDiff > 0 ? "выше" : "ниже";
-                statsText += QString("<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #f39c12;'>");
-                statsText += QString("<b style='color: #f39c12;'>Тренд:</b> Сегодня калорийность <span style='color: %1;'>%2</span> среднего на <span style='color: white;'>%3 ккал</span>").arg(trendColor).arg(trendText).arg(qAbs(calDiff), 0, 'f', 0);
-                statsText += "</div>";
-            }
-        }
-        
-        // Статистика по приемам пищи
-        int mealTypesCount[4] = {0};
-        for (const MealEntry& entry : mealEntries) {
-            if (entry.mealType == "Завтрак") mealTypesCount[0]++;
-            else if (entry.mealType == "Обед") mealTypesCount[1]++;
-            else if (entry.mealType == "Ужин") mealTypesCount[2]++;
-            else if (entry.mealType == "Перекус") mealTypesCount[3]++;
-        }
-        
-        if (!mealEntries.isEmpty()) {
-            statsText += "<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #9457eb;'>";
-            statsText += QString("<b style='color: #9457eb;'>Приемы пищи сегодня:</b><br>");
-            statsText += QString("• Всего записей: <span style='color: white;'>%1</span><br>").arg(mealEntries.size());
-            if (mealTypesCount[0] > 0) statsText += QString("• Завтраки: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[0]);
-            if (mealTypesCount[1] > 0) statsText += QString("• Обеды: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[1]);
-            if (mealTypesCount[2] > 0) statsText += QString("• Ужины: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[2]);
-            if (mealTypesCount[3] > 0) statsText += QString("• Перекусы: <span style='color: white;'>%1</span>").arg(mealTypesCount[3]);
-            statsText += "</div>";
-        }
-        
-        // Интересный факт
-        statsText += "<div style='background: rgba(243, 156, 18, 0.15); padding: 12px; border-radius: 8px; margin-top: 12px; border-left: 3px solid #f39c12;'>";
-        statsText += "<b style='color: #f39c12;'>Интересный факт:</b><br>";
-        if (double bjuBalance = (protPercentage + fatsPercentage + carbsPercentage) / 3.0; bjuBalance >= 90 && bjuBalance <= 110) {
-            statsText += "<span style='color: white;'>Отличный баланс БЖУ! Ваше питание сбалансировано.</span>";
-        } else if (bjuBalance < 90) {
-            statsText += "<span style='color: white;'>Рекомендуется добавить больше разнообразия в рацион для лучшего баланса.</span>";
-        } else {
-            statsText += "<span style='color: white;'>Следите за перееданием - старайтесь распределять питание равномерно.</span>";
-        }
-        statsText += "</div>";
+        statsText += generateWeeklyStatsText();
+        statsText += generateMealStatsText();
+        statsText += generateBJUFactText(protPercentage, fatsPercentage, carbsPercentage);
     }
 
     statsDisplay->setHtml(statsText);
+}
+
+QString TrackingWindow::generateDailyStatsText(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const
+{
+    QString text = "<h3 style='color: #9457eb; margin-bottom: 15px;'> Статистика за день:</h3>";
+    text += QString("<b>Калории:</b> %1/%2 ккал (<span style='color:%4'>%3%</span>)<br>")
+            .arg(totalCalories, 0, 'f', 1)
+            .arg(user->get_daily_calories(), 0, 'f', 0)
+            .arg(calPercentage, 0, 'f', 1)
+            .arg(calPercentage > 100 ? "#e74c3c" : calPercentage < 80 ? "#f39c12" : "#27ae60");
+    text += QString("<b>Белки:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
+            .arg(totalProteins, 0, 'f', 1)
+            .arg(user->get_daily_proteins(), 0, 'f', 1)
+            .arg(protPercentage, 0, 'f', 1)
+            .arg(protPercentage > 120 ? "#e74c3c" : protPercentage < 80 ? "#f39c12" : "#27ae60");
+    text += QString("<b>Жиры:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
+            .arg(totalFats, 0, 'f', 1)
+            .arg(user->get_daily_fats(), 0, 'f', 1)
+            .arg(fatsPercentage, 0, 'f', 1)
+            .arg(fatsPercentage > 120 ? "#e74c3c" : fatsPercentage < 80 ? "#f39c12" : "#27ae60");
+    text += QString("<b>Углеводы:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br><br>")
+            .arg(totalCarbs, 0, 'f', 1)
+            .arg(user->get_daily_carbs(), 0, 'f', 1)
+            .arg(carbsPercentage, 0, 'f', 1)
+            .arg(carbsPercentage > 120 ? "#e74c3c" : carbsPercentage < 80 ? "#f39c12" : "#27ae60");
+    return text;
+}
+
+QString TrackingWindow::generateAnalysisText(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const
+{
+    QString text = "<h3 style='color: #f39c12; margin-bottom: 15px;'> Анализ:</h3>";
+    
+    if (calPercentage < 70) {
+        text += "• Калорийность: <span style='color:#e74c3c'>ниже нормы</span><br>";
+    } else if (calPercentage > 130) {
+        text += "• Калорийность: <span style='color:#e74c3c'>превышена</span><br>";
+    } else {
+        text += "• Калорийность: <span style='color:#27ae60'>в норме</span><br>";
+    }
+    
+    if (protPercentage < 80) {
+        text += "• Белки: <span style='color:#e74c3c'>недостаточно</span><br>";
+    } else if (protPercentage > 120) {
+        text += "• Белки: <span style='color:#f39c12'>избыток</span><br>";
+    } else {
+        text += "• Белки: <span style='color:#27ae60'>сбалансированы</span><br>";
+    }
+    
+    if (fatsPercentage < 80) {
+        text += "• Жиры: <span style='color:#e74c3c'>недостаточно</span><br>";
+    } else if (fatsPercentage > 120) {
+        text += "• Жиры: <span style='color:#f39c12'>избыток</span><br>";
+    } else {
+        text += "• Жиры: <span style='color:#27ae60'>сбалансированы</span><br>";
+    }
+    
+    if (carbsPercentage < 80) {
+        text += "• Углеводы: <span style='color:#e74c3c'>недостаточно</span><br>";
+    } else if (carbsPercentage > 120) {
+        text += "• Углеводы: <span style='color:#f39c12'>избыток</span><br>";
+    } else {
+        text += "• Углеводы: <span style='color:#27ae60'>сбалансированы</span><br>";
+    }
+    
+    return text;
+}
+
+QString TrackingWindow::generateWeeklyStatsText() const
+{
+    if (!historyManager) {
+        return "";
+    }
+    
+    QString text = "<br><h3 style='color: #9457eb; margin-bottom: 15px; margin-top: 20px;'> Дополнительная статистика:</h3>";
+    
+    QDate today = QDate::currentDate();
+    double weeklyAvgCalories = 0;
+    double weeklyAvgProteins = 0;
+    double weeklyAvgFats = 0;
+    double weeklyAvgCarbs = 0;
+    int daysWithData = 0;
+    
+    for (int i = 0; i < 7; ++i) {
+        QDate date = today.addDays(-i);
+        QString dateStr = date.toString("yyyy-MM-dd");
+        DaySummary summary = historyManager->getDaySummary(dateStr);
+        if (!summary.date.isEmpty() && summary.totalCalories > 0) {
+            weeklyAvgCalories += summary.totalCalories;
+            weeklyAvgProteins += summary.totalProteins;
+            weeklyAvgFats += summary.totalFats;
+            weeklyAvgCarbs += summary.totalCarbs;
+            daysWithData++;
+        }
+    }
+    
+    if (daysWithData > 0) {
+        weeklyAvgCalories /= daysWithData;
+        weeklyAvgProteins /= daysWithData;
+        weeklyAvgFats /= daysWithData;
+        weeklyAvgCarbs /= daysWithData;
+        
+        text += QString("<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #9457eb;'>");
+        text += QString("<b style='color: #9457eb;'>Средние показатели за последние 7 дней (%1 дня с данными):</b><br>").arg(daysWithData);
+        text += QString("• Калории: <span style='color: white;'>%1 ккал/день</span><br>").arg(weeklyAvgCalories, 0, 'f', 0);
+        text += QString("• Белки: <span style='color: white;'>%1 г/день</span><br>").arg(weeklyAvgProteins, 0, 'f', 1);
+        text += QString("• Жиры: <span style='color: white;'>%1 г/день</span><br>").arg(weeklyAvgFats, 0, 'f', 1);
+        text += QString("• Углеводы: <span style='color: white;'>%1 г/день</span>").arg(weeklyAvgCarbs, 0, 'f', 1);
+        text += "</div>";
+        
+        double calDiff = totalCalories - weeklyAvgCalories;
+        if (qAbs(calDiff) > 50) {
+            QString trendColor = calDiff > 0 ? "#f39c12" : "#3498db";
+            QString trendText = calDiff > 0 ? "выше" : "ниже";
+            text += QString("<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #f39c12;'>");
+            text += QString("<b style='color: #f39c12;'>Тренд:</b> Сегодня калорийность <span style='color: %1;'>%2</span> среднего на <span style='color: white;'>%3 ккал</span>").arg(trendColor).arg(trendText).arg(qAbs(calDiff), 0, 'f', 0);
+            text += "</div>";
+        }
+    }
+    
+    return text;
+}
+
+QString TrackingWindow::generateMealStatsText() const
+{
+    if (!historyManager || mealEntries.isEmpty()) {
+        return "";
+    }
+    
+    int mealTypesCount[4] = {0};
+    for (const MealEntry& entry : mealEntries) {
+        if (entry.mealType == "Завтрак") mealTypesCount[0]++;
+        else if (entry.mealType == "Обед") mealTypesCount[1]++;
+        else if (entry.mealType == "Ужин") mealTypesCount[2]++;
+        else if (entry.mealType == "Перекус") mealTypesCount[3]++;
+    }
+    
+    QString text = "<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #9457eb;'>";
+    text += QString("<b style='color: #9457eb;'>Приемы пищи сегодня:</b><br>");
+    text += QString("• Всего записей: <span style='color: white;'>%1</span><br>").arg(mealEntries.size());
+    if (mealTypesCount[0] > 0) text += QString("• Завтраки: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[0]);
+    if (mealTypesCount[1] > 0) text += QString("• Обеды: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[1]);
+    if (mealTypesCount[2] > 0) text += QString("• Ужины: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[2]);
+    if (mealTypesCount[3] > 0) text += QString("• Перекусы: <span style='color: white;'>%1</span>").arg(mealTypesCount[3]);
+    text += "</div>";
+    return text;
+}
+
+QString TrackingWindow::generateBJUFactText(double protPercentage, double fatsPercentage, double carbsPercentage) const
+{
+    QString text = "<div style='background: rgba(243, 156, 18, 0.15); padding: 12px; border-radius: 8px; margin-top: 12px; border-left: 3px solid #f39c12;'>";
+    text += "<b style='color: #f39c12;'>Интересный факт:</b><br>";
+    if (double bjuBalance = (protPercentage + fatsPercentage + carbsPercentage) / 3.0; bjuBalance >= 90 && bjuBalance <= 110) {
+        text += "<span style='color: white;'>Отличный баланс БЖУ! Ваше питание сбалансировано.</span>";
+    } else if (bjuBalance < 90) {
+        text += "<span style='color: white;'>Рекомендуется добавить больше разнообразия в рацион для лучшего баланса.</span>";
+    } else {
+        text += "<span style='color: white;'>Следите за перееданием - старайтесь распределять питание равномерно.</span>";
+    }
+    text += "</div>";
+    return text;
 }
 
 void TrackingWindow::updateProgressBars()

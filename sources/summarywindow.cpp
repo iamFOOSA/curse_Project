@@ -527,7 +527,6 @@ void SummaryWindow::displaySummaryForDate(const QString& date)
     
     DaySummary summary = historyManager->getDaySummary(targetDate);
     
-    // Если нет данных для выбранной даты, создаем пустую сводку
     if (summary.date.isEmpty()) {
         summary = DaySummary(targetDate);
     }
@@ -543,17 +542,7 @@ void SummaryWindow::displaySummaryForDate(const QString& date)
     }
     
     QString dateDisplay = summaryDate.toString("dd.MM.yyyy");
-    QString dayOfWeek;
-    switch (summaryDate.dayOfWeek()) {
-        case 1: dayOfWeek = "Понедельник"; break;
-        case 2: dayOfWeek = "Вторник"; break;
-        case 3: dayOfWeek = "Среда"; break;
-        case 4: dayOfWeek = "Четверг"; break;
-        case 5: dayOfWeek = "Пятница"; break;
-        case 6: dayOfWeek = "Суббота"; break;
-        case 7: dayOfWeek = "Воскресенье"; break;
-        default: dayOfWeek = ""; break;
-    }
+    QString dayOfWeek = formatDayOfWeek(summaryDate.dayOfWeek());
     dateLabel->setText(QString("%1 • %2").arg(dateDisplay, dayOfWeek));
 
     double consumedCalories = summary.totalCalories;
@@ -566,161 +555,26 @@ void SummaryWindow::displaySummaryForDate(const QString& date)
     double targetFats = user->get_daily_fats() > 0 ? user->get_daily_fats() : 70;
     double targetCarbs = user->get_daily_carbs() > 0 ? user->get_daily_carbs() : 250;
 
-    // Обновляем прогресс-бары (без текста в формате)
     updateProgressBar(caloriesProgress, consumedCalories, targetCalories);
     updateProgressBar(proteinsProgress, consumedProteins, targetProteins);
     updateProgressBar(fatsProgress, consumedFats, targetFats);
     updateProgressBar(carbsProgress, consumedCarbs, targetCarbs);
 
-    // Статистика дня
-    QString summaryText = "<div style='margin-bottom: 20px;'>";
-    summaryText += "<h3 style='color: #9457eb; margin-bottom: 15px;'>Статистика дня:</h3>";
-    summaryText += QString("<div style='background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px;'>");
-    summaryText += QString("<b>Всего приемов пищи:</b> <span style='color: #9457eb;'>%1</span><br>").arg(summary.meals.size());
-    
-    int mealTypesCount[4] = {0};
-    for (const DayMealEntry& meal : summary.meals) {
-        if (meal.mealType == "Завтрак") mealTypesCount[0]++;
-        else if (meal.mealType == "Обед") mealTypesCount[1]++;
-        else if (meal.mealType == "Ужин") mealTypesCount[2]++;
-        else if (meal.mealType == "Перекус") mealTypesCount[3]++;
-    }
-    
-    if (mealTypesCount[0] > 0) summaryText += QString("• Завтраки: %1<br>").arg(mealTypesCount[0]);
-    if (mealTypesCount[1] > 0) summaryText += QString("• Обеды: %1<br>").arg(mealTypesCount[1]);
-    if (mealTypesCount[2] > 0) summaryText += QString("• Ужины: %1<br>").arg(mealTypesCount[2]);
-    if (mealTypesCount[3] > 0) summaryText += QString("• Перекусы: %1<br>").arg(mealTypesCount[3]);
-    summaryText += "</div>";
-    summaryText += "</div>";
-
-    summaryText += "<h3 style='color: #9457eb; margin-bottom: 15px;'>Анализ выполнения цели:</h3>";
-
     double calPercentage = targetCalories > 0 ? (consumedCalories / targetCalories) * 100 : 0;
-    QString calStatus;
-    if (calPercentage < 80) {
-        calStatus = "<span style='color:#e74c3c'>Недостаточно</span>";
-    } else if (calPercentage > 120) {
-        calStatus = "<span style='color:#e74c3c'>Превышено</span>";
-    } else {
-        calStatus = "<span style='color:#27ae60'>Отлично</span>";
-    }
-    summaryText += QString("<div style='background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px;'>");
-    summaryText += QString("<b>Калории:</b> %1 ккал / %2 ккал (%3%%) - %4").arg(consumedCalories, 0, 'f', 0).arg(targetCalories, 0, 'f', 0).arg(calPercentage, 0, 'f', 1).arg(calStatus);
-    summaryText += "</div>";
-
     double protPercentage = targetProteins > 0 ? (consumedProteins / targetProteins) * 100 : 0;
-    QString protStatus;
-    if (protPercentage < 80) {
-        protStatus = "<span style='color:#e74c3c'>Недостаточно</span>";
-    } else if (protPercentage > 120) {
-        protStatus = "<span style='color:#f39c12'>Избыток</span>";
-    } else {
-        protStatus = "<span style='color:#27ae60'>В норме</span>";
-    }
-    summaryText += QString("<div style='background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px;'>");
-    summaryText += QString("<b>Белки:</b> %1 г / %2 г (%3%%) - %4").arg(consumedProteins, 0, 'f', 1).arg(targetProteins, 0, 'f', 1).arg(protPercentage, 0, 'f', 1).arg(protStatus);
-    summaryText += "</div>";
-
     double fatsPercentage = targetFats > 0 ? (consumedFats / targetFats) * 100 : 0;
-    QString fatsStatus;
-    if (fatsPercentage < 80) {
-        fatsStatus = "<span style='color:#e74c3c'>Недостаточно</span>";
-    } else if (fatsPercentage > 120) {
-        fatsStatus = "<span style='color:#f39c12'>Избыток</span>";
-    } else {
-        fatsStatus = "<span style='color:#27ae60'>В норме</span>";
-    }
-    summaryText += QString("<div style='background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px;'>");
-    summaryText += QString("<b>Жиры:</b> %1 г / %2 г (%3%%) - %4").arg(consumedFats, 0, 'f', 1).arg(targetFats, 0, 'f', 1).arg(fatsPercentage, 0, 'f', 1).arg(fatsStatus);
-    summaryText += "</div>";
-
     double carbsPercentage = targetCarbs > 0 ? (consumedCarbs / targetCarbs) * 100 : 0;
-    QString carbsStatus;
-    if (carbsPercentage < 80) {
-        carbsStatus = "<span style='color:#e74c3c'>Недостаточно</span>";
-    } else if (carbsPercentage > 120) {
-        carbsStatus = "<span style='color:#f39c12'>Избыток</span>";
-    } else {
-        carbsStatus = "<span style='color:#27ae60'>В норме</span>";
-    }
-    summaryText += QString("<div style='background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 15px;'>");
-    summaryText += QString("<b>Углеводы:</b> %1 г / %2 г (%3%%) - %4").arg(consumedCarbs, 0, 'f', 1).arg(targetCarbs, 0, 'f', 1).arg(carbsPercentage, 0, 'f', 1).arg(carbsStatus);
-    summaryText += "</div>";
 
-    summaryText += "<h3 style='color: #f39c12; margin-bottom: 15px;'>Рекомендации:</h3>";
-
-    if (calPercentage < 80) {
-        summaryText += "<div style='background: rgba(231, 76, 60, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #e74c3c; margin-bottom: 8px;'>";
-        summaryText += "• <b>Калории:</b> Добавьте полезные перекусы или увеличите порции основных приемов пищи<br>";
-        summaryText += "</div>";
-    } else if (calPercentage > 120) {
-        summaryText += "<div style='background: rgba(231, 76, 60, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #e74c3c; margin-bottom: 8px;'>";
-        summaryText += "• <b>Калории:</b> Превышена норма. Следующий день можно сделать разгрузочным<br>";
-        summaryText += "</div>";
-    } else {
-        summaryText += "<div style='background: rgba(39, 174, 96, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #27ae60; margin-bottom: 8px;'>";
-        summaryText += "• <b>Калории:</b> Отличный баланс! Продолжайте в том же духе<br>";
-        summaryText += "</div>";
-    }
-
-    if (protPercentage < 80) {
-        summaryText += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
-        summaryText += "• <b>Белки:</b> Добавьте белковых продуктов (мясо, рыба, творог, яйца, бобовые)<br>";
-        summaryText += "</div>";
-    } else if (protPercentage > 120) {
-        summaryText += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
-        summaryText += "• <b>Белки:</b> Белки превышают норму. Следите за балансом<br>";
-        summaryText += "</div>";
-    }
-
-    if (fatsPercentage < 80) {
-        summaryText += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
-        summaryText += "• <b>Жиры:</b> Не хватает полезных жиров (орехи, авокадо, оливковое масло, рыба)<br>";
-        summaryText += "</div>";
-    } else if (fatsPercentage > 120) {
-        summaryText += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
-        summaryText += "• <b>Жиры:</b> Жиры превышают норму. Ограничьте жирные продукты<br>";
-        summaryText += "</div>";
-    }
-
-    if (carbsPercentage < 80) {
-        summaryText += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
-        summaryText += "• <b>Углеводы:</b> Нужно больше углеводов (крупы, цельнозерновой хлеб, фрукты, овощи)<br>";
-        summaryText += "</div>";
-    } else if (carbsPercentage > 120) {
-        summaryText += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
-        summaryText += "• <b>Углеводы:</b> Углеводы превышают норму. Ограничьте сладкое и мучное<br>";
-        summaryText += "</div>";
-    }
-
-    summaryText += "<div style='background: rgba(148, 87, 235, 0.15); padding: 15px; border-radius: 10px; border-left: 4px solid #9457eb; margin-top: 15px;'>";
-    summaryText += "<b style='color: #9457eb; font-size: 16px;'>Мотивация:</b><br>";
-    if (calPercentage >= 80 && calPercentage <= 120 && 
-        protPercentage >= 80 && protPercentage <= 120 &&
-        fatsPercentage >= 80 && fatsPercentage <= 120 &&
-        carbsPercentage >= 80 && carbsPercentage <= 120) {
-        summaryText += "Отличная работа! Вы идеально соблюдаете баланс БЖУ. Продолжайте в том же духе!";
-    } else {
-        summaryText += "Каждый день - это новый шанс стать лучше. Следите за балансом БЖУ, пейте воду и оставайтесь активными!";
-    }
-    summaryText += "</div>";
+    QString summaryText = generateMealStatistics(summary);
+    summaryText += "<h3 style='color: #9457eb; margin-bottom: 15px;'>Анализ выполнения цели:</h3>";
+    summaryText += generateNutrientStatus(consumedCalories, targetCalories, "Калории", "ккал");
+    summaryText += generateNutrientStatus(consumedProteins, targetProteins, "Белки", "г");
+    summaryText += generateNutrientStatus(consumedFats, targetFats, "Жиры", "г");
+    summaryText += generateNutrientStatus(consumedCarbs, targetCarbs, "Углеводы", "г");
+    summaryText += generateRecommendations(calPercentage, protPercentage, fatsPercentage, carbsPercentage);
 
     summaryLabel->setText(summaryText);
-
-    mealsTable->setRowCount(summary.meals.size());
-    for (int i = 0; i < summary.meals.size(); ++i) {
-        const DayMealEntry& entry = summary.meals[i];
-        mealsTable->setItem(i, 0, new QTableWidgetItem(entry.timestamp));
-        mealsTable->setItem(i, 1, new QTableWidgetItem(entry.mealType));
-        mealsTable->setItem(i, 2, new QTableWidgetItem(entry.productName));
-        mealsTable->setItem(i, 3, new QTableWidgetItem(QString::number(entry.grams, 'f', 1)));
-        mealsTable->setItem(i, 4, new QTableWidgetItem(QString::number(entry.calories, 'f', 1)));
-        mealsTable->setItem(i, 5, new QTableWidgetItem(QString::number(entry.proteins, 'f', 1)));
-        mealsTable->setItem(i, 6, new QTableWidgetItem(QString::number(entry.fats, 'f', 1)));
-        mealsTable->setItem(i, 7, new QTableWidgetItem(QString::number(entry.carbs, 'f', 1)));
-    }
-    mealsTable->resizeColumnsToContents();
-    
+    populateMealsTable(summary);
     createProgressChart(30);
 }
 
@@ -865,4 +719,145 @@ void SummaryWindow::updateProgressBar(QProgressBar *progressBar, double value, d
     
     // Устанавливаем пустой формат - без текста
     progressBar->setFormat("");
+}
+
+QString SummaryWindow::formatDayOfWeek(int dayOfWeek) const
+{
+    switch (dayOfWeek) {
+        case 1: return "Понедельник";
+        case 2: return "Вторник";
+        case 3: return "Среда";
+        case 4: return "Четверг";
+        case 5: return "Пятница";
+        case 6: return "Суббота";
+        case 7: return "Воскресенье";
+        default: return "";
+    }
+}
+
+QString SummaryWindow::generateMealStatistics(const DaySummary& summary) const
+{
+    QString text = "<div style='margin-bottom: 20px;'>";
+    text += "<h3 style='color: #9457eb; margin-bottom: 15px;'>Статистика дня:</h3>";
+    text += QString("<div style='background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px;'>");
+    text += QString("<b>Всего приемов пищи:</b> <span style='color: #9457eb;'>%1</span><br>").arg(summary.meals.size());
+    
+    int mealTypesCount[4] = {0};
+    for (const DayMealEntry& meal : summary.meals) {
+        if (meal.mealType == "Завтрак") mealTypesCount[0]++;
+        else if (meal.mealType == "Обед") mealTypesCount[1]++;
+        else if (meal.mealType == "Ужин") mealTypesCount[2]++;
+        else if (meal.mealType == "Перекус") mealTypesCount[3]++;
+    }
+    
+    if (mealTypesCount[0] > 0) text += QString("• Завтраки: %1<br>").arg(mealTypesCount[0]);
+    if (mealTypesCount[1] > 0) text += QString("• Обеды: %1<br>").arg(mealTypesCount[1]);
+    if (mealTypesCount[2] > 0) text += QString("• Ужины: %1<br>").arg(mealTypesCount[2]);
+    if (mealTypesCount[3] > 0) text += QString("• Перекусы: %1<br>").arg(mealTypesCount[3]);
+    text += "</div>";
+    text += "</div>";
+    return text;
+}
+
+QString SummaryWindow::generateNutrientStatus(double consumed, double target, const QString& name, const QString& unit) const
+{
+    double percentage = target > 0 ? (consumed / target) * 100 : 0;
+    QString status;
+    if (percentage < 80) {
+        status = "<span style='color:#e74c3c'>Недостаточно</span>";
+    } else if (percentage > 120) {
+        status = "<span style='color:#f39c12'>Избыток</span>";
+    } else {
+        status = "<span style='color:#27ae60'>В норме</span>";
+    }
+    
+    QString text = QString("<div style='background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px;'>");
+    text += QString("<b>%1:</b> %2 %3 / %4 %3 (%5%%) - %6")
+            .arg(name)
+            .arg(consumed, 0, 'f', name == "Калории" ? 0 : 1)
+            .arg(unit)
+            .arg(target, 0, 'f', name == "Калории" ? 0 : 1)
+            .arg(percentage, 0, 'f', 1)
+            .arg(status);
+    text += "</div>";
+    return text;
+}
+
+QString SummaryWindow::generateRecommendations(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const
+{
+    QString text = "<h3 style='color: #f39c12; margin-bottom: 15px;'>Рекомендации:</h3>";
+    
+    if (calPercentage < 80) {
+        text += "<div style='background: rgba(231, 76, 60, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #e74c3c; margin-bottom: 8px;'>";
+        text += "• <b>Калории:</b> Добавьте полезные перекусы или увеличите порции основных приемов пищи<br>";
+        text += "</div>";
+    } else if (calPercentage > 120) {
+        text += "<div style='background: rgba(231, 76, 60, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #e74c3c; margin-bottom: 8px;'>";
+        text += "• <b>Калории:</b> Превышена норма. Следующий день можно сделать разгрузочным<br>";
+        text += "</div>";
+    } else {
+        text += "<div style='background: rgba(39, 174, 96, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #27ae60; margin-bottom: 8px;'>";
+        text += "• <b>Калории:</b> Отличный баланс! Продолжайте в том же духе<br>";
+        text += "</div>";
+    }
+    
+    if (protPercentage < 80) {
+        text += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
+        text += "• <b>Белки:</b> Добавьте белковых продуктов (мясо, рыба, творог, яйца, бобовые)<br>";
+        text += "</div>";
+    } else if (protPercentage > 120) {
+        text += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
+        text += "• <b>Белки:</b> Белки превышают норму. Следите за балансом<br>";
+        text += "</div>";
+    }
+    
+    if (fatsPercentage < 80) {
+        text += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
+        text += "• <b>Жиры:</b> Не хватает полезных жиров (орехи, авокадо, оливковое масло, рыба)<br>";
+        text += "</div>";
+    } else if (fatsPercentage > 120) {
+        text += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
+        text += "• <b>Жиры:</b> Жиры превышают норму. Ограничьте жирные продукты<br>";
+        text += "</div>";
+    }
+    
+    if (carbsPercentage < 80) {
+        text += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
+        text += "• <b>Углеводы:</b> Нужно больше углеводов (крупы, цельнозерновой хлеб, фрукты, овощи)<br>";
+        text += "</div>";
+    } else if (carbsPercentage > 120) {
+        text += "<div style='background: rgba(243, 156, 18, 0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 8px;'>";
+        text += "• <b>Углеводы:</b> Углеводы превышают норму. Ограничьте сладкое и мучное<br>";
+        text += "</div>";
+    }
+    
+    text += "<div style='background: rgba(148, 87, 235, 0.15); padding: 15px; border-radius: 10px; border-left: 4px solid #9457eb; margin-top: 15px;'>";
+    text += "<b style='color: #9457eb; font-size: 16px;'>Мотивация:</b><br>";
+    if (calPercentage >= 80 && calPercentage <= 120 && 
+        protPercentage >= 80 && protPercentage <= 120 &&
+        fatsPercentage >= 80 && fatsPercentage <= 120 &&
+        carbsPercentage >= 80 && carbsPercentage <= 120) {
+        text += "Отличная работа! Вы идеально соблюдаете баланс БЖУ. Продолжайте в том же духе!";
+    } else {
+        text += "Каждый день - это новый шанс стать лучше. Следите за балансом БЖУ, пейте воду и оставайтесь активными!";
+    }
+    text += "</div>";
+    return text;
+}
+
+void SummaryWindow::populateMealsTable(const DaySummary& summary)
+{
+    mealsTable->setRowCount(summary.meals.size());
+    for (int i = 0; i < summary.meals.size(); ++i) {
+        const DayMealEntry& entry = summary.meals[i];
+        mealsTable->setItem(i, 0, new QTableWidgetItem(entry.timestamp));
+        mealsTable->setItem(i, 1, new QTableWidgetItem(entry.mealType));
+        mealsTable->setItem(i, 2, new QTableWidgetItem(entry.productName));
+        mealsTable->setItem(i, 3, new QTableWidgetItem(QString::number(entry.grams, 'f', 1)));
+        mealsTable->setItem(i, 4, new QTableWidgetItem(QString::number(entry.calories, 'f', 1)));
+        mealsTable->setItem(i, 5, new QTableWidgetItem(QString::number(entry.proteins, 'f', 1)));
+        mealsTable->setItem(i, 6, new QTableWidgetItem(QString::number(entry.fats, 'f', 1)));
+        mealsTable->setItem(i, 7, new QTableWidgetItem(QString::number(entry.carbs, 'f', 1)));
+    }
+    mealsTable->resizeColumnsToContents();
 }

@@ -42,6 +42,12 @@ private:
     void createProgressBar(QProgressBar *progressBar, const QString &text, double value, double max);
     void updateProgressBar(QProgressBar *progressBar, double value, double max);
     void createProgressChart(int days = 30);
+    
+    QString formatDayOfWeek(int dayOfWeek) const;
+    QString generateMealStatistics(const DaySummary& summary) const;
+    QString generateNutrientStatus(double consumed, double target, const QString& name, const QString& unit) const;
+    QString generateRecommendations(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const;
+    void populateMealsTable(const DaySummary& summary);
 };
 
 #endif
