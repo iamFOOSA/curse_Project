@@ -153,8 +153,7 @@ bool HistoryManager::loadHistoryFromFile(const QString& filepath)
     QJsonArray daysArray = rootObject["days"].toArray();
     for (const QJsonValue& value : daysArray) {
         if (value.isObject()) {
-            DaySummary summary = jsonToDaySummary(value.toObject());
-            if (!summary.date.isEmpty()) {
+            if (DaySummary summary = jsonToDaySummary(value.toObject()); !summary.date.isEmpty()) {
                 historyData[summary.date] = summary;
             }
         }

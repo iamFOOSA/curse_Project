@@ -83,8 +83,7 @@ bool NutritionManager::load_products_from_file(const std::string& filename) {
 }
 
 Product* NutritionManager::find_product(const std::string& name) const {
-    auto it = product_database.find(name);
-    if (it != product_database.end()) {
+    if (auto it = product_database.find(name); it != product_database.end()) {
         return it->second;
     }
     return nullptr;

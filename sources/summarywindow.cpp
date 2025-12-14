@@ -111,7 +111,7 @@ SummaryWindow::SummaryWindow(User *user, HistoryManager *historyManager, QWidget
     auto *metricsLayout = new QHBoxLayout;
     metricsLayout->setSpacing(15);
     
-    auto createMetricCard = [](const QString& title, const QString& color) -> QFrame* {
+    auto createMetricCard = [](const QString& title, const QString& color) {
         auto *card = new QFrame;
         card->setStyleSheet(QString(R"(
             QFrame {

@@ -140,7 +140,8 @@ void MenuWindow::displayMenu()
     menuText += "<div style='font-family: \"Segoe UI\", Arial, sans-serif; color: white; line-height: 1.6;'>";
     
     // Заголовок в зависимости от цели
-    QString titleColor, goalDescription;
+    QString titleColor;
+    QString goalDescription;
     if (goal == "похудение") {
         titleColor = "#e74c3c";
         goalDescription = "для похудения";

@@ -36,7 +36,10 @@ bool Manager::load_products_from_file() {
     }
 
     std::string name;
-    double calories, proteins, fats, carbs;
+    double calories;
+    double proteins;
+    double fats;
+    double carbs;
 
     while (file >> name >> calories >> proteins >> fats >> carbs) {
         std::replace(name.begin(), name.end(), '_', ' ');

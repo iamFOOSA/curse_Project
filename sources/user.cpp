@@ -32,8 +32,7 @@ void UserData<T>::set_data(const std::string& key, const T& value) {
 
 template<typename T>
 T UserData<T>::get_data(const std::string& key) const {
-    auto it = data.find(key);
-    if (it != data.end()) {
+    if (auto it = data.find(key); it != data.end()) {
         return it->second;
     }
     return T();

@@ -46,13 +46,17 @@
 
 TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionAdvisor *advisor, QWidget *parent)
     : QWidget(parent), user(user), manager(manager), advisor(advisor), 
-      foodFileManager(nullptr), historyManager(nullptr), trendAnalyzer(nullptr),
-      dateEdit(nullptr), dailyProgressChart(nullptr), productCompleter(nullptr),
-      updateTrendsButton(nullptr), trendPeriodComboBox(nullptr),
+      mealTracker(nullptr), foodFileManager(nullptr), historyManager(nullptr), trendAnalyzer(nullptr),
+      totalCalories(0), totalProteins(0), totalFats(0), totalCarbs(0),
+      tabWidget(nullptr), dateEdit(nullptr), previousDate(""),
+      mealTypeComboBox(nullptr), productNameEdit(nullptr), gramsEdit(nullptr),
+      addMealButton(nullptr), searchProductButton(nullptr), removeMealButton(nullptr),
+      mealsTable(nullptr), productInfoDisplay(nullptr), productCompleter(nullptr),
+      caloriesChartView(nullptr), macrosChartView(nullptr), dailyProgressChart(nullptr),
+      statsDisplay(nullptr), updateTrendsButton(nullptr), trendPeriodComboBox(nullptr),
       trendsSummaryTable(nullptr), trendsTopProductsTable(nullptr),
       trendsMealDistributionTable(nullptr), trendsWeekdayTable(nullptr),
-      trendsStatsTable(nullptr),
-      totalCalories(0), totalProteins(0), totalFats(0), totalCarbs(0)
+      trendsStatsTable(nullptr)
 {
     foodFileManager = new FoodFileManager("data/products.txt");
     historyManager = new HistoryManager("data/nutrition_history.json");
@@ -1054,8 +1058,8 @@ void TrackingWindow::loadTrackingData()
             // Обновляем график дневного прогресса после загрузки данных
             updateDailyProgressChart();
         }
-    } catch (...) {
-        qDebug() << "Ошибка при загрузке данных";
+    } catch (const std::exception& e) {
+        qDebug() << "Ошибка при загрузке данных:" << e.what();
         totalCalories = 0;
         totalProteins = 0;
         totalFats = 0;
@@ -1236,7 +1240,7 @@ void TrackingWindow::updateStatistics()
             else if (entry.mealType == "Перекус") mealTypesCount[3]++;
         }
         
-        if (mealEntries.size() > 0) {
+        if (!mealEntries.isEmpty()) {
             statsText += "<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #9457eb;'>";
             statsText += QString("<b style='color: #9457eb;'>Приемы пищи сегодня:</b><br>");
             statsText += QString("• Всего записей: <span style='color: white;'>%1</span><br>").arg(mealEntries.size());
@@ -1250,8 +1254,7 @@ void TrackingWindow::updateStatistics()
         // Интересный факт
         statsText += "<div style='background: rgba(243, 156, 18, 0.15); padding: 12px; border-radius: 8px; margin-top: 12px; border-left: 3px solid #f39c12;'>";
         statsText += "<b style='color: #f39c12;'>Интересный факт:</b><br>";
-        double bjuBalance = (protPercentage + fatsPercentage + carbsPercentage) / 3.0;
-        if (bjuBalance >= 90 && bjuBalance <= 110) {
+        if (double bjuBalance = (protPercentage + fatsPercentage + carbsPercentage) / 3.0; bjuBalance >= 90 && bjuBalance <= 110) {
             statsText += "<span style='color: white;'>Отличный баланс БЖУ! Ваше питание сбалансировано.</span>";
         } else if (bjuBalance < 90) {
             statsText += "<span style='color: white;'>Рекомендуется добавить больше разнообразия в рацион для лучшего баланса.</span>";

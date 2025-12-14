@@ -205,16 +205,18 @@ void MainWindow::showHistory()
     summaryTable->setRowCount(dates.size());
     summaryTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    for (int i = 0; i < dates.size(); ++i) {
-        DaySummary summary = historyManager.getDaySummary(dates[i]);
-        QDate qdate = QDate::fromString(dates[i], "yyyy-MM-dd");
+    int row = 0;
+    for (const QString& date : dates) {
+        DaySummary summary = historyManager.getDaySummary(date);
+        QDate qdate = QDate::fromString(date, "yyyy-MM-dd");
         
-        summaryTable->setItem(i, 0, new QTableWidgetItem(qdate.toString("dd.MM.yyyy")));
-        summaryTable->setItem(i, 1, new QTableWidgetItem(QString::number(summary.totalCalories, 'f', 1)));
-        summaryTable->setItem(i, 2, new QTableWidgetItem(QString::number(summary.totalProteins, 'f', 1)));
-        summaryTable->setItem(i, 3, new QTableWidgetItem(QString::number(summary.totalFats, 'f', 1)));
-        summaryTable->setItem(i, 4, new QTableWidgetItem(QString::number(summary.totalCarbs, 'f', 1)));
-        summaryTable->setItem(i, 5, new QTableWidgetItem(QString::number(summary.meals.size())));
+        summaryTable->setItem(row, 0, new QTableWidgetItem(qdate.toString("dd.MM.yyyy")));
+        summaryTable->setItem(row, 1, new QTableWidgetItem(QString::number(summary.totalCalories, 'f', 1)));
+        summaryTable->setItem(row, 2, new QTableWidgetItem(QString::number(summary.totalProteins, 'f', 1)));
+        summaryTable->setItem(row, 3, new QTableWidgetItem(QString::number(summary.totalFats, 'f', 1)));
+        summaryTable->setItem(row, 4, new QTableWidgetItem(QString::number(summary.totalCarbs, 'f', 1)));
+        summaryTable->setItem(row, 5, new QTableWidgetItem(QString::number(summary.meals.size())));
+        ++row;
     }
 
     summaryTable->horizontalHeader()->setStretchLastSection(true);

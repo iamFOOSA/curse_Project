@@ -276,7 +276,9 @@ void RegistrationWindow::registerUser()
         return;
     }
 
-    bool ageOk, heightOk, weightOk;
+    bool ageOk;
+    bool heightOk;
+    bool weightOk;
     int age = ageEdit->text().toInt(&ageOk);
     double height = heightEdit->text().toDouble(&heightOk);
     double weight = weightEdit->text().toDouble(&weightOk);

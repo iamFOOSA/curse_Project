@@ -89,7 +89,8 @@ QList<QPair<QString, int>> TrendAnalyzer::getTopProducts(const QDate& startDate,
               });
     
     QList<QPair<QString, int>> result;
-    for (int i = 0; i < std::min(count, static_cast<int>(sortedProducts.size())); ++i) {
+    const int resultCount = std::min(count, static_cast<int>(sortedProducts.size()));
+    for (int i = 0; i < resultCount; ++i) {
         result.append(qMakePair(sortedProducts[i].second, sortedProducts[i].first));
     }
     
@@ -126,8 +127,7 @@ QMap<QString, double> TrendAnalyzer::calculateWeekdayDistribution(const QDate& s
     QDate currentDate = startDate;
     while (currentDate <= endDate) {
         QString dayName;
-        int dayOfWeek = currentDate.dayOfWeek();
-        switch (dayOfWeek) {
+        switch (int dayOfWeek = currentDate.dayOfWeek(); dayOfWeek) {
             case 1: dayName = "Понедельник"; break;
             case 2: dayName = "Вторник"; break;
             case 3: dayName = "Среда"; break;
