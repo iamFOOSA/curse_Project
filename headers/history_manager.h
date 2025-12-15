@@ -25,8 +25,8 @@ struct DayMealEntry {
 
     DayMealEntry(const QString& d, const QString& mt, const QString& pn,
                  double g, double cal, double prot, double fat, double carb, const QString& ts)
-        : date(d), mealType(mt), productName(pn), grams(g),
-          calories(cal), proteins(prot), fats(fat), carbs(carb), timestamp(ts) {}
+            : date(d), mealType(mt), productName(pn), grams(g),
+              calories(cal), proteins(prot), fats(fat), carbs(carb), timestamp(ts) {}
 };
 
 struct DaySummary {
@@ -78,7 +78,7 @@ public:
         double fats = 0.0;
         double carbs = 0.0;
         QString timestamp;
-        
+
         MealEntryParams() = default;
     };
 
@@ -117,4 +117,6 @@ public:
 };
 
 #endif // HISTORY_MANAGER_H
+
+
 

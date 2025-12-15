@@ -255,7 +255,7 @@ void MainWindow::showHistory()
         dateComboBox->setCurrentIndex(0);
     }
 
-    connect(summaryTable, &QTableWidget::cellDoubleClicked, [this, &dates, dateComboBox](int row, int) {
+    connect(summaryTable, &QTableWidget::cellDoubleClicked, [this, &dates, dateComboBox, &updateDetailTable](int row, int) {
         if (row >= 0 && row < dates.size()) {
             QString selectedDate = dates[row];
             int index = dateComboBox->findData(selectedDate);
@@ -266,14 +266,14 @@ void MainWindow::showHistory()
         }
     });
 
-    connect(viewButton, &QPushButton::clicked, [this, dateComboBox]() {
+    connect(viewButton, &QPushButton::clicked, [this, dateComboBox, &updateDetailTable]() {
         QString selectedDate = dateComboBox->currentData().toString();
         if (!selectedDate.isEmpty()) {
             updateDetailTable(selectedDate);
         }
     });
 
-    connect(viewTodayButton, &QPushButton::clicked, [this, dateComboBox]() {
+    connect(viewTodayButton, &QPushButton::clicked, [this, dateComboBox, &updateDetailTable]() {
         QString todayDate = QDate::currentDate().toString("yyyy-MM-dd");
         int index = dateComboBox->findData(todayDate);
         if (index >= 0) {
@@ -286,7 +286,7 @@ void MainWindow::showHistory()
     connect(closeButton, &QPushButton::clicked, &historyDialog, &QDialog::accept);
 
     auto showSummaryButton = new QPushButton("Показать итоги дня", &historyDialog);
-    connect(showSummaryButton, &QPushButton::clicked, [this, &historyDialog, dateComboBox, summaryWindow, stackedWidget]() {
+    connect(showSummaryButton, &QPushButton::clicked, [this, &historyDialog, dateComboBox]() {
         QString selectedDate = dateComboBox->currentData().toString();
         if (!selectedDate.isEmpty()) {
             historyDialog.accept();

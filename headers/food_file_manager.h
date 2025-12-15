@@ -21,7 +21,7 @@ public:
 
         ProductData() : calories(0), proteins(0), fats(0), carbs(0) {}
         ProductData(const QString& n, double cal, double prot, double fat, double carb)
-            : name(n), calories(cal), proteins(prot), fats(fat), carbs(carb) {}
+                : name(n), calories(cal), proteins(prot), fats(fat), carbs(carb) {}
     };
 
 private:
@@ -75,4 +75,3 @@ public:
 };
 
 #endif // FOOD_FILE_MANAGER_H
-

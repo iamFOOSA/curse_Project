@@ -1,12 +1,12 @@
 #include "../headers/nutrition_exceptions.h"
 
 NutritionException::NutritionException(const std::string& msg, const std::string& ctx)
-    : message(msg), context(ctx) {}
+        : message(msg), context(ctx) {}
 
 NutritionException::~NutritionException() noexcept = default;
 
 const char* NutritionException::what() const noexcept {
-    return message.c_str();
+return message.c_str();
 }
 
 std::string NutritionException::get_message() const {
@@ -25,7 +25,7 @@ std::string NutritionException::get_full_message() const {
 }
 
 FileException::FileException(const std::string& msg, const std::string& fname, const std::string& ctx)
-    : NutritionException(msg, ctx), filename(fname) {}
+        : NutritionException(msg, ctx), filename(fname) {}
 
 std::string FileException::get_filename() const {
     return filename;
@@ -43,7 +43,7 @@ std::string FileException::get_full_message() const {
 }
 
 DataException::DataException(const std::string& msg, const std::string& dtype, const std::string& ctx)
-    : NutritionException(msg, ctx), dataType(dtype) {}
+        : NutritionException(msg, ctx), dataType(dtype) {}
 
 std::string DataException::get_data_type() const {
     return dataType;
@@ -61,7 +61,7 @@ std::string DataException::get_full_message() const {
 }
 
 ValidationException::ValidationException(const std::string& msg, const std::string& field, const std::string& value, const std::string& ctx)
-    : NutritionException(msg, ctx), fieldName(field), invalidValue(value) {}
+        : NutritionException(msg, ctx), fieldName(field), invalidValue(value) {}
 
 std::string ValidationException::get_field_name() const {
     return fieldName;
@@ -86,13 +86,13 @@ std::string ValidationException::get_full_message() const {
 }
 
 InvalidUserDataException::InvalidUserDataException(const std::string& msg, const std::string& field, const std::string& value)
-    : ValidationException(msg, field, value, "User Data Validation") {}
+        : ValidationException(msg, field, value, "User Data Validation") {}
 
 InvalidProductException::InvalidProductException(const std::string& msg, const std::string& field, const std::string& value)
-    : ValidationException(msg, field, value, "Product Data Validation") {}
+        : ValidationException(msg, field, value, "Product Data Validation") {}
 
 CalculationException::CalculationException(const std::string& msg, const std::string& calcType, const std::string& ctx)
-    : NutritionException(msg, ctx), calculationType(calcType) {}
+        : NutritionException(msg, ctx), calculationType(calcType) {}
 
 std::string CalculationException::get_calculation_type() const {
     return calculationType;
@@ -108,4 +108,3 @@ std::string CalculationException::get_full_message() const {
     }
     return full;
 }
-
