@@ -15,6 +15,32 @@
 #include <QMap>
 #include <QVector>
 
+
+struct MealEntryParams {
+    std::string date = "";
+    std::string meal_type = "";
+    std::string product_name = "";
+    double grams = 0;
+    double calories = 0;
+    double proteins = 0;
+    double fats = 0;
+    double carbs = 0;
+
+    // Конструкторы для удобства
+    MealEntryParams() = default;
+
+    MealEntryParams(const std::string& d, const std::string& mt,
+                    const std::string& pn, double g)
+        : date(d), meal_type(mt), product_name(pn), grams(g) {}
+
+    MealEntryParams(const std::string& d, const std::string& mt,
+                    const std::string& pn, double g,
+                    double cal, double prot, double f, double c)
+        : date(d), meal_type(mt), product_name(pn), grams(g),
+        calories(cal), proteins(prot), fats(f), carbs(c) {}
+};
+
+
 struct MealEntry {
     std::string date;
     std::string meal_type;
@@ -25,11 +51,11 @@ struct MealEntry {
     double fats;
     double carbs;
 
-    explicit MealEntry(const std::string& d = "", const std::string& mt = "",
-              const std::string& pn = "", double g = 0, double cal = 0,
-              double prot = 0, double f = 0, double c = 0)
-        : date(d), meal_type(mt), product_name(pn), grams(g),
-        calories(cal), proteins(prot), fats(f), carbs(c) {}
+    explicit MealEntry(const MealEntryParams& params = {})
+        : date(params.date), meal_type(params.meal_type),
+        product_name(params.product_name), grams(params.grams),
+        calories(params.calories), proteins(params.proteins),
+        fats(params.fats), carbs(params.carbs) {}
 };
 
 class MealTracker {
