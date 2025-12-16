@@ -305,12 +305,6 @@ QMap<QString, double> HistoryManager::getWeeklyTotals(const QDate& startDate) co
     while (currentDate <= endDate) {
         if (QString dateStr = formatDate(currentDate); historyData.contains(dateStr)) {
             const DaySummary& summary = historyData.value(dateStr);
-            /*if (const DaySummary& summary = historyData.at(dateStr); true) {
-                totals["calories"] += summary.totalCalories;
-                totals["proteins"] += summary.totalProteins;
-                totals["fats"] += summary.totalFats;
-                totals["carbs"] += summary.totalCarbs;
-            }*/
         }
         currentDate = currentDate.addDays(1);
     }

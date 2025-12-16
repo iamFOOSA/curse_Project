@@ -317,5 +317,5 @@ void MainWindow::onUserRegistered()
 
 void MainWindow::initializeData()
 {
-    // Метод оставлен пустым, так как инициализация данных выполняется в конструкторе
+
 }

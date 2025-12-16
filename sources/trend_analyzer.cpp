@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <QPair>
+#include <algorithm>
 
 TrendAnalyzer::TrendAnalyzer(HistoryManager* historyMgr, User* usr)
     : historyManager(historyMgr), user(usr)
@@ -200,14 +201,14 @@ TrendAnalysis TrendAnalyzer::analyzeTrends(const QDate& startDate, const QDate& 
     QList<double> dailyFats;
     QList<double> dailyCarbs;
     int daysWithDataCount = 0;
-    int daysOver = 0, daysUnder = 0;
+    int daysOver = 0;
+    int daysUnder = 0;
     double targetCalories = user->get_daily_calories();
     
     QDate currentDate = startDate;
     while (currentDate <= endDate) {
-        DaySummary summary = historyManager->getDaySummary(currentDate);
-        
-        if (summary.totalCalories > 0) {
+        if (DaySummary summary = historyManager->getDaySummary(currentDate);
+            summary.totalCalories > 0) {
             dailyCalories.append(summary.totalCalories);
             dailyProteins.append(summary.totalProteins);
             dailyFats.append(summary.totalFats);
