@@ -29,10 +29,11 @@ private:
     double height;
     double weight;
     std::string goal;
-    double daily_calories;
-    double daily_proteins;
-    double daily_fats;
-    double daily_carbs;
+    double daily_calories = 0.0;
+    double daily_proteins = 0.0;
+    double daily_fats = 0.0;
+    double daily_carbs = 0.0;
+
     UserData<double> physical_data;
     UserData<std::string> personal_data;
 
@@ -44,8 +45,8 @@ public:
     void display_info() const;
     void calculate_daily_nutrition();
 
-    void register_user();
-    void choose_goal();
+    void register_user() const;
+    void choose_goal() const;
 
     void set_name(std::string_view n) { name = std::string(n); }
     void set_age(int a) { age = a; }

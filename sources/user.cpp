@@ -1,28 +1,29 @@
 #include "../headers/user.h"
+#include <iostream>
 #include <algorithm>
 #include <cmath>
 
 namespace {
-    constexpr double BMR_WEIGHT_COEFFICIENT = 10.0;
-    constexpr double BMR_HEIGHT_COEFFICIENT = 6.25;
-    constexpr double BMR_AGE_COEFFICIENT = 5.0;
-    constexpr double DEFAULT_WEIGHT = 70.0;
-    constexpr double DEFAULT_HEIGHT = 170.0;
-    constexpr int DEFAULT_AGE = 30;
-    constexpr double MIN_WEIGHT_FOR_BMR = 50.0;
-    constexpr double MIN_HEIGHT_FOR_BMR = 150.0;
-    constexpr int MIN_AGE_FOR_BMR = 18;
-    constexpr double CALORIE_ADJUSTMENT = 500.0;
-    constexpr double MIN_SAFE_CALORIES = 1200.0;
-    constexpr double PROTEIN_PER_KG = 1.8;
-    constexpr double PROTEIN_PER_KG_MIN = 1.5;
-    constexpr double FAT_PER_KG = 1.0;
-    constexpr double FAT_PER_KG_MIN = 0.8;
-    constexpr double CALORIES_PER_GRAM_PROTEIN = 4.0;
-    constexpr double CALORIES_PER_GRAM_FAT = 9.0;
-    constexpr double CALORIES_PER_GRAM_CARB = 4.0;
-    constexpr double CALORIE_TOLERANCE = 10.0;
-    constexpr double ZERO = 0.0;
+constexpr double BMR_WEIGHT_COEFFICIENT = 10.0;
+constexpr double BMR_HEIGHT_COEFFICIENT = 6.25;
+constexpr double BMR_AGE_COEFFICIENT = 5.0;
+constexpr double DEFAULT_WEIGHT = 70.0;
+constexpr double DEFAULT_HEIGHT = 170.0;
+constexpr int DEFAULT_AGE = 30;
+constexpr double MIN_WEIGHT_FOR_BMR = 50.0;
+constexpr double MIN_HEIGHT_FOR_BMR = 150.0;
+constexpr int MIN_AGE_FOR_BMR = 18;
+constexpr double CALORIE_ADJUSTMENT = 500.0;
+constexpr double MIN_SAFE_CALORIES = 1200.0;
+constexpr double PROTEIN_PER_KG = 1.8;
+constexpr double PROTEIN_PER_KG_MIN = 1.5;
+constexpr double FAT_PER_KG = 1.0;
+constexpr double FAT_PER_KG_MIN = 0.8;
+constexpr double CALORIES_PER_GRAM_PROTEIN = 4.0;
+constexpr double CALORIES_PER_GRAM_FAT = 9.0;
+constexpr double CALORIES_PER_GRAM_CARB = 4.0;
+constexpr double CALORIE_TOLERANCE = 10.0;
+constexpr double ZERO = 0.0;
 }
 
 template<typename T>
@@ -48,12 +49,14 @@ void UserData<T>::display_all() const {
 template class UserData<double>;
 template class UserData<std::string>;
 
-User::User() : name(""), age(0), height(0), weight(0), goal(""),
-               daily_calories(0), daily_proteins(0), daily_fats(0), daily_carbs(0) {}
+User::User() : name(""), age(0), height(0), weight(0), goal("") {
+    initialize_data();
+    calculate_daily_nutrition();
+}
 
 User::User(const std::string& n, int a, double h, double w, const std::string& g)
-        : name(n), age(a), height(h), weight(w), goal(g),
-          daily_calories(0), daily_proteins(0), daily_fats(0), daily_carbs(0) {
+    : name(n), age(a), height(h), weight(w), goal(g) {
+
     initialize_data();
     calculate_daily_nutrition();
 }
@@ -94,14 +97,14 @@ void User::calculate_daily_nutrition() {
     }
 
     std::string currentGoal = goal;
-    
+
     if (currentGoal.empty()) {
         currentGoal = "поддержание";
         goal = currentGoal;
     }
 
     double bmr = BMR_WEIGHT_COEFFICIENT * weight + BMR_HEIGHT_COEFFICIENT * height - BMR_AGE_COEFFICIENT * age;
-    
+
     if (bmr <= ZERO) {
         bmr = BMR_WEIGHT_COEFFICIENT * MIN_WEIGHT_FOR_BMR + BMR_HEIGHT_COEFFICIENT * MIN_HEIGHT_FOR_BMR - BMR_AGE_COEFFICIENT * MIN_AGE_FOR_BMR;
     }
@@ -119,13 +122,13 @@ void User::calculate_daily_nutrition() {
     }
 
     daily_proteins = weight * PROTEIN_PER_KG;
-    
+
     if (daily_proteins <= ZERO) {
         daily_proteins = weight * PROTEIN_PER_KG_MIN;
     }
 
     daily_fats = weight * FAT_PER_KG;
-    
+
     if (daily_fats <= ZERO) {
         daily_fats = weight * FAT_PER_KG_MIN;
     }
@@ -134,7 +137,7 @@ void User::calculate_daily_nutrition() {
     double caloriesFromFats = daily_fats * CALORIES_PER_GRAM_FAT;
     double remainingCalories = daily_calories - caloriesFromProteins - caloriesFromFats;
     daily_carbs = remainingCalories / CALORIES_PER_GRAM_CARB;
-    
+
     if (daily_carbs < ZERO) {
         double totalCaloriesNeeded = caloriesFromProteins + caloriesFromFats;
         if (totalCaloriesNeeded > daily_calories) {
@@ -149,7 +152,7 @@ void User::calculate_daily_nutrition() {
 
     double calculatedCalories = daily_proteins * CALORIES_PER_GRAM_PROTEIN + daily_fats * CALORIES_PER_GRAM_FAT + daily_carbs * CALORIES_PER_GRAM_CARB;
     double difference = std::abs(calculatedCalories - daily_calories);
-    
+
     if (difference > CALORIE_TOLERANCE) {
         double caloriesFromProteinsFats = daily_proteins * CALORIES_PER_GRAM_PROTEIN + daily_fats * CALORIES_PER_GRAM_FAT;
         double carbsCalories = daily_calories - caloriesFromProteinsFats;
@@ -161,10 +164,12 @@ void User::calculate_daily_nutrition() {
     }
 }
 
-void User::register_user() {
-    // Метод зарезервирован для будущей реализации регистрации пользователя
+void User::register_user() const
+{
+
 }
 
-void User::choose_goal() {
-    // Метод зарезервирован для будущей реализации выбора цели пользователя
+void User::choose_goal() const
+{
+
 }
