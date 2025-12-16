@@ -45,46 +45,13 @@
 #include <QDateTimeAxis>
 #include <QTime>
 
-// УДАЛЕНЫ НЕПРАВИЛЬНЫЕ TYPEDEF - DayMealEntry и DaySummary уже определены в history_manager.h
-
 TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionAdvisor *advisor, QWidget *parent)
     : QWidget(parent),
     user(user),
     manager(manager),
     advisor(advisor),
     foodFileManager(new FoodFileManager("data/products.txt")),
-    historyManager(new HistoryManager("data/nutrition_history.json")),
-    trendAnalyzer(nullptr),
-    totalCalories(0.0),
-    totalProteins(0.0),
-    totalFats(0.0),
-    totalCarbs(0.0),
-    tabWidget(nullptr),
-    dateEdit(nullptr),
-    mealTypeComboBox(nullptr),
-    productNameEdit(nullptr),
-    gramsEdit(nullptr),
-    addMealButton(nullptr),
-    searchProductButton(nullptr),
-    removeMealButton(nullptr),
-    mealsTable(nullptr),
-    productInfoDisplay(nullptr),
-    productCompleter(nullptr),
-    caloriesChartView(nullptr),
-    macrosChartView(nullptr),
-    dailyProgressChart(nullptr),
-    statsDisplay(nullptr),
-    updateTrendsButton(nullptr),
-    trendPeriodComboBox(nullptr),
-    trendsSummaryTable(nullptr),
-    trendsTopProductsTable(nullptr),
-    trendsMealDistributionTable(nullptr),
-    trendsWeekdayTable(nullptr),
-    trendsStatsTable(nullptr),
-    caloriesProgress(nullptr),
-    proteinsProgress(nullptr),
-    fatsProgress(nullptr),
-    carbsProgress(nullptr)
+    historyManager(new HistoryManager("data/nutrition_history.json"))
 {
     if (foodFileManager) {
         foodFileManager->loadProductsFromFile();
@@ -1051,7 +1018,7 @@ void TrackingWindow::loadTrackingData()
             updateStatistics();
             updateDailyProgressChart();
         }
-    } catch (const std::exception& e) {
+    } catch (const std::runtime_error& e) {
         qDebug() << "Ошибка при загрузке данных:" << e.what();
         totalCalories = 0;
         totalProteins = 0;
@@ -1125,11 +1092,41 @@ void TrackingWindow::updateStatistics()
 
 QString TrackingWindow::generateDailyStatsText(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const
 {
-    // Извлекаем вложенные тернарные операторы в отдельные переменные
-    QString calColor = calPercentage > 100 ? "#e74c3c" : (calPercentage < 80 ? "#f39c12" : "#27ae60");
-    QString protColor = protPercentage > 120 ? "#e74c3c" : (protPercentage < 80 ? "#f39c12" : "#27ae60");
-    QString fatsColor = fatsPercentage > 120 ? "#e74c3c" : (fatsPercentage < 80 ? "#f39c12" : "#27ae60");
-    QString carbsColor = carbsPercentage > 120 ? "#e74c3c" : (carbsPercentage < 80 ? "#f39c12" : "#27ae60");
+    QString calColor;
+    if (calPercentage > 100) {
+        calColor = "#e74c3c";
+    } else if (calPercentage < 80) {
+        calColor = "#f39c12";
+    } else {
+        calColor = "#27ae60";
+    }
+
+    QString protColor;
+    if (protPercentage > 120) {
+        protColor = "#e74c3c";
+    } else if (protPercentage < 80) {
+        protColor = "#f39c12";
+    } else {
+        protColor = "#27ae60";
+    }
+
+    QString fatsColor;
+    if (fatsPercentage > 120) {
+        fatsColor = "#e74c3c";
+    } else if (fatsPercentage < 80) {
+        fatsColor = "#f39c12";
+    } else {
+        fatsColor = "#27ae60";
+    }
+
+    QString carbsColor;
+    if (carbsPercentage > 120) {
+        carbsColor = "#e74c3c";
+    } else if (carbsPercentage < 80) {
+        carbsColor = "#f39c12";
+    } else {
+        carbsColor = "#27ae60";
+    }
 
     QString text = "<h3 style='color: #9457eb; margin-bottom: 15px;'> Статистика за день:</h3>";
     text += QString("<b>Калории:</b> %1/%2 ккал (<span style='color:%4'>%3%</span>)<br>")
