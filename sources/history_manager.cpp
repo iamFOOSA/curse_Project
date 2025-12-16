@@ -8,6 +8,12 @@
 #include <QDir>
 #include <algorithm>
 
+template<typename Range>
+void reverse_range(Range& range) {
+    std::reverse(range.begin(), range.end());
+}
+
+
 HistoryManager::HistoryManager(const QString& filepath)
     : historyFilePath(filepath)
 {
@@ -273,7 +279,7 @@ QStringList HistoryManager::getAvailableDates() const
         dates.append(it.key());
     }
     dates.sort();
-    std::reverse(dates.begin(), dates.end()); // Оставляем старый вариант
+    reverse_range(dates);
     return dates;
 }
 
@@ -286,7 +292,8 @@ QList<QDate> HistoryManager::getAvailableDatesAsQDate() const
             dates.append(date);
         }
     }
-    std::sort(dates.begin(), dates.end(), std::greater<>()); // Сортируем по убыванию
+    std::sort(dates.begin(), dates.end());
+    reverse_range(dates);
     return dates;
 }
 
