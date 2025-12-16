@@ -108,3 +108,4 @@ std::string CalculationException::get_full_message() const {
     }
     return full;
 }
+

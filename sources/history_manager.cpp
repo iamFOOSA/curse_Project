@@ -113,9 +113,13 @@ bool HistoryManager::loadHistoryFromFile(const QString& filepath)
     if (!file.exists()) {
         QFileInfo fileInfo(filepath);
         if (QDir dir = fileInfo.absoluteDir(); !dir.exists()) {
-            dir.mkpath(".");
+            if (!dir.mkpath(".")) {
+                qDebug() << "Не удалось создать директорию для файла истории";
+                return false;
+            }
         }
-        return true;
+        qDebug() << "Файл истории не существует, будет создан новый";
+        return true; // Файла нет, это нормально
     }
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -128,8 +132,9 @@ bool HistoryManager::loadHistoryFromFile(const QString& filepath)
     QString jsonString = in.readAll();
     file.close();
 
-    if (jsonString.isEmpty()) {
-        return true;
+    if (jsonString.isEmpty() || jsonString.trimmed().isEmpty()) {
+        qDebug() << "Файл истории пустой";
+        return true; // Пустой файл - это нормально
     }
 
     QJsonParseError parseError;
@@ -306,10 +311,13 @@ QMap<QString, double> HistoryManager::getWeeklyTotals(const QDate& startDate) co
     while (currentDate <= endDate) {
         if (QString dateStr = formatDate(currentDate); historyData.contains(dateStr)) {
             const DaySummary& summary = historyData.value(dateStr);
+            totals["calories"] += summary.totalCalories;
+            totals["proteins"] += summary.totalProteins;
+            totals["fats"] += summary.totalFats;
+            totals["carbs"] += summary.totalCarbs;
         }
         currentDate = currentDate.addDays(1);
     }
-
     return totals;
 }
 

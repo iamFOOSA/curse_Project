@@ -32,20 +32,35 @@ QStringList FoodFileManager::splitProductName(const QString& input) const
 QString FoodFileManager::findDataFilePath(const QString& relativePath) const
 {
     QStringList searchPaths;
-    
+
     QString appDir;
     QString currentDir = QDir::currentPath();
-    
+
     if (const QCoreApplication* app = QCoreApplication::instance()) {
         appDir = QCoreApplication::applicationDirPath();
     }
-    
+
     QDir currentQDir(currentDir);
     QString projectRoot = currentDir;
-    
+
+    // Сначала проверяем txt/products.txt (основной файл проекта)
+    QFileInfo txtFile(currentDir + "/txt/products.txt");
+    if (txtFile.exists()) {
+        qDebug() << "Найден файл в txt/products.txt:" << txtFile.absoluteFilePath();
+        return txtFile.absoluteFilePath();
+    }
+
     bool found = false;
     while (!currentQDir.isRoot() && !found) {
-        if (QFileInfo playCheck(currentQDir.absoluteFilePath("play/data/products.txt")); playCheck.exists()) {
+        // Проверяем txt/products.txt в текущей и родительских директориях
+        QFileInfo txtCheck(currentQDir.absoluteFilePath("txt/products.txt"));
+        if (txtCheck.exists()) {
+            qDebug() << "Найден файл txt/products.txt в:" << txtCheck.absoluteFilePath();
+            return txtCheck.absoluteFilePath();
+        }
+
+        QFileInfo playCheck(currentQDir.absoluteFilePath("play/data/products.txt"));
+        if (playCheck.exists()) {
             projectRoot = currentQDir.absolutePath();
             searchPaths << playCheck.absoluteFilePath();
             found = true;
@@ -53,36 +68,47 @@ QString FoodFileManager::findDataFilePath(const QString& relativePath) const
             break;
         }
     }
-    
+
+    // Добавляем пути поиска для txt/products.txt
+    searchPaths << currentDir + "/txt/products.txt";
+    searchPaths << currentDir + "/../txt/products.txt";
+    searchPaths << currentDir + "/../../txt/products.txt";
+
     if (!appDir.isEmpty()) {
         searchPaths << appDir + "/" + relativePath;
         searchPaths << appDir + "/../../play/" + relativePath;
         searchPaths << appDir + "/../../../play/" + relativePath;
+        searchPaths << appDir + "/txt/products.txt";
     }
-    
+
     searchPaths << projectRoot + "/play/" + relativePath;
+    searchPaths << projectRoot + "/txt/products.txt";
     searchPaths << projectRoot + "/" + relativePath;
     searchPaths << currentDir + "/" + relativePath;
     searchPaths << currentDir + "/../play/" + relativePath;
     searchPaths << currentDir + "/../../play/" + relativePath;
     searchPaths << relativePath;
-    
+
+    qDebug() << "Поиск файла продуктов по путям:";
     for (const QString& path : searchPaths) {
         QString cleanPath = QDir::cleanPath(path);
         QFileInfo fileInfo(cleanPath);
+        qDebug() << "  Проверка:" << cleanPath << "существует:" << fileInfo.exists();
         if (fileInfo.exists() && fileInfo.isFile()) {
             QString absPath = fileInfo.absoluteFilePath();
+            qDebug() << "  НАЙДЕН файл:" << absPath;
             return absPath;
         }
     }
-    
+
     QString createPath = QDir::cleanPath(currentDir + "/" + relativePath);
     QFileInfo createFileInfo(createPath);
-    
+
     if (QDir createDir = createFileInfo.absoluteDir(); !createDir.exists() && !createDir.mkpath(".")) {
         return QString();
     }
-    
+
+    qDebug() << "Файл не найден, будет создан по пути:" << QDir::cleanPath(createPath);
     return QDir::cleanPath(createPath);
 }
 
@@ -192,35 +218,66 @@ bool FoodFileManager::loadProductsFromFile()
 bool FoodFileManager::loadProductsFromFile(const std::string& filepath)
 {
     productsDatabase.clear();
-    
-    QString qFilePath = findDataFilePath(QString::fromStdString(filepath));
-    
-    if (qFilePath.isEmpty()) {
+
+    // Используем переданный filepath, если он не пустой, иначе используем filename
+    QString searchPath = filepath.empty() ? QString::fromStdString(filename) : QString::fromStdString(filepath);
+    QString qFilePath = findDataFilePath(searchPath);
+
+    qDebug() << "Ищем файл продуктов...";
+    qDebug() << "Исходный путь:" << searchPath;
+    qDebug() << "Найденный путь:" << qFilePath;
+
+    if (qFilePath.isEmpty() || !QFileInfo(qFilePath).exists()) {
         QString currentDir = QDir::currentPath();
-        qFilePath = QDir::cleanPath(currentDir + "/data/products.txt");
-        QFileInfo info(qFilePath);
-        if (!info.exists()) {
-            qFilePath = QDir::cleanPath(currentDir + "/play/data/products.txt");
+        qDebug() << "Текущая директория:" << currentDir;
+
+        QString txtFilePath = currentDir + "/txt/products.txt";
+        QFileInfo txtFile(txtFilePath);
+        if (txtFile.exists()) {
+            qFilePath = txtFile.absoluteFilePath();
+            qDebug() << "Используем файл из txt/products.txt:" << qFilePath;
+        } else {
+            QString dataDirPath = currentDir + "/data";
+            QDir dataDir(dataDirPath);
+            if (!dataDir.exists()) {
+                qDebug() << "Папка data не существует, создаем...";
+                if (!dataDir.mkpath(".")) {
+                    qDebug() << "Не удалось создать папку data";
+                    return false;
+                }
+            }
+
+            qFilePath = dataDirPath + "/products.txt";
+            qDebug() << "Создаем путь:" << qFilePath;
         }
     }
-    
     filename = qFilePath.toStdString();
 
     QFile file(qFilePath);
-    
+    qDebug() << "Файл существует?" << file.exists();
+    qDebug() << "Полный путь к файлу:" << QFileInfo(qFilePath).absoluteFilePath();
+
     if (!file.exists()) {
         QFileInfo fileInfo(qFilePath);
-        if (QDir dir = fileInfo.absoluteDir(); !dir.exists() && !dir.mkpath(".")) {
-            return false;
+        if (QDir dir = fileInfo.absoluteDir(); !dir.exists()) {
+            qDebug() << "Директория не существует, создаем...";
+            if (!dir.mkpath(".")) {
+                qDebug() << "Не удалось создать директорию";
+                return false;
+            }
         }
-        
+
+        qDebug() << "Создаем файл с продуктами по умолчанию...";
         if (!createDefaultProductsFile(qFilePath)) {
+            qDebug() << "Не удалось создать файл с продуктами по умолчанию";
             return false;
         }
+        // После создания файла нужно переоткрыть его
         file.setFileName(qFilePath);
     }
-    
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Ошибка открытия файла для чтения:" << file.errorString();
         return false;
     }
 
@@ -228,6 +285,7 @@ bool FoodFileManager::loadProductsFromFile(const std::string& filepath)
     in.setEncoding(QStringConverter::Utf8);
 
     int lineNumber = 0;
+    int loadedCount = 0;
     while (!in.atEnd()) {
         lineNumber++;
         QString line = in.readLine().trimmed();
@@ -239,11 +297,17 @@ bool FoodFileManager::loadProductsFromFile(const std::string& filepath)
         ProductData product;
         if (parseProductLine(line, lineNumber, product)) {
             addProductVariants(product);
+            loadedCount++;
+            qDebug() << "Загружен продукт:" << product.name << "Ккал:" << product.calories << "Б:" << product.proteins << "Ж:" << product.fats << "У:" << product.carbs;
+        } else {
+            qDebug() << "Ошибка парсинга строки" << lineNumber << ":" << line;
         }
     }
 
     file.close();
-    
+
+    qDebug() << "Всего обработано строк:" << lineNumber << "Успешно загружено продуктов:" << loadedCount;
+
     size_t uniqueCount = 0;
     QMap<QString, bool> seen;
     for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
@@ -253,13 +317,13 @@ bool FoodFileManager::loadProductsFromFile(const std::string& filepath)
             uniqueCount++;
         }
     }
-    
+
     qDebug() << "Загружено уникальных продуктов:" << uniqueCount << "из файла:" << qFilePath;
-    
+
     if (uniqueCount == 0) {
         qDebug() << "ВНИМАНИЕ: База продуктов пуста! Файл:" << qFilePath;
     }
-    
+
     return true;
 }
 
@@ -308,12 +372,10 @@ bool FoodFileManager::addProduct(const QString& name, double calories, double pr
         return false;
     }
 
-    QString normalizedName = normalizeProductName(name);
     QString displayName = name.trimmed();
-
     ProductData product(displayName, calories, proteins, fats, carbs);
-    productsDatabase[normalizedName] = product;
-    productsDatabase[displayName] = product;
+
+    addProductVariants(product);
 
     return true;
 }
@@ -346,52 +408,73 @@ FoodFileManager::ProductData FoodFileManager::findProduct(const QString& name) c
     }
 
     QString inputName = name.trimmed();
-    QString inputNormalized = inputName.toLower().trimmed();
+
+    // Сначала проверяем прямое совпадение в базе данных (быстрый поиск)
+    if (productsDatabase.contains(inputName)) {
+        return productsDatabase[inputName];
+    }
+
+    QString inputNormalized = normalizeProductName(inputName);
+    if (productsDatabase.contains(inputNormalized)) {
+        return productsDatabase[inputNormalized];
+    }
+
+    // Проверяем варианты с подчеркиваниями
+    QString inputWithUnderscores = inputName;
+    inputWithUnderscores.replace(' ', '_');
+    if (productsDatabase.contains(inputWithUnderscores)) {
+        return productsDatabase[inputWithUnderscores];
+    }
+    if (productsDatabase.contains(inputWithUnderscores.toLower())) {
+        return productsDatabase[inputWithUnderscores.toLower()];
+    }
+
+    // Поиск по нормализованному имени (без учета регистра и пробелов)
+    inputNormalized = inputName.toLower().trimmed();
     inputNormalized.replace('_', ' ');
 
     for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
         QString productName = it.value().name;
         QString productLower = productName.toLower().trimmed();
-        
+
         if (productLower == inputNormalized) {
             return it.value();
         }
     }
 
+    // Поиск по словам
     QStringList inputWords = inputNormalized.split(' ', Qt::SkipEmptyParts);
-    if (inputWords.isEmpty()) {
-        return {};
-    }
-    
-    for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
-        QString productName = it.value().name.toLower();
-        bool allMatch = true;
-        
-        for (const QString& word : inputWords) {
-            if (word.length() < 2) {
-                continue;
+    if (!inputWords.isEmpty()) {
+        for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
+            QString productName = it.value().name.toLower();
+            bool allMatch = true;
+
+            for (const QString& word : inputWords) {
+                if (word.length() < 2) {
+                    continue;
+                }
+                if (!productName.contains(word)) {
+                    allMatch = false;
+                    break;
+                }
             }
-            if (!productName.contains(word)) {
-                allMatch = false;
-                break;
+
+            if (allMatch) {
+                return it.value();
             }
-        }
-        
-        if (allMatch) {
-            return it.value();
         }
     }
 
     QString inputSimple = inputNormalized;
     inputSimple.remove(' ');
     inputSimple.remove('_');
-    
+
     for (auto it = productsDatabase.constBegin(); it != productsDatabase.constEnd(); ++it) {
         QString productName = it.value().name.toLower();
         QString productSimple = productName;
         productSimple.remove(' ');
         productSimple.remove('_');
-        
+
         if (productSimple.contains(inputSimple) || inputSimple.contains(productSimple)) {
             return it.value();
         }

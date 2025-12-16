@@ -28,6 +28,7 @@
 #include <QIntValidator>
 #include <QDoubleValidator>
 #include <QFile>
+#include <QApplication>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -54,7 +55,11 @@ TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionA
     historyManager(new HistoryManager("data/nutrition_history.json"))
 {
     if (foodFileManager) {
-        foodFileManager->loadProductsFromFile();
+        if (foodFileManager->loadProductsFromFile()) {
+            qDebug() << "Продукты успешно загружены, количество:" << foodFileManager->getProductCount();
+        } else {
+            qDebug() << "Ошибка загрузки продуктов";
+        }
     }
 
     if (historyManager) {
@@ -286,15 +291,23 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     )";
 
     caloriesProgress = new QProgressBar;
+    caloriesProgress->setRange(0, 100);
+    caloriesProgress->setValue(0);
     caloriesProgress->setStyleSheet(progressStyle + "QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #e74c3c, stop:1 #c0392b); }");
 
     proteinsProgress = new QProgressBar;
+    proteinsProgress->setRange(0, 100);
+    proteinsProgress->setValue(0);
     proteinsProgress->setStyleSheet(progressStyle + "QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3498db, stop:1 #2980b9); }");
 
     fatsProgress = new QProgressBar;
+    fatsProgress->setRange(0, 100);
+    fatsProgress->setValue(0);
     fatsProgress->setStyleSheet(progressStyle + "QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #f39c12, stop:1 #e67e22); }");
 
     carbsProgress = new QProgressBar;
+    carbsProgress->setRange(0, 100);
+    carbsProgress->setValue(0);
     carbsProgress->setStyleSheet(progressStyle + "QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #27ae60, stop:1 #229954); }");
 
     auto createProgressRow = [](const QString& label, QProgressBar* progress) {
@@ -534,7 +547,10 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     connect(removeMealButton, &QPushButton::clicked, this, &TrackingWindow::onRemoveMealClicked);
     connect(productNameEdit, &QLineEdit::textChanged, this, &TrackingWindow::onProductTextChanged);
 
-    populateProductSuggestions();
+    QTimer::singleShot(100, this, [this]() {
+        populateProductSuggestions();
+        qDebug() << "Подсказки продуктов обновлены, количество:" << (foodFileManager ? foodFileManager->getAllProductNames().size() : 0);
+    });
 
     if (dateEdit) {
         previousDate = dateEdit->date().toString("yyyy-MM-dd");
@@ -918,10 +934,12 @@ QString TrackingWindow::getCurrentDate() const
 void TrackingWindow::saveTrackingData()
 {
     if (!historyManager) {
+        qDebug() << "HistoryManager не инициализирован";
         return;
     }
 
     QString currentDate = getCurrentDate();
+    qDebug() << "Сохранение данных за дату:" << currentDate;
 
     double recalcCalories = 0;
     double recalcProteins = 0;
@@ -941,53 +959,49 @@ void TrackingWindow::saveTrackingData()
         recalcCarbs += entry.carbs;
     }
 
-    DaySummary summary(currentDate);
-    summary.totalCalories = recalcCalories;
-    summary.totalProteins = recalcProteins;
-    summary.totalFats = recalcFats;
-    summary.totalCarbs = recalcCarbs;
-    summary.meals = dayMeals;
-
     totalCalories = recalcCalories;
     totalProteins = recalcProteins;
     totalFats = recalcFats;
     totalCarbs = recalcCarbs;
 
+    DaySummary summary(currentDate);
+    summary.totalCalories = totalCalories;
+    summary.totalProteins = totalProteins;
+    summary.totalFats = totalFats;
+    summary.totalCarbs = totalCarbs;
+    summary.meals = dayMeals;
+
+    // Сохраняем в менеджер истории
     historyManager->updateDaySummary(currentDate, summary);
-    historyManager->saveHistoryToFile();
+
+    // Немедленно сохраняем в файл
+    if (!historyManager->saveHistoryToFile()) {
+        qDebug() << "Ошибка сохранения истории в файл";
+        QMessageBox::warning(this, "Ошибка", "Не удалось сохранить данные в файл");
+    } else {
+        qDebug() << "Данные успешно сохранены";
+    }
 }
 
 void TrackingWindow::loadTrackingData()
 {
     if (!historyManager) {
+        qDebug() << "HistoryManager не инициализирован";
         return;
     }
 
-    try {
-        QString currentDate = getCurrentDate();
-        DaySummary daySummary = historyManager->getDaySummary(currentDate);
+    QString currentDate = getCurrentDate();
+    qDebug() << "Загрузка данных за дату:" << currentDate;
 
-        if (daySummary.date.isEmpty() || daySummary.date != currentDate) {
-            totalCalories = 0;
-            totalProteins = 0;
-            totalFats = 0;
-            totalCarbs = 0;
-            mealEntries.clear();
-            if (mealsTable && caloriesProgress) {
-                updateMealsTable();
-                updateProgressBars();
-                updateStatistics();
-                updateDailyProgressChart();
-            }
-            return;
-        }
+    DaySummary daySummary = historyManager->getDaySummary(currentDate);
 
-        mealEntries.clear();
-        double recalcCalories = 0;
-        double recalcProteins = 0;
-        double recalcFats = 0;
-        double recalcCarbs = 0;
+    mealEntries.clear();
+    double recalcCalories = 0;
+    double recalcProteins = 0;
+    double recalcFats = 0;
+    double recalcCarbs = 0;
 
+    if (daySummary.date == currentDate) {
         for (const DayMealEntry& dayEntry : daySummary.meals) {
             MealEntry entry;
             entry.mealType = dayEntry.mealType;
@@ -998,38 +1012,30 @@ void TrackingWindow::loadTrackingData()
             entry.fats = dayEntry.fats;
             entry.carbs = dayEntry.carbs;
             entry.timestamp = dayEntry.timestamp;
+            mealEntries.append(entry);
 
             recalcCalories += dayEntry.calories;
             recalcProteins += dayEntry.proteins;
             recalcFats += dayEntry.fats;
             recalcCarbs += dayEntry.carbs;
         }
+    }
 
-        totalCalories = recalcCalories;
-        totalProteins = recalcProteins;
-        totalFats = recalcFats;
-        totalCarbs = recalcCarbs;
+    // Обновляем totals
+    totalCalories = recalcCalories;
+    totalProteins = recalcProteins;
+    totalFats = recalcFats;
+    totalCarbs = recalcCarbs;
 
-        if (qAbs(totalCalories - daySummary.totalCalories) > 0.1 ||
-            qAbs(totalProteins - daySummary.totalProteins) > 0.1 ||
-            qAbs(totalFats - daySummary.totalFats) > 0.1 ||
-            qAbs(totalCarbs - daySummary.totalCarbs) > 0.1) {
-            saveTrackingData();
-        }
+    qDebug() << "Загружено записей:" << mealEntries.size();
+    qDebug() << "Калории:" << totalCalories;
 
-        if (mealsTable && caloriesProgress) {
-            updateMealsTable();
-            updateProgressBars();
-            updateStatistics();
-            updateDailyProgressChart();
-        }
-    } catch (const std::runtime_error& e) {
-        qDebug() << "Ошибка при загрузке данных:" << e.what();
-        totalCalories = 0;
-        totalProteins = 0;
-        totalFats = 0;
-        totalCarbs = 0;
-        mealEntries.clear();
+    // Обновляем интерфейс
+    if (mealsTable && caloriesProgress) {
+        updateMealsTable();
+        updateProgressBars();
+        updateStatistics();
+        updateDailyProgressChart();
     }
 }
 
@@ -1040,27 +1046,28 @@ void TrackingWindow::onDateChanged(const QDate &date)
     }
 
     if (!previousDate.isEmpty()) {
-        QString oldDate = previousDate;
-        DaySummary oldSummary(oldDate);
+        qDebug() << "Сохранение данных за предыдущую дату:" << previousDate;
+
+        DaySummary oldSummary(previousDate);
         oldSummary.totalCalories = totalCalories;
         oldSummary.totalProteins = totalProteins;
         oldSummary.totalFats = totalFats;
         oldSummary.totalCarbs = totalCarbs;
 
         for (const auto& entry : mealEntries) {
-            DayMealEntry dayEntry(oldDate, entry.mealType, entry.productName,
+            DayMealEntry dayEntry(previousDate, entry.mealType, entry.productName,
                                   entry.grams, entry.calories, entry.proteins,
                                   entry.fats, entry.carbs, entry.timestamp);
             oldSummary.meals.append(dayEntry);
         }
 
         if (historyManager) {
-            historyManager->updateDaySummary(oldDate, oldSummary);
-            historyManager->saveHistoryToFile();
+            historyManager->updateDaySummary(previousDate, oldSummary);
         }
     }
 
     previousDate = date.toString("yyyy-MM-dd");
+    qDebug() << "Смена даты на:" << previousDate;
 
     loadTrackingData();
 }
@@ -1314,25 +1321,48 @@ void TrackingWindow::updateProgressBars()
         return;
     }
 
+    caloriesProgress->setRange(0, 100);
+    proteinsProgress->setRange(0, 100);
+    fatsProgress->setRange(0, 100);
+    carbsProgress->setRange(0, 100);
+
     double dailyCalories = user->get_daily_calories() > 0 ? user->get_daily_calories() : 1;
     double dailyProteins = user->get_daily_proteins() > 0 ? user->get_daily_proteins() : 1;
     double dailyFats = user->get_daily_fats() > 0 ? user->get_daily_fats() : 1;
     double dailyCarbs = user->get_daily_carbs() > 0 ? user->get_daily_carbs() : 1;
+
+    qDebug() << "updateProgressBars: totalCalories=" << totalCalories << "dailyCalories=" << dailyCalories;
+    qDebug() << "updateProgressBars: totalProteins=" << totalProteins << "dailyProteins=" << dailyProteins;
 
     double calPercentage = (totalCalories / dailyCalories) * 100;
     double protPercentage = (totalProteins / dailyProteins) * 100;
     double fatsPercentage = (totalFats / dailyFats) * 100;
     double carbsPercentage = (totalCarbs / dailyCarbs) * 100;
 
-    caloriesProgress->setValue(qMin(calPercentage, 100.0));
-    proteinsProgress->setValue(qMin(protPercentage, 100.0));
-    fatsProgress->setValue(qMin(fatsPercentage, 100.0));
-    carbsProgress->setValue(qMin(carbsPercentage, 100.0));
+    int calValue = qMin(static_cast<int>(calPercentage), 100);
+    int protValue = qMin(static_cast<int>(protPercentage), 100);
+    int fatsValue = qMin(static_cast<int>(fatsPercentage), 100);
+    int carbsValue = qMin(static_cast<int>(carbsPercentage), 100);
+
+    caloriesProgress->setValue(calValue);
+    proteinsProgress->setValue(protValue);
+    fatsProgress->setValue(fatsValue);
+    carbsProgress->setValue(carbsValue);
 
     caloriesProgress->setFormat(QString("Калории: %1/%2 (%3%)").arg(totalCalories, 0, 'f', 1).arg(user->get_daily_calories(), 0, 'f', 0).arg(calPercentage, 0, 'f', 1));
     proteinsProgress->setFormat(QString("Белки: %1/%2 г (%3%)").arg(totalProteins, 0, 'f', 1).arg(user->get_daily_proteins(), 0, 'f', 1).arg(protPercentage, 0, 'f', 1));
     fatsProgress->setFormat(QString("Жиры: %1/%2 г (%3%)").arg(totalFats, 0, 'f', 1).arg(user->get_daily_fats(), 0, 'f', 1).arg(fatsPercentage, 0, 'f', 1));
     carbsProgress->setFormat(QString("Углеводы: %1/%2 г (%3%)").arg(totalCarbs, 0, 'f', 1).arg(user->get_daily_carbs(), 0, 'f', 1).arg(carbsPercentage, 0, 'f', 1));
+    caloriesProgress->repaint();
+    proteinsProgress->repaint();
+    fatsProgress->repaint();
+    carbsProgress->repaint();
+
+    if (caloriesProgress->parentWidget()) {
+        caloriesProgress->parentWidget()->update();
+    }
+
+    QApplication::processEvents();
 }
 
 void TrackingWindow::resetTracking()
@@ -1392,22 +1422,43 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
 
     FoodFileManager::ProductData product = foodFileManager->findProduct(productName);
 
+    qDebug() << "addMeal: поиск продукта '" << productName << "'";
+    qDebug() << "addMeal: найден продукт:" << (product.name.isEmpty() ? "НЕ НАЙДЕН" : product.name);
+
+    if (!product.name.isEmpty()) {
+        qDebug() << "addMeal: данные продукта из БД - Ккал:" << product.calories << "Б:" << product.proteins << "Ж:" << product.fats << "У:" << product.carbs << "на 100г";
+    }
+
     if (product.name.isEmpty()) {
+        qDebug() << "addMeal: продукт не найден в базе, проверяем существование...";
         if (!foodFileManager->productExists(productName)) {
+            qDebug() << "addMeal: продукт не существует, добавляем новый с дефолтными значениями:" << productName;
             foodFileManager->addProduct(productName, 100, 10, 5, 20);
             foodFileManager->saveProductsToFile();
+            foodFileManager->loadProductsFromFile();
         }
         product = foodFileManager->findProduct(productName);
         if (product.name.isEmpty()) {
+            qDebug() << "addMeal: КРИТИЧЕСКАЯ ОШИБКА - продукт не найден после добавления!";
+            QMessageBox::warning(this, "Ошибка", QString("Не удалось найти или добавить продукт: %1").arg(productName));
             return false;
         }
+        qDebug() << "addMeal: продукт найден после добавления:" << product.name;
     }
 
-    double mealCalories = foodFileManager->getCalories(product.name, grams);
-    double mealProteins = foodFileManager->getProteins(product.name, grams);
-    double mealFats = foodFileManager->getFats(product.name, grams);
-    double mealCarbs = foodFileManager->getCarbs(product.name, grams);
+    if (product.calories <= 0 && product.proteins <= 0 && product.fats <= 0 && product.carbs <= 0) {
+        qDebug() << "addMeal: ВНИМАНИЕ - продукт имеет нулевые значения БЖУ!";
+    }
 
+    double mealCalories = (product.calories * grams) / 100.0;
+    double mealProteins = (product.proteins * grams) / 100.0;
+    double mealFats = (product.fats * grams) / 100.0;
+    double mealCarbs = (product.carbs * grams) / 100.0;
+
+    qDebug() << "addMeal: расчет для" << grams << "г продукта '" << product.name << "'";
+    qDebug() << "addMeal: Исходные данные (на 100г): Ккал:" << product.calories << "Б:" << product.proteins << "Ж:" << product.fats << "У:" << product.carbs;
+    qDebug() << "addMeal: Рассчитано (на" << grams << "г): Ккал:" << mealCalories << "Б:" << mealProteins << "Ж:" << mealFats << "У:" << mealCarbs;
+    qDebug() << "addMeal: Ккал:" << mealCalories << "Б:" << mealProteins << "Ж:" << mealFats << "У:" << mealCarbs;
     totalCalories += mealCalories;
     totalProteins += mealProteins;
     totalFats += mealFats;
@@ -1425,6 +1476,8 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
     newEntry.fats = mealFats;
     newEntry.carbs = mealCarbs;
     newEntry.timestamp = timestamp;
+
+    mealEntries.append(newEntry);
 
     if (historyManager) {
         HistoryManager::MealEntryParams params;
@@ -1445,6 +1498,7 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
     updateStatistics();
     updateDailyProgressChart();
     saveTrackingData();
+
 
     return true;
 }
@@ -1535,6 +1589,11 @@ void TrackingWindow::onRemoveMealClicked()
 
     mealEntries = remainingMeals;
 
+    QString currentDate = getCurrentDate();
+    if (historyManager) {
+        historyManager->removeMealEntry(currentDate, currentRow);
+    }
+
     saveTrackingData();
 
     updateMealsTable();
@@ -1584,12 +1643,20 @@ void TrackingWindow::loadDailyData() {
 
 void TrackingWindow::populateProductSuggestions() {
     if (!foodFileManager || !productNameEdit) {
+        qDebug() << "populateProductSuggestions: foodFileManager или productNameEdit не инициализирован";
         return;
     }
 
     QStringList productNames = foodFileManager->getAllProductNames();
+    qDebug() << "populateProductSuggestions: найдено продуктов:" << productNames.size();
+
+    if (productNames.isEmpty()) {
+        qDebug() << "populateProductSuggestions: список продуктов пуст!";
+        return;
+    }
 
     if (productCompleter) {
+        productNameEdit->setCompleter(nullptr);
         delete productCompleter;
         productCompleter = nullptr;
     }
@@ -1597,7 +1664,11 @@ void TrackingWindow::populateProductSuggestions() {
     productCompleter = new QCompleter(productNames, this);
     productCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     productCompleter->setFilterMode(Qt::MatchContains);
+    productCompleter->setCompletionMode(QCompleter::PopupCompletion);
+    productCompleter->setMaxVisibleItems(10);
     productNameEdit->setCompleter(productCompleter);
+
+    qDebug() << "populateProductSuggestions: completer настроен для" << productNames.size() << "продуктов";
 }
 
 void TrackingWindow::showProductInfo(const QString &productName) {
