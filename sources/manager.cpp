@@ -4,15 +4,16 @@
 #include <algorithm>
 #include <fstream>
 #include <cctype>
+#include <string>
 
 std::string to_lower_case(const std::string& str) {
     std::string result = str;
-    std::transform(result.begin(), result.end(), result.begin(), ::tolower);
-    result.erase(std::remove_if(result.begin(), result.end(), ::isspace), result.end());
+    std::ranges::transform(result, result.begin(), ::tolower);
+    result.erase(std::ranges::remove_if(result, ::isspace).begin(), result.end());
     return result;
 }
 
-// Реализации методов Manager
+
 Manager::Manager() {
     for (auto& menu : weekly_menu) {
         menu = nullptr;
@@ -42,7 +43,7 @@ bool Manager::load_products_from_file() {
     double carbs;
 
     while (file >> name >> calories >> proteins >> fats >> carbs) {
-        std::replace(name.begin(), name.end(), '_', ' ');
+        std::ranges::replace(name, '_', ' ');
         product_database[name] = new Product(name, calories, proteins, fats, carbs);
 
         std::string search_name = to_lower_case(name);
@@ -144,7 +145,7 @@ bool Manager::add_product_to_file(const std::string& name, double calories, doub
     }
 
     std::string file_name = name;
-    std::replace(file_name.begin(), file_name.end(), ' ', '_');
+    std::ranges::replace(file_name, ' ', '_');
 
     file << file_name << " " << calories << " " << proteins << " " << fats << " " << carbs << "\n";
     file.close();
