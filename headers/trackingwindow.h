@@ -131,8 +131,6 @@ private:
         QString timestamp;
 
         MealEntry() : grams(0), calories(0), proteins(0), fats(0), carbs(0) {}
-        MealEntry(const QString &mt, const QString &pn, double g, double cal, double prot, double fat, double carb, const QString &ts)
-            : mealType(mt), productName(pn), grams(g), calories(cal), proteins(prot), fats(fat), carbs(carb), timestamp(ts) {}
     };
 
     QList<MealEntry> mealEntries;

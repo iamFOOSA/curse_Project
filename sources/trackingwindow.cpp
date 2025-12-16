@@ -989,10 +989,15 @@ void TrackingWindow::loadTrackingData()
         double recalcCarbs = 0;
 
         for (const DayMealEntry& dayEntry : daySummary.meals) {
-            MealEntry entry(dayEntry.mealType, dayEntry.productName, dayEntry.grams,
-                            dayEntry.calories, dayEntry.proteins, dayEntry.fats, dayEntry.carbs,
-                            dayEntry.timestamp);
-            mealEntries.append(entry);
+            MealEntry entry;
+            entry.mealType = dayEntry.mealType;
+            entry.productName = dayEntry.productName;
+            entry.grams = dayEntry.grams;
+            entry.calories = dayEntry.calories;
+            entry.proteins = dayEntry.proteins;
+            entry.fats = dayEntry.fats;
+            entry.carbs = dayEntry.carbs;
+            entry.timestamp = dayEntry.timestamp;
 
             recalcCalories += dayEntry.calories;
             recalcProteins += dayEntry.proteins;
@@ -1411,8 +1416,15 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
     QString timestamp = QDateTime::currentDateTime().toString("hh:mm");
     QString date = getCurrentDate();
 
-    MealEntry newEntry(mealType, product.name, grams, mealCalories, mealProteins, mealFats, mealCarbs, timestamp);
-    mealEntries.append(newEntry);
+    MealEntry newEntry;
+    newEntry.mealType = mealType;
+    newEntry.productName = product.name;
+    newEntry.grams = grams;
+    newEntry.calories = mealCalories;
+    newEntry.proteins = mealProteins;
+    newEntry.fats = mealFats;
+    newEntry.carbs = mealCarbs;
+    newEntry.timestamp = timestamp;
 
     if (historyManager) {
         HistoryManager::MealEntryParams params;
@@ -1436,6 +1448,8 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
 
     return true;
 }
+
+
 
 void TrackingWindow::updateMealsTable()
 {
@@ -2210,3 +2224,4 @@ void TrackingWindow::onUpdateTrends()
         trendsStatsTable->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Stretch);
     }
 }
+
