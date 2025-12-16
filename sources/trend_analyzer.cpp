@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cmath>
 #include <QPair>
-#include <algorithm>  // Один из них можно удалить, так как дублируется
 
 TrendAnalyzer::TrendAnalyzer(HistoryManager* historyMgr, User* usr)
     : historyManager(historyMgr), user(usr)
@@ -27,7 +26,6 @@ double TrendAnalyzer::calculateTrend(const QList<double>& values) const
 {
     if (values.size() < 2) return 0;
 
-    // Разделяем на две половины и сравниваем средние
     int mid = values.size() / 2;
     QList<double> firstHalf = values.mid(0, mid);
     QList<double> secondHalf = values.mid(mid);
@@ -181,7 +179,7 @@ TrendAnalysis TrendAnalyzer::analyzeTrends(int days)
     return analyzeTrends(startDate, endDate);
 }
 
-TrendAnalysis TrendAnalyzer::analyzeTrends(const QDate& startDate, const QDate& endDate)
+TrendAnalysis TrendAnalyzer::analyzeTrends(const QDate& startDate, const QDate& endDate) const
 {
     TrendAnalysis analysis;
 
@@ -215,7 +213,6 @@ TrendAnalysis TrendAnalyzer::analyzeTrends(const QDate& startDate, const QDate& 
             dailyCarbs.append(summary.totalCarbs);
             daysWithDataCount++;
 
-            // Шаг 12: Найти периоды превышения/недостатка норм
             if (summary.totalCalories > targetCalories * 1.1) {
                 daysOver++;
             } else if (summary.totalCalories < targetCalories * 0.9) {
@@ -235,14 +232,13 @@ TrendAnalysis TrendAnalyzer::analyzeTrends(const QDate& startDate, const QDate& 
         return analysis;
     }
 
-    // Шаг 4: Вычислить средние значения калорий, белков, жиров, углеводов за период
+
     analysis.avgCalories = calculateAverage(dailyCalories);
     analysis.avgProteins = calculateAverage(dailyProteins);
     analysis.avgFats = calculateAverage(dailyFats);
     analysis.avgCarbs = calculateAverage(dailyCarbs);
 
-    // Шаг 5-6: Разбить период на части и вычислить тренды
-    // Шаг 7: Определить тренд (рост/снижение/стабильность) для каждого макронутриента
+
     double calTrend = calculateTrend(dailyCalories);
     double protTrend = calculateTrend(dailyProteins);
     double fatTrend = calculateTrend(dailyFats);
@@ -253,31 +249,24 @@ TrendAnalysis TrendAnalyzer::analyzeTrends(const QDate& startDate, const QDate& 
     analysis.fatsTrend = determineTrendType(fatTrend);
     analysis.carbsTrend = determineTrendType(carbTrend);
 
-    // Шаг 8: Найти топ-10 наиболее часто употребляемых продуктов
     analysis.topProducts = getTopProducts(startDate, endDate, 10);
 
-    // Шаг 9: Проанализировать распределение калорий по приемам пищи
     analysis.mealDistribution = calculateMealDistribution(startDate, endDate);
 
-    // Шаг 10: Определить дни недели с наибольшим/наименьшим потреблением калорий
-    analysis.weekdayCalories = calculateWeekdayDistribution(startDate, endDate);
-    QPair<QString, QString> extremeDays = findExtremeDays(analysis.weekdayCalories);
-    analysis.mostCaloricDay = extremeDays.first;
-    analysis.leastCaloricDay = extremeDays.second;
 
-    // Шаг 11: Вычислить коэффициент вариации для оценки стабильности питания
+    analysis.weekdayCalories = calculateWeekdayDistribution(startDate, endDate);
+    auto [mostCaloric, leastCaloric] = findExtremeDays(analysis.weekdayCalories);
+    analysis.mostCaloricDay = mostCaloric;
+    analysis.leastCaloricDay = leastCaloric;
+
     double calVariation = calculateCoefficientOfVariation(dailyCalories);
     double protVariation = calculateCoefficientOfVariation(dailyProteins);
     double avgVariation = (calVariation + protVariation) / 2.0;
 
-    // Преобразуем в оценку стабильности (0-100, выше = стабильнее)
     analysis.stabilityScore = std::max(0.0, std::min(100.0, 100.0 - avgVariation));
 
-    // Шаг 13: Сформировать список выявленных трендов
-    // Шаг 14: Сгенерировать текстовый отчет с выводами
     analysis.analysisText = getAnalysisText(analysis);
 
-    // Шаг 15: Вернуть структурированные данные
     return analysis;
 }
 
