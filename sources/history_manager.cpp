@@ -6,13 +6,9 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
-#include <iterator>
+#include <ranges>
 #include <algorithm>
 
-template<typename Range>
-void reverse_range(Range& range) {
-    std::reverse(std::begin(range), std::end(range));
-}
 
 HistoryManager::HistoryManager(const QString& filepath)
     : historyFilePath(filepath)
@@ -279,7 +275,7 @@ QStringList HistoryManager::getAvailableDates() const
         dates.append(it.key());
     }
     dates.sort();
-    reverse_range(dates);
+    std::ranges::reverse(dates);
     return dates;
 }
 
@@ -292,8 +288,7 @@ QList<QDate> HistoryManager::getAvailableDatesAsQDate() const
             dates.append(date);
         }
     }
-    std::sort(dates.begin(), dates.end());
-    reverse_range(dates);
+    std::ranges::sort(dates, std::greater{});
     return dates;
 }
 
