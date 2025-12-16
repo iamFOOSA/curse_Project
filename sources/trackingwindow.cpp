@@ -5,6 +5,7 @@
 #include "../headers/food_file_manager.h"
 #include "../headers/history_manager.h"
 #include "../headers/trend_analyzer.h"
+#include <array>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
@@ -50,11 +51,41 @@ TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionA
     : QWidget(parent),
     user(user),
     manager(manager),
-    advisor(advisor)
+    advisor(advisor),
+    foodFileManager(new FoodFileManager("data/products.txt")),
+    historyManager(new HistoryManager("data/nutrition_history.json")),
+    trendAnalyzer(nullptr),
+    totalCalories(0.0),
+    totalProteins(0.0),
+    totalFats(0.0),
+    totalCarbs(0.0),
+    tabWidget(nullptr),
+    dateEdit(nullptr),
+    mealTypeComboBox(nullptr),
+    productNameEdit(nullptr),
+    gramsEdit(nullptr),
+    addMealButton(nullptr),
+    searchProductButton(nullptr),
+    removeMealButton(nullptr),
+    mealsTable(nullptr),
+    productInfoDisplay(nullptr),
+    productCompleter(nullptr),
+    caloriesChartView(nullptr),
+    macrosChartView(nullptr),
+    dailyProgressChart(nullptr),
+    statsDisplay(nullptr),
+    updateTrendsButton(nullptr),
+    trendPeriodComboBox(nullptr),
+    trendsSummaryTable(nullptr),
+    trendsTopProductsTable(nullptr),
+    trendsMealDistributionTable(nullptr),
+    trendsWeekdayTable(nullptr),
+    trendsStatsTable(nullptr),
+    caloriesProgress(nullptr),
+    proteinsProgress(nullptr),
+    fatsProgress(nullptr),
+    carbsProgress(nullptr)
 {
-    foodFileManager = new FoodFileManager("data/products.txt");
-    historyManager = new HistoryManager("data/nutrition_history.json");
-
     if (foodFileManager) {
         foodFileManager->loadProductsFromFile();
     }
@@ -1094,27 +1125,33 @@ void TrackingWindow::updateStatistics()
 
 QString TrackingWindow::generateDailyStatsText(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const
 {
+    // Извлекаем вложенные тернарные операторы в отдельные переменные
+    QString calColor = calPercentage > 100 ? "#e74c3c" : (calPercentage < 80 ? "#f39c12" : "#27ae60");
+    QString protColor = protPercentage > 120 ? "#e74c3c" : (protPercentage < 80 ? "#f39c12" : "#27ae60");
+    QString fatsColor = fatsPercentage > 120 ? "#e74c3c" : (fatsPercentage < 80 ? "#f39c12" : "#27ae60");
+    QString carbsColor = carbsPercentage > 120 ? "#e74c3c" : (carbsPercentage < 80 ? "#f39c12" : "#27ae60");
+
     QString text = "<h3 style='color: #9457eb; margin-bottom: 15px;'> Статистика за день:</h3>";
     text += QString("<b>Калории:</b> %1/%2 ккал (<span style='color:%4'>%3%</span>)<br>")
                 .arg(totalCalories, 0, 'f', 1)
                 .arg(user->get_daily_calories(), 0, 'f', 0)
                 .arg(calPercentage, 0, 'f', 1)
-                .arg(calPercentage > 100 ? "#e74c3c" : calPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(calColor);
     text += QString("<b>Белки:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
                 .arg(totalProteins, 0, 'f', 1)
                 .arg(user->get_daily_proteins(), 0, 'f', 1)
                 .arg(protPercentage, 0, 'f', 1)
-                .arg(protPercentage > 120 ? "#e74c3c" : protPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(protColor);
     text += QString("<b>Жиры:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
                 .arg(totalFats, 0, 'f', 1)
                 .arg(user->get_daily_fats(), 0, 'f', 1)
                 .arg(fatsPercentage, 0, 'f', 1)
-                .arg(fatsPercentage > 120 ? "#e74c3c" : fatsPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(fatsColor);
     text += QString("<b>Углеводы:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br><br>")
                 .arg(totalCarbs, 0, 'f', 1)
                 .arg(user->get_daily_carbs(), 0, 'f', 1)
                 .arg(carbsPercentage, 0, 'f', 1)
-                .arg(carbsPercentage > 120 ? "#e74c3c" : carbsPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(carbsColor);
     return text;
 }
 
@@ -1218,21 +1255,38 @@ QString TrackingWindow::generateMealStatsText() const
         return "";
     }
 
-    int mealTypesCount[4] = {0};
+    // Используем std::array вместо C-style массива
+    std::array<int, 4> mealTypesCount = {0};
+
     for (const auto& entry : mealEntries) {
-        if (entry.mealType == "Завтрак") mealTypesCount[0]++;
-        else if (entry.mealType == "Обед") mealTypesCount[1]++;
-        else if (entry.mealType == "Ужин") mealTypesCount[2]++;
-        else if (entry.mealType == "Перекус") mealTypesCount[3]++;
+        if (entry.mealType == "Завтрак") {
+            mealTypesCount[0]++;
+        } else if (entry.mealType == "Обед") {
+            mealTypesCount[1]++;
+        } else if (entry.mealType == "Ужин") {
+            mealTypesCount[2]++;
+        } else if (entry.mealType == "Перекус") {
+            mealTypesCount[3]++;
+        }
     }
 
     QString text = "<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #9457eb;'>";
     text += QString("<b style='color: #9457eb;'>Приемы пищи сегодня:</b><br>");
     text += QString("• Всего записей: <span style='color: white;'>%1</span><br>").arg(mealEntries.size());
-    if (mealTypesCount[0] > 0) text += QString("• Завтраки: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[0]);
-    if (mealTypesCount[1] > 0) text += QString("• Обеды: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[1]);
-    if (mealTypesCount[2] > 0) text += QString("• Ужины: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[2]);
-    if (mealTypesCount[3] > 0) text += QString("• Перекусы: <span style='color: white;'>%1</span>").arg(mealTypesCount[3]);
+
+    if (mealTypesCount[0] > 0) {
+        text += QString("• Завтраки: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[0]);
+    }
+    if (mealTypesCount[1] > 0) {
+        text += QString("• Обеды: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[1]);
+    }
+    if (mealTypesCount[2] > 0) {
+        text += QString("• Ужины: <span style='color: white;'>%1</span><br>").arg(mealTypesCount[2]);
+    }
+    if (mealTypesCount[3] > 0) {
+        text += QString("• Перекусы: <span style='color: white;'>%1</span>").arg(mealTypesCount[3]);
+    }
+
     text += "</div>";
     return text;
 }
@@ -2054,10 +2108,9 @@ void TrackingWindow::onUpdateTrends()
         auto *mealItem = new QTableWidgetItem(it.key());
         mealItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         trendsMealDistributionTable->setItem(row, 0, mealItem);
-
-        auto *calItem = new QTableWidgetItem(QString("%1 ккал").arg(static_cast<int>(it.value())));
-        calItem->setTextAlignment(Qt::AlignCenter);
-        trendsMealDistributionTable->setItem(row, 1, calItem);
+        auto *mealCaloriesItem = new QTableWidgetItem(QString("%1 ккал").arg(static_cast<int>(it.value())));
+        mealCaloriesItem->setTextAlignment(Qt::AlignCenter);
+        trendsMealDistributionTable->setItem(row, 1, mealCaloriesItem);
         row++;
     }
 
@@ -2069,12 +2122,12 @@ void TrackingWindow::onUpdateTrends()
         }
     }
     trendsWeekdayTable->setRowCount(weekdayRowCount);
-    row = 0;
+    int weekdayRow = 0;  // Используем другое имя переменной
     for (const QString& day : weekdayOrder) {
         if (analysis.weekdayCalories.contains(day)) {
             auto *dayItem = new QTableWidgetItem(day);
             dayItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-            trendsWeekdayTable->setItem(row, 0, dayItem);
+            trendsWeekdayTable->setItem(weekdayRow, 0, dayItem);
 
             double calories = analysis.weekdayCalories[day];
             QString caloriesText = QString("%1 ккал").arg(static_cast<int>(calories));
@@ -2083,10 +2136,10 @@ void TrackingWindow::onUpdateTrends()
             } else if (day == analysis.leastCaloricDay) {
                 caloriesText += " (минимум)";
             }
-            auto *calItem = new QTableWidgetItem(caloriesText);
-            calItem->setTextAlignment(Qt::AlignCenter);
-            trendsWeekdayTable->setItem(row, 1, calItem);
-            row++;
+            auto *weekdayCalItem = new QTableWidgetItem(caloriesText);  // Переименовано
+            weekdayCalItem->setTextAlignment(Qt::AlignCenter);
+            trendsWeekdayTable->setItem(weekdayRow, 1, weekdayCalItem);
+            weekdayRow++;
         }
     }
 
