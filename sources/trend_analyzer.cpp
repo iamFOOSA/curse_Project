@@ -184,19 +184,21 @@ TrendAnalysis TrendAnalyzer::analyzeTrends(const QDate& startDate, const QDate& 
 {
     TrendAnalysis analysis;
     
-    // Шаг 1: Получить начальную и конечную даты периода
+
     analysis.startDate = startDate;
     analysis.endDate = endDate;
     analysis.totalDays = startDate.daysTo(endDate) + 1;
     
-    // Шаг 2: Загрузить историю питания за период
+
     if (!historyManager || !user) {
         analysis.analysisText = "Ошибка: не инициализированы необходимые компоненты";
         return analysis;
     }
     
-    // Шаг 3: Проверить наличие данных и собрать данные за период
-    QList<double> dailyCalories, dailyProteins, dailyFats, dailyCarbs;
+    QList<double> dailyCalories;
+    QList<double>dailyProteins;
+    QList<double> dailyFats;
+    QList<double> dailyCarbs;
     int daysWithDataCount = 0;
     int daysOver = 0, daysUnder = 0;
     double targetCalories = user->get_daily_calories();
