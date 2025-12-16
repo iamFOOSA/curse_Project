@@ -16,7 +16,13 @@
 RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     : QWidget(parent),
     user(user),
-    mainFrame(new QFrame(this))  // Инициализация в списке инициализации
+    mainFrame(new QFrame(this)),
+    nameEdit(new QLineEdit(this)),
+    ageEdit(new QLineEdit(this)),
+    heightEdit(new QLineEdit(this)),
+    weightEdit(new QLineEdit(this)),
+    goalComboBox(new QComboBox(this)),
+    registerButton(new QPushButton(this))
 {
     setStyleSheet(R"(
         RegistrationWindow {

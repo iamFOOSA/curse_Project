@@ -9,10 +9,9 @@
 std::string to_lower_case(const std::string& str) {
     std::string result = str;
     std::ranges::transform(result, result.begin(), ::tolower);
-    result.erase(std::ranges::remove_if(result, ::isspace).begin(), result.end());
+    std::erase_if(result, ::isspace); // Исправлено: используется std::erase_if
     return result;
 }
-
 
 Manager::Manager() {
     for (auto& menu : weekly_menu) {
@@ -24,8 +23,8 @@ Manager::~Manager() {
     for (int i = 0; i < day_count; i++) {
         delete weekly_menu[i];
     }
-    for (auto& pair : product_database) {
-        delete pair.second;
+    for (auto& [key, value] : product_database) {
+        delete value;
     }
 }
 
@@ -61,7 +60,7 @@ void Manager::create_detailed_menu() {
     }
     day_count = 0;
 
-    DailyMenu* day1 = new DailyMenu("День 1");
+    auto* day1 = new DailyMenu("День 1");  // Исправлено: добавлен auto*
     day1->add_meal(new Product("Овсяная каша с фруктами", 350, 12, 6, 57));
     day1->add_meal(new Product("Йогурт натуральный", 60, 4, 3.5, 5));
     day1->add_meal(new Product("Куриная грудка с гречкой", 165, 31, 3.6, 15));
@@ -70,7 +69,7 @@ void Manager::create_detailed_menu() {
     weekly_menu[day_count] = day1;
     ++day_count;
 
-    DailyMenu* day2 = new DailyMenu("День 2");
+    auto* day2 = new DailyMenu("День 2");  // Исправлено: добавлен auto*
     day2->add_meal(new Product("Омлет с овощами", 180, 12, 14, 5));
     day2->add_meal(new Product("Яблоко", 52, 0.3, 0.2, 14));
     day2->add_meal(new Product("Рыба на пару с рисом", 120, 20, 4, 25));
@@ -79,7 +78,7 @@ void Manager::create_detailed_menu() {
     weekly_menu[day_count] = day2;
     ++day_count;
 
-    DailyMenu* day3 = new DailyMenu("День 3");
+    auto* day3 = new DailyMenu("День 3");  // Исправлено: добавлен auto*
     day3->add_meal(new Product("Творожная запеканка", 200, 15, 8, 20));
     day3->add_meal(new Product("Банановый смузи", 90, 2, 0.5, 20));
     day3->add_meal(new Product("Индейка с овощами", 140, 25, 3, 10));
