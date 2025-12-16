@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <string>
 
 DailyMenu::DailyMenu(const std::string& d) : day(d) {
     for (int i = 0; i < max_meals; i++) {
@@ -74,7 +75,7 @@ bool NutritionManager::load_products_from_file(const std::string& filename) {
     double carbs = 0.0;
 
     while (file >> name >> calories >> proteins >> fats >> carbs) {
-        std::replace(name.begin(), name.end(), '_', ' ');
+        std::ranges::replace(name, '_', ' ');
         product_database[name] = new Product(name, calories, proteins, fats, carbs);
     }
 
@@ -99,7 +100,7 @@ bool NutritionManager::add_product(const std::string& name, double calories, dou
 }
 
 void NutritionManager::create_detailed_menu() const {
-    // Метод зарезервирован для будущей реализации создания детального меню
+
 }
 
 void NutritionManager::display_weekly_menu() const {
@@ -119,7 +120,7 @@ void NutritionManager::save_all_menus(const std::string& filename) const {
 }
 
 void NutritionManager::suggest_menu() const {
-    // Метод зарезервирован для будущей реализации предложения меню
+
 }
 
 QStringList NutritionManager::get_product_names_qt() const {
@@ -139,21 +140,21 @@ bool NutritionManager::add_product_qt(const QString& name, double calories, doub
     return add_product(name.toStdString(), calories, proteins, fats, carbs);
 }
 
-bool NutritionManager::save_products_to_file(const std::string& /*filename*/) const { 
-    // Метод зарезервирован для будущей реализации сохранения продуктов
-    return true; 
+bool NutritionManager::save_products_to_file(const std::string& /*filename*/) const {
+
+    return true;
 }
 
-bool NutritionManager::remove_product(const std::string& /*name*/) const { 
-    // Метод зарезервирован для будущей реализации удаления продукта
-    return true; 
+bool NutritionManager::remove_product(const std::string& /*name*/) const {
+
+    return true;
 }
 
-std::vector<std::string> NutritionManager::get_all_product_names() const { 
-    // Метод зарезервирован для будущей реализации получения всех имен продуктов
-    return {}; 
+std::vector<std::string> NutritionManager::get_all_product_names() const {
+
+    return {};
 }
 
 void NutritionManager::display_product_info(const std::string& /*name*/, double /*grams*/) const {
-    // Метод зарезервирован для будущей реализации отображения информации о продукте
+
 }
