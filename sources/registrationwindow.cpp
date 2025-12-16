@@ -14,7 +14,9 @@
 #include <QGraphicsDropShadowEffect>
 
 RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
-    : QWidget(parent), user(user)
+    : QWidget(parent),
+    user(user),
+    mainFrame(new QFrame(this))  // Инициализация в списке инициализации
 {
     setStyleSheet(R"(
         RegistrationWindow {
@@ -28,7 +30,6 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(40, 40, 40, 40);
 
-    mainFrame = new QFrame;
     mainFrame->setStyleSheet(R"(
         QFrame {
             background: rgba(45, 45, 65, 0.95);
@@ -145,14 +146,12 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
 
     auto *nameLabel = new QLabel(" Имя:");
     nameLabel->setStyleSheet(labelStyle);
-    nameEdit = new QLineEdit;
     nameEdit->setPlaceholderText("Введите ваше имя");
     nameEdit->setStyleSheet(inputStyle);
     formLayout->addRow(nameLabel, nameEdit);
 
     auto *ageLabel = new QLabel(" Возраст:");
     ageLabel->setStyleSheet(labelStyle);
-    ageEdit = new QLineEdit;
     ageEdit->setPlaceholderText("Ваш возраст в годах");
     ageEdit->setStyleSheet(inputStyle);
     ageEdit->setValidator(new QIntValidator(1, 120, this));
@@ -160,7 +159,6 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
 
     auto *heightLabel = new QLabel(" Рост (см):");
     heightLabel->setStyleSheet(labelStyle);
-    heightEdit = new QLineEdit;
     heightEdit->setPlaceholderText("Рост в сантиметрах");
     heightEdit->setStyleSheet(inputStyle);
     heightEdit->setValidator(new QIntValidator(50, 250, this));
@@ -168,7 +166,6 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
 
     auto *weightLabel = new QLabel(" Вес (кг):");
     weightLabel->setStyleSheet(labelStyle);
-    weightEdit = new QLineEdit;
     weightEdit->setPlaceholderText("Вес в килограммах");
     weightEdit->setStyleSheet(inputStyle);
     weightEdit->setValidator(new QDoubleValidator(20, 300, 1, this));
@@ -176,7 +173,6 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
 
     auto *goalLabel = new QLabel(" Цель:");
     goalLabel->setStyleSheet(labelStyle);
-    goalComboBox = new QComboBox;
     goalComboBox->addItem(" Похудение");
     goalComboBox->addItem(" Набор массы");
     goalComboBox->addItem(" Поддержание веса");
@@ -184,7 +180,7 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
     goalComboBox->setCurrentIndex(2);
     formLayout->addRow(goalLabel, goalComboBox);
 
-    registerButton = new QPushButton(" Начать!");
+    registerButton->setText(" Начать!");
     registerButton->setStyleSheet(R"(
         QPushButton {
             background: rgba(255, 255, 255, 0.15);
@@ -205,24 +201,6 @@ RegistrationWindow::RegistrationWindow(User *user, QWidget *parent)
             background: rgba(255, 255, 255, 0.1);
         }
     )");
-
-
-    /* QPushButton *autoFillButton = new QPushButton(" Автозаполнение ");
-    autoFillButton->setStyleSheet(R"(
-        QPushButton {
-            background: #8e44ad;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        QPushButton:hover {
-            background: #7d3c98;
-        }
-    )");*/
 
     frameLayout->addWidget(titleLabel);
     frameLayout->addWidget(subtitleLabel);
