@@ -2,9 +2,9 @@
 #include <iostream>
 
 NutritionAdvisor::NutritionAdvisor() {
-    advice_list.push_back("Пейте достаточно воды - 2 литра в день!");
-    advice_list.push_back("Сбалансируйте приемы пищи");
-    advice_list.push_back("Не пропускайте завтрак");
+    advice_list.emplace_back("Пейте достаточно воды - 2 литра в день!");
+    advice_list.emplace_back("Сбалансируйте приемы пищи");
+    advice_list.emplace_back("Не пропускайте завтрак");
 }
 
 void NutritionAdvisor::show_welcome_advice() const {
@@ -52,14 +52,14 @@ QString NutritionAdvisor::get_welcome_advice_qt() const {
     return QString::fromStdString("Совет: " + advice_list[0]);
 }
 
-QString NutritionAdvisor::get_goal_based_advice_qt(const User& user) const {
+QString NutritionAdvisor::get_goal_based_advice_qt(const User&) const {
     return "Совет по вашей цели";
 }
 
-QString NutritionAdvisor::get_nutrition_analysis_qt(const User& user, double calories, double proteins, double fats, double carbs) const {
+QString NutritionAdvisor::get_nutrition_analysis_qt(const User&, double, double, double, double) const {
     return "Анализ питания";
 }
 
-QString NutritionAdvisor::get_progress_advice_qt(const User& user, double calories_percentage, double proteins_percentage, double fats_percentage, double carbs_percentage) const {
+QString NutritionAdvisor::get_progress_advice_qt(const User&, double, double, double, double) const {
     return "Совет по прогрессу";
 }
