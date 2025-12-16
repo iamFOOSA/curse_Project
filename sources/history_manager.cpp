@@ -6,13 +6,13 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
+#include <iterator>
 #include <algorithm>
 
 template<typename Range>
 void reverse_range(Range& range) {
-    std::reverse(range.begin(), range.end());
+    std::reverse(std::begin(range), std::end(range));
 }
-
 
 HistoryManager::HistoryManager(const QString& filepath)
     : historyFilePath(filepath)
