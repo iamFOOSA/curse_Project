@@ -44,36 +44,29 @@
 #include <QDateTimeAxis>
 #include <QTime>
 
+// УДАЛЕНЫ НЕПРАВИЛЬНЫЕ TYPEDEF - DayMealEntry и DaySummary уже определены в history_manager.h
+
 TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionAdvisor *advisor, QWidget *parent)
-    : QWidget(parent), user(user), manager(manager), advisor(advisor), 
-      mealTracker(nullptr), foodFileManager(nullptr), historyManager(nullptr), trendAnalyzer(nullptr),
-      totalCalories(0), totalProteins(0), totalFats(0), totalCarbs(0),
-      tabWidget(nullptr), dateEdit(nullptr), previousDate(""),
-      mealTypeComboBox(nullptr), productNameEdit(nullptr), gramsEdit(nullptr),
-      addMealButton(nullptr), searchProductButton(nullptr), removeMealButton(nullptr),
-      mealsTable(nullptr), productInfoDisplay(nullptr), productCompleter(nullptr),
-      caloriesChartView(nullptr), macrosChartView(nullptr), dailyProgressChart(nullptr),
-      statsDisplay(nullptr), updateTrendsButton(nullptr), trendPeriodComboBox(nullptr),
-      trendsSummaryTable(nullptr), trendsTopProductsTable(nullptr),
-      trendsMealDistributionTable(nullptr), trendsWeekdayTable(nullptr),
-      trendsStatsTable(nullptr)
+    : QWidget(parent),
+    user(user),
+    manager(manager),
+    advisor(advisor)
 {
     foodFileManager = new FoodFileManager("data/products.txt");
     historyManager = new HistoryManager("data/nutrition_history.json");
-    
+
     if (foodFileManager) {
         foodFileManager->loadProductsFromFile();
     }
-    
+
     if (historyManager) {
         historyManager->loadHistoryFromFile();
     }
-    
-    // Инициализируем анализатор трендов
+
     if (historyManager && user) {
         trendAnalyzer = new TrendAnalyzer(historyManager, user);
     }
-    
+
     setStyleSheet(R"(
         TrackingWindow {
             background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -136,9 +129,7 @@ TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionA
 
     mainLayout->addWidget(tabWidget);
     connect(tabWidget, &QTabWidget::currentChanged, this, &TrackingWindow::updateStatistics);
-    
-    // Отложенное обновление графика дневного прогресса после полной инициализации
-    // Используем QTimer для гарантии, что все виджеты созданы и user готов
+
     QTimer::singleShot(200, this, [this]() {
         if (dailyProgressChart && this->user && historyManager && this->user->get_daily_calories() > 0) {
             updateDailyProgressChart();
@@ -148,7 +139,6 @@ TrackingWindow::TrackingWindow(User *user, NutritionManager *manager, NutritionA
 
 void TrackingWindow::setupTrackingTab(QWidget *tab)
 {
-    // Создаем scroll area
     auto *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -189,7 +179,6 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
         }
     )");
 
-    // Создаем контейнер для содержимого
     auto *scrollContent = new QWidget;
     auto *tabLayout = new QVBoxLayout(scrollContent);
     tabLayout->setSpacing(15);
@@ -486,7 +475,7 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     mealsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     mealsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mealsTable->setAlternatingRowColors(true);
-    mealsTable->setMinimumHeight(200); // Минимальная высота таблицы
+    mealsTable->setMinimumHeight(200);
 
     historyLayout->addWidget(mealsTable);
 
@@ -528,7 +517,6 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     buttonsLayout->addWidget(removeMealButton);
     buttonsLayout->setAlignment(Qt::AlignCenter);
 
-    // Добавляем все элементы в основной layout
     tabLayout->addWidget(titleLabel);
     tabLayout->addWidget(dateGroup);
     tabLayout->addWidget(progressGroup);
@@ -536,10 +524,8 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     tabLayout->addWidget(historyGroup);
     tabLayout->addLayout(buttonsLayout);
 
-    // Устанавливаем scrollContent в scrollArea
     scrollArea->setWidget(scrollContent);
 
-    // Создаем главный layout для вкладки и помещаем в него scrollArea
     auto *mainTabLayout = new QVBoxLayout(tab);
     mainTabLayout->setSpacing(0);
     mainTabLayout->setContentsMargins(0, 0, 0, 0);
@@ -550,10 +536,8 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
     connect(removeMealButton, &QPushButton::clicked, this, &TrackingWindow::onRemoveMealClicked);
     connect(productNameEdit, &QLineEdit::textChanged, this, &TrackingWindow::onProductTextChanged);
 
-    // Настройка автодополнения для продуктов (после создания productNameEdit)
     populateProductSuggestions();
 
-    // Инициализируем previousDate текущей датой из dateEdit
     if (dateEdit) {
         previousDate = dateEdit->date().toString("yyyy-MM-dd");
     } else {
@@ -567,7 +551,6 @@ void TrackingWindow::setupTrackingTab(QWidget *tab)
 
 void TrackingWindow::setupStatisticsTab(QWidget *tab)
 {
-    // Создаем scroll area для статистики тоже
     auto *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -691,7 +674,6 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     )");
     statsLayout->addWidget(statsDisplay);
 
-    // Добавляем график прогресса по дням
     auto *progressChartGroup = new QGroupBox(" Прогресс по дням");
     progressChartGroup->setStyleSheet(R"(
         QGroupBox {
@@ -711,12 +693,11 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
             font-size: 16px;
         }
     )");
-    
+
     auto *progressChartLayout = new QVBoxLayout(progressChartGroup);
     progressChartLayout->setContentsMargins(0, 0, 0, 0);
     progressChartLayout->setSpacing(0);
-    
-    // Создаем ScrollArea для графика с горизонтальной прокруткой
+
     auto *chartScrollArea = new QScrollArea;
     chartScrollArea->setWidgetResizable(false);
     chartScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -744,18 +725,17 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
             width: 0px;
         }
     )");
-    
-    // Кнопки выбора периода
+
     auto *periodLayout = new QHBoxLayout;
     auto *periodLabel = new QLabel("Период:");
     periodLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white; margin-right: 10px;");
     periodLayout->addWidget(periodLabel);
-    
+
     auto *periodComboBox = new QComboBox;
     periodComboBox->addItem("3 дня", 3);
     periodComboBox->addItem("Неделя", 7);
     periodComboBox->addItem("Месяц", 30);
-    periodComboBox->setCurrentIndex(2); // По умолчанию месяц
+    periodComboBox->setCurrentIndex(2);
     periodComboBox->setStyleSheet(R"(
         QComboBox {
             background: rgba(148, 87, 235, 0.3);
@@ -795,23 +775,18 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     periodLayout->addWidget(periodComboBox);
     periodLayout->addStretch();
     progressChartLayout->addLayout(periodLayout);
-    
+
     dailyProgressChart = new QChartView();
     dailyProgressChart->setRenderHint(QPainter::Antialiasing);
     dailyProgressChart->setMinimumHeight(400);
     dailyProgressChart->setStyleSheet("background: transparent; border: none;");
-    
+
     chartScrollArea->setWidget(dailyProgressChart);
     chartScrollArea->setMinimumHeight(400);
     progressChartLayout->addWidget(chartScrollArea, 1);
-    
-    // Создаем график прогресса (будет обновлен после загрузки данных)
-    // Не создаем сразу, так как данные пользователя могут быть еще не загружены
-    
-    // Подключаем изменение периода к обновлению графика
+
     connect(periodComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, periodComboBox, chartScrollArea]() {
         int days = periodComboBox->currentData().toInt();
-        // Для месяца уменьшаем высоту, для других периодов - увеличиваем
         if (days > 7) {
             dailyProgressChart->setMinimumHeight(400);
             chartScrollArea->setMinimumHeight(400);
@@ -827,10 +802,8 @@ void TrackingWindow::setupStatisticsTab(QWidget *tab)
     tabLayout->addWidget(progressChartGroup);
     tabLayout->addWidget(statsGroup);
 
-    // Устанавливаем scrollContent в scrollArea
     scrollArea->setWidget(scrollContent);
 
-    // Создаем главный layout для вкладки и помещаем в него scrollArea
     auto *mainTabLayout = new QVBoxLayout(tab);
     mainTabLayout->setSpacing(0);
     mainTabLayout->setContentsMargins(0, 0, 0, 0);
@@ -844,7 +817,7 @@ void TrackingWindow::createCharts()
     if (!caloriesChartView || !macrosChartView || !user) {
         return;
     }
-    
+
     auto *caloriesSet = new QBarSet("Калории");
 
     double currentCalories = totalCalories > 0 ? totalCalories : 0;
@@ -951,35 +924,32 @@ void TrackingWindow::saveTrackingData()
     }
 
     QString currentDate = getCurrentDate();
-    
-    // Пересчитываем итоги из mealEntries для синхронизации
+
     double recalcCalories = 0;
     double recalcProteins = 0;
     double recalcFats = 0;
     double recalcCarbs = 0;
-    
+
     QList<DayMealEntry> dayMeals;
-    for (const MealEntry& entry : mealEntries) {
+    for (const auto& entry : mealEntries) {
         DayMealEntry dayEntry(currentDate, entry.mealType, entry.productName,
-                             entry.grams, entry.calories, entry.proteins,
-                             entry.fats, entry.carbs, entry.timestamp);
+                              entry.grams, entry.calories, entry.proteins,
+                              entry.fats, entry.carbs, entry.timestamp);
         dayMeals.append(dayEntry);
-        
+
         recalcCalories += entry.calories;
         recalcProteins += entry.proteins;
         recalcFats += entry.fats;
         recalcCarbs += entry.carbs;
     }
-    
-    // Используем пересчитанные значения
+
     DaySummary summary(currentDate);
     summary.totalCalories = recalcCalories;
     summary.totalProteins = recalcProteins;
     summary.totalFats = recalcFats;
     summary.totalCarbs = recalcCarbs;
     summary.meals = dayMeals;
-    
-    // Синхронизируем внутренние значения
+
     totalCalories = recalcCalories;
     totalProteins = recalcProteins;
     totalFats = recalcFats;
@@ -1000,7 +970,6 @@ void TrackingWindow::loadTrackingData()
         DaySummary daySummary = historyManager->getDaySummary(currentDate);
 
         if (daySummary.date.isEmpty() || daySummary.date != currentDate) {
-            // Данных за выбранную дату нет, очищаем
             totalCalories = 0;
             totalProteins = 0;
             totalFats = 0;
@@ -1010,44 +979,38 @@ void TrackingWindow::loadTrackingData()
                 updateMealsTable();
                 updateProgressBars();
                 updateStatistics();
-                // Обновляем график дневного прогресса
                 updateDailyProgressChart();
             }
             return;
         }
 
-        // Загружаем записи приёмов пищи
         mealEntries.clear();
         double recalcCalories = 0;
         double recalcProteins = 0;
         double recalcFats = 0;
         double recalcCarbs = 0;
-        
+
         for (const DayMealEntry& dayEntry : daySummary.meals) {
             MealEntry entry(dayEntry.mealType, dayEntry.productName, dayEntry.grams,
-                           dayEntry.calories, dayEntry.proteins, dayEntry.fats, dayEntry.carbs,
-                           dayEntry.timestamp);
+                            dayEntry.calories, dayEntry.proteins, dayEntry.fats, dayEntry.carbs,
+                            dayEntry.timestamp);
             mealEntries.append(entry);
-            
-            // Пересчитываем для точности
+
             recalcCalories += dayEntry.calories;
             recalcProteins += dayEntry.proteins;
             recalcFats += dayEntry.fats;
             recalcCarbs += dayEntry.carbs;
         }
-        
-        // Используем пересчитанные значения (более точные)
+
         totalCalories = recalcCalories;
         totalProteins = recalcProteins;
         totalFats = recalcFats;
         totalCarbs = recalcCarbs;
-        
-        // Если есть расхождения, пересохраняем с правильными значениями
+
         if (qAbs(totalCalories - daySummary.totalCalories) > 0.1 ||
             qAbs(totalProteins - daySummary.totalProteins) > 0.1 ||
             qAbs(totalFats - daySummary.totalFats) > 0.1 ||
             qAbs(totalCarbs - daySummary.totalCarbs) > 0.1) {
-            // Пересохраняем с корректными значениями
             saveTrackingData();
         }
 
@@ -1055,7 +1018,6 @@ void TrackingWindow::loadTrackingData()
             updateMealsTable();
             updateProgressBars();
             updateStatistics();
-            // Обновляем график дневного прогресса после загрузки данных
             updateDailyProgressChart();
         }
     } catch (const std::exception& e) {
@@ -1073,8 +1035,7 @@ void TrackingWindow::onDateChanged(const QDate &date)
     if (!date.isValid()) {
         return;
     }
-    
-    // Сохраняем данные за предыдущую дату (если она была)
+
     if (!previousDate.isEmpty()) {
         QString oldDate = previousDate;
         DaySummary oldSummary(oldDate);
@@ -1082,24 +1043,22 @@ void TrackingWindow::onDateChanged(const QDate &date)
         oldSummary.totalProteins = totalProteins;
         oldSummary.totalFats = totalFats;
         oldSummary.totalCarbs = totalCarbs;
-        
-        for (const MealEntry& entry : mealEntries) {
+
+        for (const auto& entry : mealEntries) {
             DayMealEntry dayEntry(oldDate, entry.mealType, entry.productName,
-                                 entry.grams, entry.calories, entry.proteins,
-                                 entry.fats, entry.carbs, entry.timestamp);
+                                  entry.grams, entry.calories, entry.proteins,
+                                  entry.fats, entry.carbs, entry.timestamp);
             oldSummary.meals.append(dayEntry);
         }
-        
+
         if (historyManager) {
             historyManager->updateDaySummary(oldDate, oldSummary);
             historyManager->saveHistoryToFile();
         }
     }
-    
-    // Обновляем предыдущую дату на текущую выбранную
+
     previousDate = date.toString("yyyy-MM-dd");
-    
-    // Загружаем данные за новую дату
+
     loadTrackingData();
 }
 
@@ -1108,7 +1067,7 @@ void TrackingWindow::updateStatistics()
     if (!statsDisplay || !user) {
         return;
     }
-    
+
     createCharts();
 
     double dailyCalories = user->get_daily_calories() > 0 ? user->get_daily_calories() : 1;
@@ -1123,7 +1082,7 @@ void TrackingWindow::updateStatistics()
 
     QString statsText = generateDailyStatsText(calPercentage, protPercentage, fatsPercentage, carbsPercentage);
     statsText += generateAnalysisText(calPercentage, protPercentage, fatsPercentage, carbsPercentage);
-    
+
     if (historyManager) {
         statsText += generateWeeklyStatsText();
         statsText += generateMealStatsText();
@@ -1137,32 +1096,32 @@ QString TrackingWindow::generateDailyStatsText(double calPercentage, double prot
 {
     QString text = "<h3 style='color: #9457eb; margin-bottom: 15px;'> Статистика за день:</h3>";
     text += QString("<b>Калории:</b> %1/%2 ккал (<span style='color:%4'>%3%</span>)<br>")
-            .arg(totalCalories, 0, 'f', 1)
-            .arg(user->get_daily_calories(), 0, 'f', 0)
-            .arg(calPercentage, 0, 'f', 1)
-            .arg(calPercentage > 100 ? "#e74c3c" : calPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(totalCalories, 0, 'f', 1)
+                .arg(user->get_daily_calories(), 0, 'f', 0)
+                .arg(calPercentage, 0, 'f', 1)
+                .arg(calPercentage > 100 ? "#e74c3c" : calPercentage < 80 ? "#f39c12" : "#27ae60");
     text += QString("<b>Белки:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
-            .arg(totalProteins, 0, 'f', 1)
-            .arg(user->get_daily_proteins(), 0, 'f', 1)
-            .arg(protPercentage, 0, 'f', 1)
-            .arg(protPercentage > 120 ? "#e74c3c" : protPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(totalProteins, 0, 'f', 1)
+                .arg(user->get_daily_proteins(), 0, 'f', 1)
+                .arg(protPercentage, 0, 'f', 1)
+                .arg(protPercentage > 120 ? "#e74c3c" : protPercentage < 80 ? "#f39c12" : "#27ae60");
     text += QString("<b>Жиры:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br>")
-            .arg(totalFats, 0, 'f', 1)
-            .arg(user->get_daily_fats(), 0, 'f', 1)
-            .arg(fatsPercentage, 0, 'f', 1)
-            .arg(fatsPercentage > 120 ? "#e74c3c" : fatsPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(totalFats, 0, 'f', 1)
+                .arg(user->get_daily_fats(), 0, 'f', 1)
+                .arg(fatsPercentage, 0, 'f', 1)
+                .arg(fatsPercentage > 120 ? "#e74c3c" : fatsPercentage < 80 ? "#f39c12" : "#27ae60");
     text += QString("<b>Углеводы:</b> %1/%2 г (<span style='color:%4'>%3%</span>)<br><br>")
-            .arg(totalCarbs, 0, 'f', 1)
-            .arg(user->get_daily_carbs(), 0, 'f', 1)
-            .arg(carbsPercentage, 0, 'f', 1)
-            .arg(carbsPercentage > 120 ? "#e74c3c" : carbsPercentage < 80 ? "#f39c12" : "#27ae60");
+                .arg(totalCarbs, 0, 'f', 1)
+                .arg(user->get_daily_carbs(), 0, 'f', 1)
+                .arg(carbsPercentage, 0, 'f', 1)
+                .arg(carbsPercentage > 120 ? "#e74c3c" : carbsPercentage < 80 ? "#f39c12" : "#27ae60");
     return text;
 }
 
 QString TrackingWindow::generateAnalysisText(double calPercentage, double protPercentage, double fatsPercentage, double carbsPercentage) const
 {
     QString text = "<h3 style='color: #f39c12; margin-bottom: 15px;'> Анализ:</h3>";
-    
+
     if (calPercentage < 70) {
         text += "• Калорийность: <span style='color:#e74c3c'>ниже нормы</span><br>";
     } else if (calPercentage > 130) {
@@ -1170,7 +1129,7 @@ QString TrackingWindow::generateAnalysisText(double calPercentage, double protPe
     } else {
         text += "• Калорийность: <span style='color:#27ae60'>в норме</span><br>";
     }
-    
+
     if (protPercentage < 80) {
         text += "• Белки: <span style='color:#e74c3c'>недостаточно</span><br>";
     } else if (protPercentage > 120) {
@@ -1178,7 +1137,7 @@ QString TrackingWindow::generateAnalysisText(double calPercentage, double protPe
     } else {
         text += "• Белки: <span style='color:#27ae60'>сбалансированы</span><br>";
     }
-    
+
     if (fatsPercentage < 80) {
         text += "• Жиры: <span style='color:#e74c3c'>недостаточно</span><br>";
     } else if (fatsPercentage > 120) {
@@ -1186,7 +1145,7 @@ QString TrackingWindow::generateAnalysisText(double calPercentage, double protPe
     } else {
         text += "• Жиры: <span style='color:#27ae60'>сбалансированы</span><br>";
     }
-    
+
     if (carbsPercentage < 80) {
         text += "• Углеводы: <span style='color:#e74c3c'>недостаточно</span><br>";
     } else if (carbsPercentage > 120) {
@@ -1194,7 +1153,7 @@ QString TrackingWindow::generateAnalysisText(double calPercentage, double protPe
     } else {
         text += "• Углеводы: <span style='color:#27ae60'>сбалансированы</span><br>";
     }
-    
+
     return text;
 }
 
@@ -1203,16 +1162,16 @@ QString TrackingWindow::generateWeeklyStatsText() const
     if (!historyManager) {
         return "";
     }
-    
+
     QString text = "<br><h3 style='color: #9457eb; margin-bottom: 15px; margin-top: 20px;'> Дополнительная статистика:</h3>";
-    
+
     QDate today = QDate::currentDate();
     double weeklyAvgCalories = 0;
     double weeklyAvgProteins = 0;
     double weeklyAvgFats = 0;
     double weeklyAvgCarbs = 0;
     int daysWithData = 0;
-    
+
     for (int i = 0; i < 7; ++i) {
         QDate date = today.addDays(-i);
         QString dateStr = date.toString("yyyy-MM-dd");
@@ -1225,13 +1184,13 @@ QString TrackingWindow::generateWeeklyStatsText() const
             daysWithData++;
         }
     }
-    
+
     if (daysWithData > 0) {
         weeklyAvgCalories /= daysWithData;
         weeklyAvgProteins /= daysWithData;
         weeklyAvgFats /= daysWithData;
         weeklyAvgCarbs /= daysWithData;
-        
+
         text += QString("<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #9457eb;'>");
         text += QString("<b style='color: #9457eb;'>Средние показатели за последние 7 дней (%1 дня с данными):</b><br>").arg(daysWithData);
         text += QString("• Калории: <span style='color: white;'>%1 ккал/день</span><br>").arg(weeklyAvgCalories, 0, 'f', 0);
@@ -1239,7 +1198,7 @@ QString TrackingWindow::generateWeeklyStatsText() const
         text += QString("• Жиры: <span style='color: white;'>%1 г/день</span><br>").arg(weeklyAvgFats, 0, 'f', 1);
         text += QString("• Углеводы: <span style='color: white;'>%1 г/день</span>").arg(weeklyAvgCarbs, 0, 'f', 1);
         text += "</div>";
-        
+
         double calDiff = totalCalories - weeklyAvgCalories;
         if (qAbs(calDiff) > 50) {
             QString trendColor = calDiff > 0 ? "#f39c12" : "#3498db";
@@ -1249,7 +1208,7 @@ QString TrackingWindow::generateWeeklyStatsText() const
             text += "</div>";
         }
     }
-    
+
     return text;
 }
 
@@ -1258,15 +1217,15 @@ QString TrackingWindow::generateMealStatsText() const
     if (!historyManager || mealEntries.isEmpty()) {
         return "";
     }
-    
+
     int mealTypesCount[4] = {0};
-    for (const MealEntry& entry : mealEntries) {
+    for (const auto& entry : mealEntries) {
         if (entry.mealType == "Завтрак") mealTypesCount[0]++;
         else if (entry.mealType == "Обед") mealTypesCount[1]++;
         else if (entry.mealType == "Ужин") mealTypesCount[2]++;
         else if (entry.mealType == "Перекус") mealTypesCount[3]++;
     }
-    
+
     QString text = "<div style='background: rgba(148, 87, 235, 0.1); padding: 12px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #9457eb;'>";
     text += QString("<b style='color: #9457eb;'>Приемы пищи сегодня:</b><br>");
     text += QString("• Всего записей: <span style='color: white;'>%1</span><br>").arg(mealEntries.size());
@@ -1298,7 +1257,7 @@ void TrackingWindow::updateProgressBars()
     if (!caloriesProgress || !proteinsProgress || !fatsProgress || !carbsProgress || !user) {
         return;
     }
-    
+
     double dailyCalories = user->get_daily_calories() > 0 ? user->get_daily_calories() : 1;
     double dailyProteins = user->get_daily_proteins() > 0 ? user->get_daily_proteins() : 1;
     double dailyFats = user->get_daily_fats() > 0 ? user->get_daily_fats() : 1;
@@ -1329,7 +1288,6 @@ void TrackingWindow::resetTracking()
 
     mealEntries.clear();
 
-    // Удаляем данные из истории
     if (historyManager) {
         QString currentDate = getCurrentDate();
         historyManager->removeDayData(currentDate);
@@ -1376,9 +1334,8 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
         return false;
     }
 
-    // Поиск продукта в базе данных
     FoodFileManager::ProductData product = foodFileManager->findProduct(productName);
-    
+
     if (product.name.isEmpty()) {
         if (!foodFileManager->productExists(productName)) {
             foodFileManager->addProduct(productName, 100, 10, 5, 20);
@@ -1390,7 +1347,6 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
         }
     }
 
-    // Расчет питательной ценности для указанного веса
     double mealCalories = foodFileManager->getCalories(product.name, grams);
     double mealProteins = foodFileManager->getProteins(product.name, grams);
     double mealFats = foodFileManager->getFats(product.name, grams);
@@ -1407,7 +1363,6 @@ bool TrackingWindow::addMeal(const QString &mealType, const QString &productName
     MealEntry newEntry(mealType, product.name, grams, mealCalories, mealProteins, mealFats, mealCarbs, timestamp);
     mealEntries.append(newEntry);
 
-    // Сохраняем в историю
     if (historyManager) {
         HistoryManager::MealEntryParams params;
         params.date = date;
@@ -1436,11 +1391,11 @@ void TrackingWindow::updateMealsTable()
     if (!mealsTable) {
         return;
     }
-    
+
     mealsTable->setRowCount(mealEntries.size());
 
     for (int i = 0; i < mealEntries.size(); ++i) {
-        const MealEntry &entry = mealEntries[i];
+        const auto &entry = mealEntries[i];
 
         mealsTable->setItem(i, 0, new QTableWidgetItem(entry.timestamp));
         mealsTable->setItem(i, 1, new QTableWidgetItem(entry.mealType));
@@ -1458,7 +1413,7 @@ void TrackingWindow::updateMealsTable()
 void TrackingWindow::onRemoveMealClicked()
 {
     constexpr double ZERO_VALUE = 0.0;
-    
+
     if (!historyManager || !mealsTable) {
         return;
     }
@@ -1468,12 +1423,12 @@ void TrackingWindow::onRemoveMealClicked()
     }
 
     int currentRow = mealsTable->currentRow();
-    
+
     if (currentRow < 0 || currentRow >= mealEntries.size()) {
         return;
     }
 
-    if (const MealEntry &entry = mealEntries[currentRow]; entry.calories <= ZERO_VALUE && entry.proteins <= ZERO_VALUE && entry.fats <= ZERO_VALUE && entry.carbs <= ZERO_VALUE) {
+    if (const auto &entry = mealEntries[currentRow]; entry.calories <= ZERO_VALUE && entry.proteins <= ZERO_VALUE && entry.fats <= ZERO_VALUE && entry.carbs <= ZERO_VALUE) {
         mealEntries.removeAt(currentRow);
         updateMealsTable();
         return;
@@ -1485,14 +1440,14 @@ void TrackingWindow::onRemoveMealClicked()
     double recalcCarbs = ZERO_VALUE;
 
     QList<MealEntry> remainingMeals;
-    
+
     if (mealEntries.isEmpty()) {
         return;
     }
 
     for (int i = 0; i < mealEntries.size(); ++i) {
         if (i != currentRow) {
-            const MealEntry &meal = mealEntries[i];
+            const auto &meal = mealEntries[i];
             if (meal.calories > 0 || meal.proteins > 0 || meal.fats > 0 || meal.carbs > 0) {
                 recalcCalories += meal.calories;
                 recalcProteins += meal.proteins;
@@ -1549,11 +1504,9 @@ TrackingWindow::~TrackingWindow() {
 }
 
 void TrackingWindow::addTestData() {
-    // Метод оставлен пустым, так как тестовые данные не требуются в продакшн версии
 }
 
 void TrackingWindow::onProductSearch() {
-    // Метод оставлен пустым, так как поиск продуктов реализован через QCompleter
 }
 
 void TrackingWindow::onMealTypeChanged(int index) {
@@ -1570,13 +1523,12 @@ void TrackingWindow::populateProductSuggestions() {
     }
 
     QStringList productNames = foodFileManager->getAllProductNames();
-    
-    // Удаляем старый completer, если он существует
+
     if (productCompleter) {
         delete productCompleter;
         productCompleter = nullptr;
     }
-    
+
     productCompleter = new QCompleter(productNames, this);
     productCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     productCompleter->setFilterMode(Qt::MatchContains);
@@ -1588,7 +1540,6 @@ void TrackingWindow::showProductInfo(const QString &productName) {
 }
 
 void TrackingWindow::autoSave() {
-    // Метод оставлен пустым, так как автосохранение выполняется при каждом изменении данных
 }
 
 void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
@@ -1596,51 +1547,49 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     if (!chartView || !historyManager || !user) {
         return;
     }
-    
+
     constexpr int DEFAULT_DAYS = 30;
     constexpr double DEFAULT_CALORIES = 2000.0;
-    
+
     if (days <= 0) {
         days = DEFAULT_DAYS;
     }
-    
+
     double targetCalories = user->get_daily_calories() > 0 ? user->get_daily_calories() : DEFAULT_CALORIES;
-    
-    // Определяем диапазон дат
+
     QDate today = QDate::currentDate();
-    QDate startDate = today.addDays(-(days - 1)); // Включая сегодня
-    
+    QDate startDate = today.addDays(-(days - 1));
+
     auto *actualSet = new QBarSet("Фактическое");
     auto *targetSet = new QBarSet("Цель");
-    
+
     QStringList dateLabels;
     double maxCalories = targetCalories;
     double minCalories = 0;
-    
-    // Проходим по всем дням последовательно
+
     for (int i = 0; i < days; ++i) {
         QDate currentDate = startDate.addDays(i);
         QString dateStr = currentDate.toString("yyyy-MM-dd");
-        
+
         DaySummary summary = historyManager->getDaySummary(dateStr);
         double calories = summary.totalCalories;
-        
+
         *actualSet << calories;
         *targetSet << targetCalories;
-        
+
         dateLabels << currentDate.toString("dd.MM");
         maxCalories = qMax(maxCalories, calories);
         minCalories = qMin(minCalories, calories);
     }
-    
+
     actualSet->setColor(QColor(148, 87, 235));
     targetSet->setColor(QColor(243, 156, 18, 100));
-    
+
     auto *series = new QBarSeries();
     series->append(actualSet);
     series->append(targetSet);
     series->setBarWidth(0.7);
-    
+
     auto *chart = new QChart();
     chart->addSeries(series);
     QString periodText;
@@ -1648,13 +1597,13 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     else if (days == 7) periodText = "неделю";
     else if (days == 30) periodText = "месяц";
     else periodText = QString::number(days) + " дней";
-    
+
     chart->setTitle(QString("Прогресс по калориям за последние %1").arg(periodText));
     chart->setAnimationOptions(QChart::SeriesAnimations);
     chart->setTitleFont(QFont("Segoe UI", 12, QFont::Bold));
     chart->setBackgroundBrush(QBrush(QColor(45, 45, 65)));
     chart->setTitleBrush(QBrush(Qt::white));
-    
+
     auto *axisX = new QBarCategoryAxis();
     axisX->append(dateLabels);
     axisX->setLabelsColor(Qt::white);
@@ -1662,7 +1611,7 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     axisX->setTitleBrush(QBrush(Qt::white));
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
-    
+
     auto *axisY = new QValueAxis();
     double range = maxCalories - minCalories;
     if (range < 500) range = 500;
@@ -1672,19 +1621,19 @@ void TrackingWindow::createDailyProgressChart(QChartView *chartView, int days)
     axisY->setTitleBrush(QBrush(Qt::white));
     chart->addAxis(axisY, Qt::AlignLeft);
     series->attachAxis(axisY);
-    
+
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
     chart->legend()->setLabelColor(Qt::white);
     chart->setBackgroundRoundness(10);
-    
+
     constexpr int DAYS_THRESHOLD_SHORT = 3;
     constexpr int DAYS_THRESHOLD_MEDIUM = 7;
     constexpr int PIXELS_PER_DAY_SHORT = 70;
     constexpr int PIXELS_PER_DAY_MEDIUM = 60;
     constexpr int PIXELS_PER_DAY_LONG = 65;
     constexpr int MIN_CHART_WIDTH = 800;
-    
+
     int chartWidth;
     if (days <= DAYS_THRESHOLD_SHORT) {
         chartWidth = days * PIXELS_PER_DAY_SHORT;
@@ -1702,26 +1651,24 @@ void TrackingWindow::updateDailyProgressChart()
     if (!dailyProgressChart || !historyManager || !user) {
         return;
     }
-    
-    // Находим QComboBox для периода в родительском виджете
+
     QWidget *parentWidget = dailyProgressChart->parentWidget();
     if (!parentWidget) {
         parentWidget = this;
     }
     QComboBox *periodComboBox = parentWidget->findChild<QComboBox*>();
-    
+
     constexpr int DEFAULT_DAYS_PERIOD = 30;
     int days = DEFAULT_DAYS_PERIOD;
     if (periodComboBox) {
         days = periodComboBox->currentData().toInt();
     }
-    
+
     createDailyProgressChart(dailyProgressChart, days);
 }
 
 void TrackingWindow::setupTrendsTab(QWidget *tab)
 {
-    // Создаем scroll area
     auto *scrollArea = new QScrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -1792,7 +1739,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     auto *controlsLayout = new QHBoxLayout(controlsGroup);
     auto *periodLabel = new QLabel("Период анализа:");
     periodLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: white; margin-right: 10px;");
-    
+
     trendPeriodComboBox = new QComboBox;
     trendPeriodComboBox->addItem("7 дней", 7);
     trendPeriodComboBox->addItem("14 дней", 14);
@@ -1836,7 +1783,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
             padding: 5px;
         }
     )");
-    
+
     updateTrendsButton = new QPushButton("Обновить анализ");
     updateTrendsButton->setStyleSheet(R"(
         QPushButton {
@@ -1860,7 +1807,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
         }
     )");
     connect(updateTrendsButton, &QPushButton::clicked, this, &TrackingWindow::onUpdateTrends);
-    
+
     controlsLayout->addWidget(periodLabel);
     controlsLayout->addWidget(trendPeriodComboBox);
     controlsLayout->addWidget(updateTrendsButton);
@@ -1887,7 +1834,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     )");
 
     auto *trendsLayout = new QVBoxLayout(trendsGroup);
-    
+
     QString tableStyle = R"(
         QTableWidget {
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -1942,8 +1889,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
             border-bottom: 2px solid rgba(148, 87, 235, 0.8);
         }
     )";
-    
-    // Таблица 1: Средние значения и тренды
+
     auto *summaryLabel = new QLabel("Средние значения и тренды:");
     summaryLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 10px;");
     trendsSummaryTable = new QTableWidget(4, 3);
@@ -1957,8 +1903,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsSummaryTable->verticalHeader()->setDefaultSectionSize(60);
     trendsSummaryTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     trendsSummaryTable->setMinimumHeight(250);
-    
-    // Таблица 2: Топ продуктов
+
     auto *topProductsLabel = new QLabel("Топ-10 наиболее часто употребляемых продуктов:");
     topProductsLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsTopProductsTable = new QTableWidget(0, 3);
@@ -1972,8 +1917,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsTopProductsTable->verticalHeader()->setDefaultSectionSize(50);
     trendsTopProductsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     trendsTopProductsTable->setMinimumHeight(400);
-    
-    // Таблица 3: Распределение по приемам пищи
+
     auto *mealDistLabel = new QLabel("Распределение калорий по приемам пищи:");
     mealDistLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsMealDistributionTable = new QTableWidget(0, 2);
@@ -1987,8 +1931,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsMealDistributionTable->verticalHeader()->setDefaultSectionSize(60);
     trendsMealDistributionTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     trendsMealDistributionTable->setMinimumHeight(200);
-    
-    // Таблица 4: Дни недели
+
     auto *weekdayLabel = new QLabel("Средние калории по дням недели:");
     weekdayLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsWeekdayTable = new QTableWidget(0, 2);
@@ -2002,8 +1945,7 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsWeekdayTable->verticalHeader()->setDefaultSectionSize(55);
     trendsWeekdayTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     trendsWeekdayTable->setMinimumHeight(350);
-    
-    // Таблица 5: Статистика
+
     auto *statsLabel = new QLabel("Общая статистика:");
     statsLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: white; margin-top: 15px;");
     trendsStatsTable = new QTableWidget(0, 2);
@@ -2017,20 +1959,19 @@ void TrackingWindow::setupTrendsTab(QWidget *tab)
     trendsStatsTable->verticalHeader()->setDefaultSectionSize(55);
     trendsStatsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     trendsStatsTable->setMinimumHeight(250);
-    
-    // Настраиваем пропорции для таблиц
+
     trendsLayout->addWidget(summaryLabel);
     trendsLayout->addWidget(trendsSummaryTable);
-    
+
     trendsLayout->addWidget(topProductsLabel);
-    trendsLayout->addWidget(trendsTopProductsTable, 1); // Пропорция 1 (растягивается)
-    
+    trendsLayout->addWidget(trendsTopProductsTable, 1);
+
     trendsLayout->addWidget(mealDistLabel);
     trendsLayout->addWidget(trendsMealDistributionTable);
-    
+
     trendsLayout->addWidget(weekdayLabel);
     trendsLayout->addWidget(trendsWeekdayTable);
-    
+
     trendsLayout->addWidget(statsLabel);
     trendsLayout->addWidget(trendsStatsTable);
 
@@ -2063,7 +2004,7 @@ void TrackingWindow::onUpdateTrends()
     }
 
     int days = trendPeriodComboBox->currentData().toInt();
-    
+
     TrendAnalysis analysis = trendAnalyzer->analyzeTrends(days);
 
     constexpr int SUMMARY_TABLE_ROWS = 4;
@@ -2073,56 +2014,53 @@ void TrackingWindow::onUpdateTrends()
     trendsSummaryTable->setItem(0, 0, calItem);
     trendsSummaryTable->setItem(0, 1, new QTableWidgetItem(QString("%1 ккал").arg(static_cast<int>(analysis.avgCalories))));
     trendsSummaryTable->setItem(0, 2, new QTableWidgetItem(analysis.caloriesTrend));
-    
-    // Белки
+
     auto *protItem = new QTableWidgetItem("Белки");
     protItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsSummaryTable->setItem(1, 0, protItem);
     trendsSummaryTable->setItem(1, 1, new QTableWidgetItem(QString("%1 г").arg(static_cast<int>(analysis.avgProteins))));
     trendsSummaryTable->setItem(1, 2, new QTableWidgetItem(analysis.proteinsTrend));
-    
-    // Жиры
+
     auto *fatItem = new QTableWidgetItem("Жиры");
     fatItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsSummaryTable->setItem(2, 0, fatItem);
     trendsSummaryTable->setItem(2, 1, new QTableWidgetItem(QString("%1 г").arg(static_cast<int>(analysis.avgFats))));
     trendsSummaryTable->setItem(2, 2, new QTableWidgetItem(analysis.fatsTrend));
-    
-    // Углеводы
+
     auto *carbItem = new QTableWidgetItem("Углеводы");
     carbItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsSummaryTable->setItem(3, 0, carbItem);
     trendsSummaryTable->setItem(3, 1, new QTableWidgetItem(QString("%1 г").arg(static_cast<int>(analysis.avgCarbs))));
     trendsSummaryTable->setItem(3, 2, new QTableWidgetItem(analysis.carbsTrend));
-    
+
     trendsTopProductsTable->setRowCount(analysis.topProducts.size());
     for (int i = 0; i < analysis.topProducts.size(); ++i) {
         auto *numItem = new QTableWidgetItem(QString::number(i + 1));
         numItem->setTextAlignment(Qt::AlignCenter);
         trendsTopProductsTable->setItem(i, 0, numItem);
-        
+
         auto *nameItem = new QTableWidgetItem(analysis.topProducts[i].first);
         nameItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         trendsTopProductsTable->setItem(i, 1, nameItem);
-        
+
         auto *countItem = new QTableWidgetItem(QString("%1 раз").arg(analysis.topProducts[i].second));
         countItem->setTextAlignment(Qt::AlignCenter);
         trendsTopProductsTable->setItem(i, 2, countItem);
     }
-    
+
     trendsMealDistributionTable->setRowCount(analysis.mealDistribution.size());
     int row = 0;
     for (auto it = analysis.mealDistribution.constBegin(); it != analysis.mealDistribution.constEnd(); ++it) {
         auto *mealItem = new QTableWidgetItem(it.key());
         mealItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         trendsMealDistributionTable->setItem(row, 0, mealItem);
-        
+
         auto *calItem = new QTableWidgetItem(QString("%1 ккал").arg(static_cast<int>(it.value())));
         calItem->setTextAlignment(Qt::AlignCenter);
         trendsMealDistributionTable->setItem(row, 1, calItem);
         row++;
     }
-    
+
     QStringList weekdayOrder = {"Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"};
     int weekdayRowCount = 0;
     for (const QString& day : weekdayOrder) {
@@ -2137,7 +2075,7 @@ void TrackingWindow::onUpdateTrends()
             auto *dayItem = new QTableWidgetItem(day);
             dayItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
             trendsWeekdayTable->setItem(row, 0, dayItem);
-            
+
             double calories = analysis.weekdayCalories[day];
             QString caloriesText = QString("%1 ккал").arg(static_cast<int>(calories));
             if (day == analysis.mostCaloricDay) {
@@ -2151,61 +2089,61 @@ void TrackingWindow::onUpdateTrends()
             row++;
         }
     }
-    
+
     constexpr int STATS_TABLE_ROWS = 5;
     trendsStatsTable->setRowCount(STATS_TABLE_ROWS);
-    
+
     auto *periodItem = new QTableWidgetItem("Период анализа");
     periodItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(0, 0, periodItem);
     trendsStatsTable->setItem(0, 1, new QTableWidgetItem(
-        QString("%1 - %2 (%3 дней)").arg(analysis.startDate.toString("dd.MM.yyyy"))
-                                    .arg(analysis.endDate.toString("dd.MM.yyyy"))
-                                    .arg(analysis.totalDays)));
-    
+                                        QString("%1 - %2 (%3 дней)").arg(analysis.startDate.toString("dd.MM.yyyy"))
+                                            .arg(analysis.endDate.toString("dd.MM.yyyy"))
+                                            .arg(analysis.totalDays)));
+
     auto *dataItem = new QTableWidgetItem("Дней с данными");
     dataItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(1, 0, dataItem);
     auto *dataValue = new QTableWidgetItem(QString::number(analysis.daysWithData));
     dataValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(1, 1, dataValue);
-    
+
     auto *stabilityItem = new QTableWidgetItem("Стабильность питания");
     stabilityItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(2, 0, stabilityItem);
     auto *stabilityValue = new QTableWidgetItem(QString("%1/100").arg(static_cast<int>(analysis.stabilityScore)));
     stabilityValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(2, 1, stabilityValue);
-    
+
     auto *overItem = new QTableWidgetItem("Дней превышения нормы");
     overItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(3, 0, overItem);
     auto *overValue = new QTableWidgetItem(QString::number(analysis.daysOverTarget));
     overValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(3, 1, overValue);
-    
+
     auto *underItem = new QTableWidgetItem("Дней ниже нормы");
     underItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     trendsStatsTable->setItem(4, 0, underItem);
     auto *underValue = new QTableWidgetItem(QString::number(analysis.daysUnderTarget));
     underValue->setTextAlignment(Qt::AlignCenter);
     trendsStatsTable->setItem(4, 1, underValue);
-    
+
     trendsSummaryTable->resizeColumnsToContents();
     trendsSummaryTable->resizeRowsToContents();
-    
+
     trendsTopProductsTable->resizeColumnsToContents();
     trendsTopProductsTable->resizeRowsToContents();
-    
+
     trendsMealDistributionTable->resizeColumnsToContents();
     trendsMealDistributionTable->resizeRowsToContents();
-    
+
     trendsWeekdayTable->resizeColumnsToContents();
     trendsWeekdayTable->resizeRowsToContents();
-    
+
     trendsStatsTable->resizeColumnsToContents();
     trendsStatsTable->resizeRowsToContents();
-    
+
     for (int i = 0; i < trendsSummaryTable->columnCount(); ++i) {
         trendsSummaryTable->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Stretch);
     }

@@ -30,7 +30,8 @@ class TrackingWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit TrackingWindow(User *user, NutritionManager *manager, NutritionAdvisor *advisor, QWidget *parent = nullptr);
+    explicit TrackingWindow(User *user, NutritionManager *manager,
+                            NutritionAdvisor *advisor, QWidget *parent = nullptr);
     ~TrackingWindow() override;
 
     void resetTracking();
@@ -61,49 +62,51 @@ private:
     QString generateMealStatsText() const;
     QString generateBJUFactText(double protPercentage, double fatsPercentage, double carbsPercentage) const;
 
-    User *user;
-    NutritionManager *manager;
-    NutritionAdvisor *advisor;
-    MealTracker *mealTracker;
-    FoodFileManager *foodFileManager;
-    HistoryManager *historyManager;
-    TrendAnalyzer *trendAnalyzer;
+    User* user = nullptr;
+    NutritionManager* manager = nullptr;
+    NutritionAdvisor* advisor = nullptr;
+    MealTracker* mealTracker = nullptr;
+    FoodFileManager* foodFileManager = nullptr;
+    HistoryManager* historyManager = nullptr;
+    TrendAnalyzer* trendAnalyzer = nullptr;
 
-    double totalCalories;
-    double totalProteins;
-    double totalFats;
-    double totalCarbs;
+    double totalCalories = 0.0;
+    double totalProteins = 0.0;
+    double totalFats = 0.0;
+    double totalCarbs = 0.0;
 
-    QTabWidget *tabWidget;
-
-    QDateEdit *dateEdit;
+    QTabWidget* tabWidget = nullptr;
+    QDateEdit* dateEdit = nullptr;
     QString previousDate;
-    QComboBox *mealTypeComboBox;
-    QLineEdit *productNameEdit;
-    QLineEdit *gramsEdit;
-    QPushButton *addMealButton;
-    QPushButton *searchProductButton;
-    QPushButton *removeMealButton;
-    QTableWidget *mealsTable;
-    QTextEdit *productInfoDisplay;
-    QCompleter *productCompleter;
 
-    QChartView *caloriesChartView;
-    QChartView *macrosChartView;
-    QChartView *dailyProgressChart;
-    QTextEdit *statsDisplay;
-    QPushButton *updateTrendsButton;
-    QComboBox *trendPeriodComboBox;
-    QTableWidget *trendsSummaryTable;
-    QTableWidget *trendsTopProductsTable;
-    QTableWidget *trendsMealDistributionTable;
-    QTableWidget *trendsWeekdayTable;
-    QTableWidget *trendsStatsTable;
+    QComboBox* mealTypeComboBox = nullptr;
+    QLineEdit* productNameEdit = nullptr;
+    QLineEdit* gramsEdit = nullptr;
+    QPushButton* addMealButton = nullptr;
+    QPushButton* searchProductButton = nullptr;
+    QPushButton* removeMealButton = nullptr;
 
-    QProgressBar *caloriesProgress;
-    QProgressBar *proteinsProgress;
-    QProgressBar *fatsProgress;
-    QProgressBar *carbsProgress;
+    QTableWidget* mealsTable = nullptr;
+    QTextEdit* productInfoDisplay = nullptr;
+    QCompleter* productCompleter = nullptr;
+
+    QChartView* caloriesChartView = nullptr;
+    QChartView* macrosChartView = nullptr;
+    QChartView* dailyProgressChart = nullptr;
+    QTextEdit* statsDisplay = nullptr;
+    QPushButton* updateTrendsButton = nullptr;
+    QComboBox* trendPeriodComboBox = nullptr;
+
+    QTableWidget* trendsSummaryTable = nullptr;
+    QTableWidget* trendsTopProductsTable = nullptr;
+    QTableWidget* trendsMealDistributionTable = nullptr;
+    QTableWidget* trendsWeekdayTable = nullptr;
+    QTableWidget* trendsStatsTable = nullptr;
+
+    QProgressBar* caloriesProgress = nullptr;
+    QProgressBar* proteinsProgress = nullptr;
+    QProgressBar* fatsProgress = nullptr;
+    QProgressBar* carbsProgress = nullptr;
 
     struct ProductInfo {
         QString name;
