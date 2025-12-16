@@ -86,7 +86,7 @@ public:
     
     // Основной метод анализа трендов
     TrendAnalysis analyzeTrends(const QDate& startDate, const QDate& endDate) const;
-    TrendAnalysis analyzeTrends(int days = 30); // Анализ за последние N дней
+    TrendAnalysis analyzeTrends(int days = 30) const ;
     
     // Получение анализа в текстовом виде
     QString getAnalysisText(const TrendAnalysis& analysis) const;

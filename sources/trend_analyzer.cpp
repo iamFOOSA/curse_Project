@@ -132,6 +132,7 @@ QMap<QString, double> TrendAnalyzer::calculateWeekdayDistribution(const QDate& s
         case 5: dayName = "Пятница"; break;
         case 6: dayName = "Суббота"; break;
         case 7: dayName = "Воскресенье"; break;
+        default: dayName = "Неизвестный день"; break;
         }
 
         if (DaySummary summary = historyManager->getDaySummary(currentDate); summary.totalCalories > 0) {
@@ -172,7 +173,7 @@ QPair<QString, QString> TrendAnalyzer::findExtremeDays(const QMap<QString, doubl
     return qMakePair(mostCaloric, leastCaloric);
 }
 
-TrendAnalysis TrendAnalyzer::analyzeTrends(int days)
+TrendAnalysis TrendAnalyzer::analyzeTrends(int days) const
 {
     QDate endDate = QDate::currentDate();
     QDate startDate = endDate.addDays(-(days - 1));
